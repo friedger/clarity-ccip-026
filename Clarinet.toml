@@ -1,0 +1,37 @@
+[project]
+name = "clarity-ccip-026"
+description = ""
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+requirements = [
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd004-city-registry'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.proposal-trait'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.extension-trait'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao'},
+    { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3'},
+]
+
+[contracts.ccd013-burn-to-exit-mia]
+path = "contracts/ccd013-burn-to-exit-mia.clar"
+epoch = "latest"
+
+[contracts.ccip026-miamicoin-burn-to-exit]
+path = "contracts/ccip026-miamicoin-burn-to-exit.clar"
+epoch = "latest"
+
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+
+# Check-checker settings:
+# trusted_sender: if true, inputs are trusted after tx_sender has been checked.
+# trusted_caller: if true, inputs are trusted after contract-caller has been checked.
+# callee_filter: if true, untrusted data may be passed into a private function without a
+# warning, if it gets checked inside. This check will also propagate up to the
+# caller.
+# More informations: https://www.hiro.so/blog/new-safety-checks-in-clarinet

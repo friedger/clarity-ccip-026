@@ -88,6 +88,24 @@ plan:
             path: "./.cache/requirements/SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token.clar"
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: nft-trait
+            emulated-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
+            path: "./.cache/requirements/SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.clar"
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: newyorkcitycoin-auth
+            emulated-sender: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5
+            path: "./.cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-auth.clar"
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: newyorkcitycoin-token
+            emulated-sender: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5
+            path: "./.cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token.clar"
+            clarity-version: 1
+      epoch: "2.0"
+    - id: 1
+      transactions:
+        - emulated-contract-publish:
             contract-name: extension-trait
             emulated-sender: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH
             path: "./.cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.extension-trait.clar"
@@ -101,11 +119,6 @@ plan:
             contract-name: base-dao
             emulated-sender: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH
             path: "./.cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao.clar"
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: nft-trait
-            emulated-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
-            path: "./.cache/requirements/SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.clar"
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: ccd002-trait
@@ -163,16 +176,6 @@ plan:
             path: "./.cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2.clar"
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: newyorkcitycoin-auth
-            emulated-sender: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5
-            path: "./.cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-auth.clar"
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: newyorkcitycoin-token
-            emulated-sender: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5
-            path: "./.cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token.clar"
-            clarity-version: 1
-        - emulated-contract-publish:
             contract-name: newyorkcitycoin-token-v2
             emulated-sender: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11
             path: "./.cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2.clar"
@@ -187,9 +190,6 @@ plan:
             emulated-sender: SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R
             path: "./.cache/requirements/SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch.clar"
             clarity-version: 1
-      epoch: "2.1"
-    - id: 1
-      transactions:
         - emulated-contract-publish:
             contract-name: miamicoin-token-v2
             emulated-sender: SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R
@@ -200,7 +200,7 @@ plan:
             emulated-sender: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH
             path: "./.cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking.clar"
             clarity-version: 1
-      epoch: "2.1"
+      epoch: "2.05"
     - id: 2
       transactions:
         - emulated-contract-publish:

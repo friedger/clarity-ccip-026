@@ -8,13 +8,15 @@
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
-    "test:stxer": "npx tsx simulations/ccip026-stxer.ts"
+    "test:stxer": "npx tsx simulations/ccip026-stxer.ts",
+    "test:rv": "rv . ccd013-burn-to-exit-mia test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hirosystems/clarinet-sdk": "^3.0.2",
     "@stacks/common": "^7.0.2",
+    "@stacks/rendezvous": "^0.9.0",
     "@stacks/transactions": "^7.0.6",
     "chokidar-cli": "^3.0.0",
     "stxer": "^0.4.2",

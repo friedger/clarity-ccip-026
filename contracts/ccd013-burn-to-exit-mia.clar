@@ -19,6 +19,7 @@
 (define-constant ERR_NOTHING_TO_REDEEM (err u12007))
 (define-constant ERR_ALREADY_CLAIMED (err u12008))
 (define-constant ERR_SUPPLY_CALCULATION (err u12009))
+(define-constant ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT (err u12010))
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
@@ -103,7 +104,7 @@
         balanceV2
         maxAmountUMia
       ))
-      (redemptionAmountUStx (get-redemption-for-balance redemptionAmountUMia))
+      (redemptionAmountUStx (try! (get-redemption-for-balance redemptionAmountUMia)))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
@@ -188,9 +189,9 @@
     )
     (if (< redemptionAmount contractCurrentBalance)
       ;; if redemption amount is less than contract balance, return redemption amount
-      redemptionAmount
-      ;; if redemption amount is greater than contract balance, return contract balance
-      contractCurrentBalance
+      (ok redemptionAmount)
+      ;; if redemption amount is greater than contract balance, thrown an error
+      ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT
     )
   )
 )

@@ -53,9 +53,7 @@ function redeem(sender: string, nonce: number, amount: number) {
   };
 }
 
-function main() {
-  const block_height = 3491155;
-
+function main(block_height: number) {
   return (
     SimulationBuilder.new()
       .useBlockHeight(block_height)
@@ -111,4 +109,8 @@ function main() {
   );
 }
 
-main().catch(console.error);
+const block_height_empty = 3425439;
+const block_height_31k_stx = 3491155;
+
+main(block_height_empty).catch(console.error);
+main(block_height_31k_stx).catch(console.error);

@@ -22,9 +22,9 @@
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
-(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u8)) ;; 8 decimal places
-(define-constant MAX_PER_TRANSACTION (* u10000000 MICRO_CITYCOINS)) ;; max 1000 MIA per transaction
+(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u6)) ;; 1m MIA = 1700 STX
 (define-constant REDEMPTION_RATIO u1700) ;; start with 0.0017 STX per MIA
+(define-constant MAX_PER_TRANSACTION (* u10000000 MICRO_CITYCOINS)) ;; max 10m MIA per transaction
 
 ;; DATA VARS
 (define-data-var redemptionsEnabled bool false)

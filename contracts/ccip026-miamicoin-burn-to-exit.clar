@@ -38,8 +38,8 @@
 (define-data-var voteStart uint u0)
 (define-data-var voteEnd uint u0)
 ;; start the vote when deployed
-(var-set voteStart stacks-block-height)
-
+(var-set voteStart burn-block-height)
+(var-set voteEnd (+ burn-block-height VOTE_LENGTH))
 ;; DATA MAPS
 
 (define-map CityVotes
@@ -156,7 +156,7 @@
 )
 
 (define-read-only (is-vote-active)
-  (if (and (> stacks-block-height (var-get voteStart)) (<= stacks-block-height (var-get voteEnd)))
+  (if (and (>= burn-block-height (var-get voteStart)) (<= burn-block-height (var-get voteEnd)))
     true
     false
   )

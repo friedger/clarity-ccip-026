@@ -82,7 +82,14 @@
 
 (define-public (redeem-mia (amountUMia uint))
   (let (
+      ;; balances for user
       (userAddress tx-sender)
+      (balanceV1 (unwrap!
+        (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
+          get-balance userAddress
+        )
+        ERR_BALANCE_NOT_FOUND
+      ))
       (balanceV2 (unwrap!
         (contract-call?
           'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
@@ -90,26 +97,38 @@
         )
         ERR_BALANCE_NOT_FOUND
       ))
+      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      ;; previous redemptions
       (redemptionClaimed (default-to {
         uMia: u0,
         uStx: u0,
       }
         (map-get? RedemptionClaims userAddress)
       ))
+      ;; limit to max amount per transaction and actual balance
       (maxAmountUMia (if (> amountUMia MAX_PER_TRANSACTION)
         MAX_PER_TRANSACTION
         amountUMia
       ))
-      (redemptionAmountUMia (if (> maxAmountUMia balanceV2)
-        balanceV2
+      (redemptionAmountUMia (if (> maxAmountUMia totalBalance)
+        totalBalance
         maxAmountUMia
       ))
+      ;; calculate redemption amount in uSTX
       (redemptionAmountUStx (try! (get-redemption-for-balance redemptionAmountUMia)))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmountUStx u0) ERR_NOTHING_TO_REDEEM)
+    ;; convert v1 tokens to v2 if user holds v1 tokens
+    (try! (if (> balanceV1 u0)
+      (contract-call?
+        'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+        convert-to-v2
+      )
+      (ok true)
+    ))
     ;; burn MIA tokens
     (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
       burn redemptionAmountUMia userAddress

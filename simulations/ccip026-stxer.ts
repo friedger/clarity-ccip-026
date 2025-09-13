@@ -104,6 +104,14 @@ function main(block_height: number) {
           11_000_000_000000
         )
       )
+      // .addContractCall(
+      //   // redeem v1
+      //   redeem(
+      //     "SPY00AG5X55R7A2NNCBBGXCVDHEEA2JF3WRRTTDG",
+      //     10,
+      //     10_000_000_000000
+      //   )
+      // )
       .run()
       .catch(console.error)
   );
@@ -112,5 +120,5 @@ function main(block_height: number) {
 const block_height_empty = 3425439;
 const block_height_31k_stx = 3491155;
 
-main(block_height_empty).catch(console.error);
+//main(block_height_empty).catch(console.error);
 main(block_height_31k_stx).catch(console.error);

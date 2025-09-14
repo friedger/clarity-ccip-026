@@ -1,6 +1,7 @@
 (define-public (prepare)
   (begin
-    (try! (stx-transfer? u2000000000 tx-sender
+    ;; send 20,000 STX to the contract
+    (try! (stx-transfer? u20000000000 tx-sender
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
     ))
     (ok true)
@@ -15,7 +16,7 @@
         amountUMia
       ))
     )
-    (asserts! (is-eq ustx expectedResult) (err u9998))
+    (asserts! (is-eq ustx expectedResult) (err u9999))
     (ok true)
   )
 )
@@ -28,7 +29,7 @@
         amountUMia
       ))
     )
-    (asserts! (is-eq ustx expectedResult) (err u9998))
+    (asserts! (is-eq ustx expectedResult) (err u9999))
     (ok true)
   )
 )
@@ -36,12 +37,12 @@
 (define-public (test-get-redemption-for-balance-10m)
   (let (
       (amountUMia u10000000000000) ;; 10,000,000 Mia
-      (expectedResult (err u12010)) ;; not enough stx in contract
+      (expectedResult (ok u17000000000)) ;; 17,000 STX
       (ustx (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
         amountUMia
       ))
     )
-    (asserts! (is-eq ustx expectedResult) (err u9998))
+    (asserts! (is-eq ustx expectedResult) (err ustx))
     (ok true)
   )
 )
@@ -54,7 +55,7 @@
         amountUMia
       ))
     )
-    (asserts! (is-eq ustx expectedResult) (err u9998))
+    (asserts! (is-eq ustx expectedResult) (err u9999))
     (ok true)
   )
 )

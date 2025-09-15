@@ -97,7 +97,6 @@
         )
         ERR_BALANCE_NOT_FOUND
       ))
-      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
       ;; previous redemptions
       (redemptionClaimed (default-to {
         uMia: u0,
@@ -110,28 +109,29 @@
         MAX_PER_TRANSACTION
         amountUMia
       ))
-      (redemptionAmountUMia (if (> maxAmountUMia totalBalance)
-        totalBalance
+      (redemptionAmountUMiaV1 (if (> maxAmountUMia (* balanceV1 MICRO_CITYCOINS))
+        (* balanceV1 MICRO_CITYCOINS)
         maxAmountUMia
       ))
+      (remainingAmountUMia (- maxAmountUMia redemptionAmountUMiaV1))
+      (redemptionAmountUMiaV2 (if (> remainingAmountUMia balanceV2)
+        balanceV2
+        remainingAmountUMia
+      ))
+      (redemptionTotalUMia (+ redemptionAmountUMiaV1 redemptionAmountUMiaV2))
       ;; calculate redemption amount in uSTX
-      (redemptionAmountUStx (try! (get-redemption-for-balance redemptionAmountUMia)))
+      (redemptionAmountUStx (try! (get-redemption-for-balance redemptionTotalUMia)))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmountUStx u0) ERR_NOTHING_TO_REDEEM)
-    ;; convert v1 tokens to v2 if user holds v1 tokens
-    (try! (if (> balanceV1 u0)
-      (contract-call?
-        'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-        convert-to-v2
-      )
-      (ok true)
-    ))
     ;; burn MIA tokens
+    (try! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
+      burn redemptionAmountUMiaV1 userAddress
+    ))
     (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-      burn redemptionAmountUMia userAddress
+      burn redemptionAmountUMiaV2 userAddress
     ))
     ;; transfer STX
     (try! (contract-call?
@@ -139,10 +139,10 @@
       withdraw-stx redemptionAmountUStx userAddress
     ))
     ;; update redemption claims
-    (var-set totalRedeemed (+ (var-get totalRedeemed) redemptionAmountUMia))
+    (var-set totalRedeemed (+ (var-get totalRedeemed) redemptionTotalUMia))
     (var-set totalTransferred (+ (var-get totalTransferred) redemptionAmountUStx))
     (map-set RedemptionClaims userAddress {
-      uMia: (+ (get uMia redemptionClaimed) redemptionAmountUMia),
+      uMia: (+ (get uMia redemptionClaimed) redemptionTotalUMia),
       uStx: (+ (get uStx redemptionClaimed) redemptionAmountUStx),
     })
     ;; print redemption info
@@ -158,7 +158,7 @@
     ;; return redemption amount
     (ok {
       uStx: redemptionAmountUStx,
-      uMia: redemptionAmountUMia,
+      uMia: redemptionTotalUMia,
     })
   )
 )

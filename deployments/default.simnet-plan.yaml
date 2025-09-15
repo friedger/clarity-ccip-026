@@ -78,8 +78,8 @@ plan:
             path: contracts/ccip026-miamicoin-burn-to-exit.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: ccip026-miamicoin-burn-to-exit_test
+            contract-name: ccip026-miamicoin-burn-to-exit_flow_test
             emulated-sender: SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R
-            path: tests/ccip026-miamicoin-burn-to-exit_test.clar
+            path: tests/ccip026-miamicoin-burn-to-exit_flow_test.clar
             clarity-version: 3
       epoch: "3.2"

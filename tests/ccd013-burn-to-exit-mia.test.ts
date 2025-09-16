@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  convertToV2,
   directExecute,
   redeem,
   vote,
@@ -40,26 +41,28 @@ describe("CCD013 Burn to Exit MIA", () => {
       redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000),
       // redeem more than user owns (0 MIA)
       redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000),
-      // redeem holder of v1
+      // redeem holder of v1 (fails)
+      redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 800_000_000000),
+      // convert to v2
+      convertToV2("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX"),
+      // redeem holder of v2
       redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 800_000_000000),
     ]);
     expect(txReceipts[0].result).toBeOk(
       tupleCV({
         ustx: uintCV(547_102500),
         umia: uintCV(321_825_000000),
-        umiaV2: uintCV(321_825_000000),
-        miaV1: uintCV(0),
       })
     );
     // nothing to redeem
     expect(txReceipts[1].result).toBeErr(uintCV(1001));
     // redeem v1 holder
-    expect(txReceipts[1].result).toBeOk(
+    expect(txReceipts[2].result).toBeErr(uintCV(13007));
+    expect(txReceipts[3].result).toBeOk(boolCV(true));
+    expect(txReceipts[4].result).toBeOk(
       tupleCV({
-        ustx: uintCV(1234),
-        umia: uintCV(800_000_000_000),
-        umiaV2: uintCV(321_825),
-        miaV1: uintCV(0),
+        ustx: uintCV(1360_000000),
+        umia: uintCV(800_000_000000),
       })
     );
   });

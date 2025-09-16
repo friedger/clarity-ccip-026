@@ -121,11 +121,7 @@ function main(block_height: number) {
       )
       .addContractCall(
         // convert to v2
-        convertToV2(
-          "SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX",
-          10,
-          800_000_000000
-        )
+        convertToV2("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 10)
       )
       .addContractCall(
         // redeem v2

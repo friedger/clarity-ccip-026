@@ -12,11 +12,11 @@
       (err "vote failed")
     )
     ;; @caller 'SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE
+    ;; @type-hints trait_reference
     (unwrap!
       (contract-call?
         'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute
-        direct-execute
-        'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip024-miamicoin-signal-vote
+        direct-execute .ccip026-miamicoin-burn-to-exit
       )
       (err "direct execute failed")
     )

@@ -32,3 +32,12 @@ export const redeem = (sender: string, amount: number) => {
     sender
   );
 };
+
+export const convertToV2 = (sender: string) => {
+  return tx.callPublicFn(
+    "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2",
+    "convert-to-v2",
+    [],
+    sender
+  );
+};

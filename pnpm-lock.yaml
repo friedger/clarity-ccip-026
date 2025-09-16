@@ -12,8 +12,8 @@ importers:
         specifier: 3.6.1
         version: 3.6.1
       '@stacks/clarunit':
-        specifier: 0.1.0
-        version: 0.1.0(yaml@2.8.1)
+        specifier: git+ssh://git@github.com/friedger/stacks-test-tools.git#1aead92a0767ecc831195be480dfcfd6f21c35bd
+        version: https://codeload.github.com/friedger/stacks-test-tools/tar.gz/1aead92a0767ecc831195be480dfcfd6f21c35bd(yaml@2.8.1)
       '@stacks/common':
         specifier: 7.0.2
         version: 7.0.2
@@ -326,8 +326,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@stacks/clarunit@0.1.0':
-    resolution: {integrity: sha512-ceS4rkTVUYILoP1DfaVPaQdpXphrFlCuriFi9Bb1aEbJRdjhhIpweYMoGYFGsOs9Sm6YsIwkov/uYB6e/JJd9A==}
+  '@stacks/clarunit@https://codeload.github.com/friedger/stacks-test-tools/tar.gz/1aead92a0767ecc831195be480dfcfd6f21c35bd':
+    resolution: {tarball: https://codeload.github.com/friedger/stacks-test-tools/tar.gz/1aead92a0767ecc831195be480dfcfd6f21c35bd}
+    version: 0.1.0
     hasBin: true
 
   '@stacks/common@7.0.2':
@@ -1222,7 +1223,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.50.1':
     optional: true
 
-  '@stacks/clarunit@0.1.0(yaml@2.8.1)':
+  '@stacks/clarunit@https://codeload.github.com/friedger/stacks-test-tools/tar.gz/1aead92a0767ecc831195be480dfcfd6f21c35bd(yaml@2.8.1)':
     dependencies:
       '@hirosystems/clarinet-sdk': 3.1.0
       '@stacks/common': 7.0.2

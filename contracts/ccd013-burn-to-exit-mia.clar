@@ -66,6 +66,8 @@
 ;; initialize contract after deployment to start redemptions
 (define-public (initialize)
   (begin
+    ;; check if sender is DAO or extension
+    (try! (is-dao-or-extension))
     ;; revoke delegation
     (try! (contract-call?
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
@@ -109,10 +111,13 @@
         MAX_PER_TRANSACTION
         amountUMia
       ))
+      ;; v1 amount in micro MIA
       (redemptionAmountUMiaV1 (if (> maxAmountUMia (* balanceV1 MICRO_CITYCOINS))
         (* balanceV1 MICRO_CITYCOINS)
         maxAmountUMia
       ))
+      (redemptionV1InMia (/ redemptionAmountUMiaV1 MICRO_CITYCOINS))
+      ;; v2 amount in micro MIA
       (remainingAmountUMia (- maxAmountUMia redemptionAmountUMiaV1))
       (redemptionAmountUMiaV2 (if (> remainingAmountUMia balanceV2)
         balanceV2
@@ -126,13 +131,21 @@
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
     ;; check that redemption amount is > 0
     (asserts! (> redemptionAmountUStx u0) ERR_NOTHING_TO_REDEEM)
-    ;; burn MIA tokens
-    (try! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
-      burn redemptionAmountUMiaV1 userAddress
-    ))
-    (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-      burn redemptionAmountUMiaV2 userAddress
-    ))
+    ;; burn MIA tokens v1
+    (and
+      (> redemptionV1InMia u0)
+      (try! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
+        burn redemptionV1InMia userAddress
+      ))
+    )
+    ;; burn MIA tokens v2
+    (and
+      (> redemptionAmountUMiaV2 u0)
+      (try! (contract-call?
+        'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 burn
+        redemptionAmountUMiaV2 userAddress
+      ))
+    )
     ;; transfer STX
     (try! (contract-call?
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
@@ -159,6 +172,8 @@
     (ok {
       uStx: redemptionAmountUStx,
       uMia: redemptionTotalUMia,
+      uMiaV2: redemptionAmountUMiaV2,
+      miaV1: redemptionV1InMia,
     })
   )
 )

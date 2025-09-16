@@ -53,6 +53,17 @@ function redeem(sender: string, nonce: number, amount: number) {
   };
 }
 
+function convertToV2(sender: string, nonce: number) {
+  return {
+    contract_id: `SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2`,
+    function_name: "convert-to-v2",
+    function_args: [],
+    nonce: nonce++,
+    sender,
+    ...common_params,
+  };
+}
+
 function main(block_height: number) {
   return (
     SimulationBuilder.new()
@@ -74,9 +85,8 @@ function main(block_height: number) {
         deployer,
       })
       .addContractCall(vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 74))
-      .addContractCall(vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529))
-      .addContractCall(vote("SP34N5WWPHWTVJVYPE368HYDEXMZWKPVF639B3P5T", 984))
       .addContractCall(vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", 249))
+      .addContractCall(vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529))
       // execute
       .addContractCall(
         directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE", 124)
@@ -104,14 +114,23 @@ function main(block_height: number) {
           11_000_000_000000
         )
       )
-      // .addContractCall(
-      //   // redeem v1
-      //   redeem(
-      //     "SPY00AG5X55R7A2NNCBBGXCVDHEEA2JF3WRRTTDG",
-      //     10,
-      //     10_000_000_000000
-      //   )
-      // )
+      // redeem v1
+      .addContractCall(
+        // no v2 mia
+        redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 10, 800_000_000000)
+      )
+      .addContractCall(
+        // convert to v2
+        convertToV2(
+          "SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX",
+          10,
+          800_000_000000
+        )
+      )
+      .addContractCall(
+        // redeem v2
+        redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 10, 800_000_000000)
+      )
       .run()
       .catch(console.error)
   );

@@ -1,5 +1,5 @@
 import { tx } from "@hirosystems/clarinet-sdk";
-import { boolCV, contractPrincipalCV } from "@stacks/transactions";
+import { boolCV, contractPrincipalCV, uintCV } from "@stacks/transactions";
 
 export const vote = (sender: string) => {
   return tx.callPublicFn(
@@ -20,6 +20,15 @@ export const directExecute = (sender: string) => {
         "ccip026-miamicoin-burn-to-exit"
       ),
     ],
+    sender
+  );
+};
+
+export const redeem = (sender: string, amount: number) => {
+  return tx.callPublicFn(
+    "ccd013-burn-to-exit-mia",
+    "redeem-mia",
+    [uintCV(amount)],
     sender
   );
 };

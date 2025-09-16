@@ -9,17 +9,11 @@
 ;; CONSTANTS
 
 ;; error codes
-(define-constant ERR_UNAUTHORIZED (err u12000))
-(define-constant ERR_PANIC (err u12001))
-(define-constant ERR_GETTING_TOTAL_SUPPLY (err u12002))
-(define-constant ERR_GETTING_REDEMPTION_BALANCE (err u12003))
-(define-constant ERR_ALREADY_ENABLED (err u12004))
-(define-constant ERR_NOT_ENABLED (err u12005))
-(define-constant ERR_BALANCE_NOT_FOUND (err u12006))
-(define-constant ERR_NOTHING_TO_REDEEM (err u12007))
-(define-constant ERR_ALREADY_CLAIMED (err u12008))
-(define-constant ERR_SUPPLY_CALCULATION (err u12009))
-(define-constant ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT (err u12010))
+(define-constant ERR_UNAUTHORIZED (err u13000))
+(define-constant ERR_NOT_ENABLED (err u13005))
+(define-constant ERR_BALANCE_NOT_FOUND (err u13006))
+(define-constant ERR_NOTHING_TO_REDEEM (err u13007))
+(define-constant ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT (err u13010))
 
 ;; helpers
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places

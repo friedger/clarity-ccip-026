@@ -15,6 +15,7 @@ requirements = [
     { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.extension-trait'},
     { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao'},
     { contract_id = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3'},
+    { contract_id = 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch'}
 ]
 
 [contracts.ccd013-burn-to-exit-mia]

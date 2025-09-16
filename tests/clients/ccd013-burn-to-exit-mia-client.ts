@@ -1,13 +1,9 @@
 import { tx } from "@hirosystems/clarinet-sdk";
-import { boolCV, contractPrincipalCV, uintCV } from "@stacks/transactions";
+import { contractPrincipalCV, uintCV } from "@stacks/transactions";
+import { vote as vote026 } from "./ccip026-miamicoin-burn-to-exit-client";
 
 export const vote = (sender: string) => {
-  return tx.callPublicFn(
-    "ccip026-miamicoin-burn-to-exit",
-    "vote-on-proposal",
-    [boolCV(true)],
-    sender
-  );
+  return vote026(sender, true);
 };
 
 export const directExecute = (sender: string) => {

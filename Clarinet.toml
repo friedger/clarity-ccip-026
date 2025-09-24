@@ -41,6 +41,7 @@ enabled = true
 # Specify the Stacks block height to fork from
 initial_height = 3491155
 use_mainnet_wallets = true
+api_url = "https://api.hiro.so"
 
 #[repl.analysis]
 #passes = ["check_checker"]

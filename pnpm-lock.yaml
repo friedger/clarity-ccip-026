@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hirosystems/clarinet-sdk':
-        specifier: 3.6.1
-        version: 3.6.1
+        specifier: 3.7.0
+        version: 3.7.0
       '@stacks/clarunit':
         specifier: git+ssh://git@github.com/friedger/stacks-test-tools.git#1aead92a0767ecc831195be480dfcfd6f21c35bd
         version: https://codeload.github.com/friedger/stacks-test-tools/tar.gz/1aead92a0767ecc831195be480dfcfd6f21c35bd(yaml@2.8.1)
@@ -37,7 +37,7 @@ importers:
         version: 3.2.4(yaml@2.8.1)
       vitest-environment-clarinet:
         specifier: 2.3.0
-        version: 2.3.0(@hirosystems/clarinet-sdk@3.6.1)(vitest@3.2.4(yaml@2.8.1))
+        version: 2.3.0(@hirosystems/clarinet-sdk@3.7.0)(vitest@3.2.4(yaml@2.8.1))
 
 packages:
 
@@ -200,12 +200,15 @@ packages:
   '@hirosystems/clarinet-sdk-wasm@3.6.1':
     resolution: {integrity: sha512-ca8FHAulmOPw4gl+PFNma0XeZI6FYVrMPbkLeElqpIKhzV0wtK5Qx5/dgjcRA0V8e9Ejo9UKSiUUzmRs3C7Fbg==}
 
+  '@hirosystems/clarinet-sdk-wasm@3.7.0':
+    resolution: {integrity: sha512-YHxOoLg//4wgAzOSWwQ1QC9xcxfEMzChxx+5dzZzD2rxdnw2BUAETcyGzpz3s6cMIJ/uGm6zMXaicHYNRvSklg==}
+
   '@hirosystems/clarinet-sdk@3.1.0':
     resolution: {integrity: sha512-eYaoxI/luH7xe0DeE3c1q66Cxqi0bBed3AOUbhL9wqWtW7leD9RG+wQFuL3fJAPq7wONq32C92DDGuvQo6ZNQA==}
     engines: {node: '>=18.0.0'}
 
-  '@hirosystems/clarinet-sdk@3.6.1':
-    resolution: {integrity: sha512-4Pe9Gimvm8YqwipEmOj8HkhYz69pAEslhjnYHmxVQoLpSTRqR6HoHI1r1Zi+9GRHMPntlyz08qe0eLQd2BjA0A==}
+  '@hirosystems/clarinet-sdk@3.7.0':
+    resolution: {integrity: sha512-Ovi5yGDqNfqBDtOrMNF42fKe/DioaDjBGcVXb4QUZQQA7khplInNb8+G9sgidt9v9hw1dWHPyHJVwu336kaDdA==}
     engines: {node: '>=18.0.0'}
 
   '@jridgewell/sourcemap-codec@1.5.5':
@@ -1132,6 +1135,8 @@ snapshots:
 
   '@hirosystems/clarinet-sdk-wasm@3.6.1': {}
 
+  '@hirosystems/clarinet-sdk-wasm@3.7.0': {}
+
   '@hirosystems/clarinet-sdk@3.1.0':
     dependencies:
       '@hirosystems/clarinet-sdk-wasm': 3.6.1
@@ -1142,9 +1147,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@hirosystems/clarinet-sdk@3.6.1':
+  '@hirosystems/clarinet-sdk@3.7.0':
     dependencies:
-      '@hirosystems/clarinet-sdk-wasm': 3.6.1
+      '@hirosystems/clarinet-sdk-wasm': 3.7.0
       '@stacks/transactions': 7.2.0
       kolorist: 1.8.0
       prompts: 2.4.2
@@ -1266,7 +1271,7 @@ snapshots:
 
   '@stacks/rendezvous@0.9.0':
     dependencies:
-      '@hirosystems/clarinet-sdk': 3.6.1
+      '@hirosystems/clarinet-sdk': 3.7.0
       '@stacks/transactions': 7.2.0
       ansicolor: 2.0.3
       fast-check: 3.23.2
@@ -1871,9 +1876,9 @@ snapshots:
       '@hirosystems/clarinet-sdk': 3.1.0
       vitest: 3.2.3(yaml@2.8.1)
 
-  vitest-environment-clarinet@2.3.0(@hirosystems/clarinet-sdk@3.6.1)(vitest@3.2.4(yaml@2.8.1)):
+  vitest-environment-clarinet@2.3.0(@hirosystems/clarinet-sdk@3.7.0)(vitest@3.2.4(yaml@2.8.1)):
     dependencies:
-      '@hirosystems/clarinet-sdk': 3.6.1
+      '@hirosystems/clarinet-sdk': 3.7.0
       vitest: 3.2.4(yaml@2.8.1)
 
   vitest@3.2.3(yaml@2.8.1):

@@ -9,7 +9,7 @@ import {
 
 describe("CCD013 Burn to Exit MIA", () => {
   it("user should redeem at 1700 STX / 1m MIA", async () => {
-    expect(simnet.blockHeight).toBe(3491158);
+    expect(simnet.blockHeight).toBe(3491156);
 
     let txReceipts: any;
 

@@ -46,7 +46,7 @@
       (match result
         success (err u9994) ;; Should never succeed when inactive
         error (begin
-          (asserts! (or (is-eq error u24005) (is-eq error u24004)) (err (+ u1000000 error))) ;; Should be ERR_PROPOSAL_NOT_ACTIVE or ERR_USER_NOT_FOUND
+          (asserts! (or (is-eq error u26005) (is-eq error u26004)) (err (+ u1000000 error))) ;; Should be ERR_PROPOSAL_NOT_ACTIVE or ERR_USER_NOT_FOUND
           (ok true)
         )
       )
@@ -77,7 +77,7 @@
           (ok true)
           ;; If not executable, should fail with ERR_VOTE_FAILED
           (begin
-            (asserts! (is-eq error u24007) (err u9990)) ;; Should be ERR_VOTE_FAILED
+            (asserts! (is-eq error u26007) (err u9990)) ;; Should be ERR_VOTE_FAILED
             (ok true)
           )
         )
@@ -201,7 +201,7 @@
         (match secondVote
           success2 (err u9974) ;; Should not succeed twice with same vote
           error (begin
-            (asserts! (is-eq error u24002) (err u9973)) ;; Should be ERR_VOTED_ALREADY
+            (asserts! (is-eq error u26002) (err u9973)) ;; Should be ERR_VOTED_ALREADY
             (ok true)
           )
         )

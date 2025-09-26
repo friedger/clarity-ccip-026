@@ -21,7 +21,7 @@ describe("CCD013 Burn to Exit MIA", () => {
 
     expect(txReceipts[0].result).toBeOk(boolCV(true));
     expect(txReceipts[1].result).toBeOk(boolCV(true));
-    expect(txReceipts[2].result).toBeErr(uintCV(24003));
+    expect(txReceipts[2].result).toBeErr(uintCV(26003));
 
     txReceipts = simnet.mineBlock([
       // execute

@@ -53,9 +53,9 @@ describe("CCIP026 Vote", () => {
       vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true), // not a holder
       vote("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", true), // holder of v1
     ]);
-    expect(txReceipts[0].result).toBeErr(uintCV(24003));
-    expect(txReceipts[1].result).toBeErr(uintCV(24004));
-    checkIsExecutable(responseErrorCV(uintCV(24007))); // vote failed
+    expect(txReceipts[0].result).toBeErr(uintCV(26003));
+    expect(txReceipts[1].result).toBeErr(uintCV(26004));
+    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
   });
 
   it("should count user votes - yes-no", async () => {
@@ -69,7 +69,7 @@ describe("CCIP026 Vote", () => {
 
     // check votes
     checkVotes(144479012000000n, 1n, 2086372000000n, 1n);
-    checkIsExecutable(responseErrorCV(uintCV(24007))); // vote failed
+    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
   });
 
   it("should count user votes - no-yes", async () => {
@@ -83,7 +83,7 @@ describe("CCIP026 Vote", () => {
 
     // check votes
     checkVotes(2086372000000n, 1n, 144479012000000n, 1n);
-    checkIsExecutable(responseErrorCV(uintCV(24007))); // vote failed
+    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
   });
 
   it("should count user votes - yes-yes", async () => {
@@ -111,6 +111,6 @@ describe("CCIP026 Vote", () => {
 
     // check votes
     checkVotes(0n, 0n, 146565384000000n, 2n);
-    checkIsExecutable(responseErrorCV(uintCV(24007))); // vote failed
+    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
   });
 });

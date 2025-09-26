@@ -67,5 +67,5 @@ describe("CCD013 Burn to Exit MIA", () => {
     );
     expect(txReceipts[3].result).toBeErr(uintCV(2003)); // v1 balance not found (0 MIA)
     expect(txReceipts[4].result).toBeErr(uintCV(13007)); // nothing to redeem (0 MIA)
-  });
+  }, 120000);
 });

@@ -58,6 +58,61 @@ describe("CCIP026 Vote", () => {
     checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
   });
 
+  it("should not allow voting twice with same choice", async () => {
+    let txReceipts: any;
+
+    // First vote
+    txReceipts = simnet.mineBlock([
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
+    ]);
+    expect(txReceipts[0].result).toBeOk(boolCV(true));
+
+    // Try to vote with same choice again
+    txReceipts = simnet.mineBlock([
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
+    ]);
+    expect(txReceipts[0].result).toBeErr(uintCV(26002)); // ERR_VOTED_ALREADY
+  });
+
+  it("should allow changing vote from yes to no", async () => {
+    let txReceipts: any;
+
+    // First vote yes
+    txReceipts = simnet.mineBlock([
+      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true),
+    ]);
+    expect(txReceipts[0].result).toBeOk(boolCV(true));
+    checkVotes(2086372000000n, 1n, 0n, 0n);
+    // Change vote to no
+    txReceipts = simnet.mineBlock([
+      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false),
+    ]);
+    expect(txReceipts[0].result).toBeOk(boolCV(true));
+    checkVotes(0n, 0n, 2086372000000n, 1n);
+  });
+
+  it("should calculate MIA vote amounts correctly", async () => {
+    // Test for a known stacker
+    const miaVoteScaled = simnet.callReadOnlyFn(
+      "ccip026-miamicoin-burn-to-exit",
+      "get-mia-vote",
+      [uintCV(1), boolCV(true)], // userId 1, scaled
+      "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
+    );
+
+    const miaVoteUnscaled = simnet.callReadOnlyFn(
+      "ccip026-miamicoin-burn-to-exit",
+      "get-mia-vote",
+      [uintCV(1), boolCV(false)], // userId 1, unscaled
+      "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
+    );
+
+    expect(miaVoteScaled.result).toBeSome(
+      uintCV(4443750000000000000000000000n)
+    );
+    expect(miaVoteUnscaled.result).toBeSome(uintCV(444375000000));
+  });
+
   it("should count user votes - yes-no", async () => {
     let txReceipts: any;
     txReceipts = simnet.mineBlock([

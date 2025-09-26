@@ -50,7 +50,7 @@
 (define-public (test-get-redemption-for-balance-100m)
   (let (
       (amountUMia u100000000000000) ;; 100,000,000 Mia
-      (expectedResult (err u12010)) ;; not enough stx in contract
+      (expectedResult (err u13010)) ;; not enough stx in contract
       (ustx (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
         amountUMia
       ))

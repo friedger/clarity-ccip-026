@@ -82,7 +82,7 @@
       (match result
         success (err u9994) ;; Should never succeed when disabled
         error (begin
-          (asserts! (is-eq error u13005) (err u9993)) ;; Should be ERR_NOT_ENABLED
+          (asserts! (is-eq error u13005) (err (+ u9900000 error))) ;; Should be ERR_NOT_ENABLED
           (ok true)
         )
       )
@@ -101,7 +101,7 @@
     (match result
       success (err u9992) ;; Should never succeed with zero amount
       error (begin
-        (asserts! (or (is-eq error u13007) (is-eq error u13006) (is-eq error u13005)) (err (+ u10000 error))) ;; Should be ERR_NOTHING_TO_REDEEM
+        (asserts! (or (is-eq error u13007) (is-eq error u13006) (is-eq error u13005)) (err (+ u9900000 error))) ;; Should be ERR_NOTHING_TO_REDEEM
         (ok true)
       )
     )
@@ -134,6 +134,37 @@
         (ok true)
       )
     )
+  )
+)
+
+(define-public (test-mining-treasury-constant)
+  (let ((ustx-mining-treasury (stx-account 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3)))
+    (asserts! (is-eq (+ (get locked ustx-mining-treasury) (get unlocked ustx-mining-treasury)) u10241497066794) (err ustx-mining-treasury))
+    (ok true)
+  )
+)
+
+(define-public (test-reward-treasury-plus-redeemed-constant)
+  (begin
+    (asserts! (invariant-reward-treasury-plus-redeemed-constant) (err (invariant-reward-treasury-plus-redeemed-constant)))
+    (ok true)
+  )
+)
+
+;; invariants
+
+(define-read-only (invariant-mining-treasury-constant)
+  (let ((ustx-mining-treasury (stx-account 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3)))
+    (is-eq (+ (get locked ustx-mining-treasury) (get unlocked ustx-mining-treasury)) u10241497066794)
+  )
+)
+
+(define-read-only (invariant-reward-treasury-plus-redeemed-constant)
+  (let (
+      (ustx-rewards-treasury (get-redemption-current-balance))
+      (ustx-transferred (get-total-transferred))
+    )
+    (is-eq (+ ustx-rewards-treasury ustx-transferred) u953618961322)
   )
 )
 

@@ -10,7 +10,9 @@
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
     "test:stxer": "npx tsx simulations/ccip026-stxer.ts",
     "test:rv": "rv . ccd013-burn-to-exit-mia test",
-    "test:rv2": "rv . ccip026-miamicoin-burn-to-exit test",
+    "test:rv2": "rv . ccd013-burn-to-exit-mia invariant",
+    "test:rv3": "rv . ccip026-miamicoin-burn-to-exit test",
+    "test:rv4": "rv . ccip026-miamicoin-burn-to-exit invariant",
     "rv:version": "rv --version"
   },
   "author": "",

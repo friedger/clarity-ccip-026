@@ -128,7 +128,8 @@
     ;; burn MIA tokens v1
     (and
       (> redemptionV1InMia u0)
-      (try! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch
+      (try! (contract-call?
+        'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch
         burn-mia-v1 redemptionV1InMia userAddress
       ))
     )
@@ -138,7 +139,7 @@
       (try! (contract-call?
         'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 burn
         redemptionAmountUMiaV2 userAddress
-    ))
+      ))
     )
     ;; transfer STX
     (try! (contract-call?

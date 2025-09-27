@@ -18,8 +18,8 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
       '@stacks/rendezvous':
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.10.0
+        version: 0.10.0
       '@stacks/transactions':
         specifier: 7.2.0
         version: 7.2.0
@@ -333,8 +333,8 @@ packages:
   '@stacks/network@7.2.0':
     resolution: {integrity: sha512-AkLougCF2RLbK97TtISZxAhF3cE757XMXWOGKvEFWNauiQ5/bYyI9W5jZypG3yI/AyYIo04NKoFWWTnpJcn1iA==}
 
-  '@stacks/rendezvous@0.9.0':
-    resolution: {integrity: sha512-Sc4SG88wbXt0tZ/WaamaPjFGwMdFo2tHFsA7HXjGcXhlCBWzgcmNyoHAP31xMAb3dEJH6o7/UsOPUeumxGRYwg==}
+  '@stacks/rendezvous@0.10.0':
+    resolution: {integrity: sha512-T1AA3yizeploq7Qx5ccjm+zKMgy2jsGfBcHOIzQnzD3HjNLrmx92Czuw9t4I9n6lblo4rZaE5GXR+a2OmtNN6w==}
     hasBin: true
 
   '@stacks/stacks-blockchain-api-types@7.14.1':
@@ -1201,7 +1201,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@stacks/rendezvous@0.9.0':
+  '@stacks/rendezvous@0.10.0':
     dependencies:
       '@hirosystems/clarinet-sdk': 3.7.0
       '@stacks/transactions': 7.2.0

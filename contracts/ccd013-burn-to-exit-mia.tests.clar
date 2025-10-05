@@ -145,12 +145,14 @@
 )
 
 ;; unlocked amount at stacks block height 3491155 is u31767086308
+;; once cycle is over unlocked amount is u953618961322
 (define-public (test-reward-treasury-plus-redeemed-constant)
   (let (
       (ustx-rewards-treasury (get-redemption-current-balance))
       (ustx-transferred (get-total-transferred))
+      (total (+ ustx-rewards-treasury ustx-transferred))
     )
-    (asserts!  (is-eq (+ ustx-rewards-treasury ustx-transferred) u31767086308) (err (+ ustx-rewards-treasury ustx-transferred)))
+    (asserts!  (or (is-eq total u31767086308) (is-eq total u953618961322)) (err total))
     (ok true)
   )
 )
@@ -164,12 +166,14 @@
 )
 
 ;; unlocked amount at stacks block height 3491155 is u31767086308
+;; once cycle is over unlocked amount is u953618961322
 (define-read-only (invariant-reward-treasury-plus-redeemed-constant)
   (let (
       (ustx-rewards-treasury (get-redemption-current-balance))
       (ustx-transferred (get-total-transferred))
+      (total (+ ustx-rewards-treasury ustx-transferred))
     )
-    (is-eq (+ ustx-rewards-treasury ustx-transferred) u31767086308)
+    (or (is-eq total u31767086308) (is-eq total u953618961322))
   )
 )
 

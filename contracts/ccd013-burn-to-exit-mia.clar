@@ -10,20 +10,27 @@
 
 ;; error codes
 (define-constant ERR_UNAUTHORIZED (err u13000))
+(define-constant ERR_PANIC (err u13001))
+(define-constant ERR_GETTING_TOTAL_SUPPLY (err u13002))
+(define-constant ERR_GETTING_REDEMPTION_BALANCE (err u13003))
+(define-constant ERR_ALREADY_ENABLED (err u13004))
 (define-constant ERR_NOT_ENABLED (err u13005))
 (define-constant ERR_BALANCE_NOT_FOUND (err u13006))
 (define-constant ERR_NOTHING_TO_REDEEM (err u13007))
-(define-constant ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT (err u13010))
+(define-constant ERR_SUPPLY_CALCULATION (err u13009))
 
 ;; helpers
+(define-constant SELF (as-contract tx-sender))
 (define-constant MICRO_CITYCOINS (pow u10 u6)) ;; 6 decimal places
-(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u6)) ;; 1m MIA = 1700 STX
-(define-constant REDEMPTION_RATIO u1700) ;; start with 0.0017 STX per MIA
+(define-constant REDEMPTION_SCALE_FACTOR (pow u10 u6)) ;; 6 decimal places
 (define-constant MAX_PER_TRANSACTION (* u10000000 MICRO_CITYCOINS)) ;; max 10m MIA per transaction
 
 ;; DATA VARS
 (define-data-var redemptionsEnabled bool false)
-
+(define-data-var blockHeight uint u0)
+(define-data-var totalSupply uint u0)
+(define-data-var contractBalance uint u0)
+(define-data-var redemptionRatio uint u0)
 (define-data-var totalRedeemed uint u0)
 (define-data-var totalTransferred uint u0)
 
@@ -58,20 +65,44 @@
 )
 
 ;; initialize contract after deployment to start redemptions
-(define-public (initialize)
-  (begin
+(define-public (initialize-redemption)
+  (let
+    (
+      (miaTotalSupplyV1 (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-total-supply) ERR_PANIC))
+      (miaTotalSupplyV2 (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-total-supply) ERR_PANIC))
+      (miaTotalSupply (+ (* miaTotalSupplyV1 MICRO_CITYCOINS) miaTotalSupplyV2))
+      (miaRedemptionBalance (get-redemption-current-balance))
+      (miaRedemptionRatio (calculate-redemption-ratio miaRedemptionBalance miaTotalSupply))
+    )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
-    ;; revoke delegation
+    ;; check that total supply is greater than 0
+    (asserts! (> miaTotalSupply u0) ERR_GETTING_TOTAL_SUPPLY)
+    ;; check that redemption balance is greater than 0
+    (asserts! (> miaRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
+    ;; check that redemption ratio has a value
+    (asserts! (is-some miaRedemptionRatio) ERR_SUPPLY_CALCULATION)
+    ;; check if redemptions are already enabled
+    (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
+    ;; revoke delegation before recording values
     (try! (contract-call?
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
       revoke-delegate-stx
     ))
-    ;; enable redemptions
+    ;; record current block height
+    (var-set blockHeight stacks-block-height)
+    ;; record total supply at block height
+    (var-set totalSupply miaTotalSupply)
+    ;; record contract balance at block height
+    (var-set contractBalance miaRedemptionBalance)
+    ;; calculate redemption ratio
+    (var-set redemptionRatio (unwrap-panic miaRedemptionRatio))
+    ;; set redemptionsEnabled to true, can only run once
     (var-set redemptionsEnabled true)
+    ;; print redemption info
     (ok (print {
-      notification: "intialize-contract",
-      payload: (get-redemption-info),
+      notification: "initialize-contract",
+      payload: (get-redemption-info)
     }))
   )
 )
@@ -119,12 +150,17 @@
       ))
       (redemptionTotalUMia (+ redemptionAmountUMiaV1 redemptionAmountUMiaV2))
       ;; calculate redemption amount in uSTX
-      (redemptionAmountUStx (try! (get-redemption-for-balance redemptionTotalUMia)))
+      (redemptionAmount (get-redemption-for-balance redemptionTotalUMia))
+      (redemptionAmountUStx (default-to u0 redemptionAmount))
     )
     ;; check if redemptions are enabled
     (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
+    ;; check that user has at least one positive balance
+    (asserts! (> (+ balanceV1 balanceV2) u0) ERR_BALANCE_NOT_FOUND)
+    ;; check that contract has a positive balance
+    (asserts! (> (get-redemption-current-balance) u0) ERR_NOTHING_TO_REDEEM)
     ;; check that redemption amount is > 0
-    (asserts! (> redemptionAmountUStx u0) ERR_NOTHING_TO_REDEEM)
+    (asserts! (and (is-some redemptionAmount) (> redemptionAmountUStx u0)) ERR_NOTHING_TO_REDEEM)
     ;; burn MIA tokens v1
     (and
       (> redemptionV1InMia u0)
@@ -179,12 +215,24 @@
   (var-get redemptionsEnabled)
 )
 
+(define-read-only (get-redemption-block-height)
+  (var-get blockHeight)
+)
+
+(define-read-only (get-redemption-total-supply)
+  (var-get totalSupply)
+)
+
+(define-read-only (get-redemption-contract-balance)
+  (var-get contractBalance)
+)
+
 (define-read-only (get-redemption-current-balance)
   (stx-get-balance 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3)
 )
 
 (define-read-only (get-redemption-ratio)
-  REDEMPTION_RATIO
+  (var-get redemptionRatio)
 )
 
 (define-read-only (get-total-redeemed)
@@ -199,28 +247,83 @@
 (define-read-only (get-redemption-info)
   {
     redemptionsEnabled: (is-redemption-enabled),
+    blockHeight: (get-redemption-block-height),
+    totalSupply: (get-redemption-total-supply),
+    contractBalance: (get-redemption-contract-balance),
     currentContractBalance: (get-redemption-current-balance),
-    redemptionRatio: REDEMPTION_RATIO,
+    redemptionRatio: (get-redemption-ratio),
     totalRedeemed: (get-total-redeemed),
     totalTransferred: (get-total-transferred),
   }
 )
 
+(define-read-only (get-mia-balances (address principal))
+  (let
+    (
+      (balanceV1 (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balanceV2 (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-balance address) ERR_BALANCE_NOT_FOUND))
+      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+    )
+    (ok {
+      address: address,
+      balanceV1: balanceV1,
+      balanceV2: balanceV2,
+      totalBalance: totalBalance
+    })
+  )
+)
+
 (define-read-only (get-user-redemption-info (user principal))
-  { totalRedeemed: (map-get? RedemptionClaims user) }
+  (let
+    (
+      (miaBalances (try! (get-mia-balances user)))
+      (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance miaBalances))))
+      (redemptionClaims (default-to { uMia: u0, uStx: u0 } (map-get? RedemptionClaims user)))
+    )
+    (ok {
+      address: user,
+      miaBalances: miaBalances,
+      redemptionAmount: redemptionAmount,
+      redemptionClaims: redemptionClaims
+    })
+  )
 )
 
 (define-read-only (get-redemption-for-balance (balance uint))
-  (let (
-      (redemptionAmountScaled (* REDEMPTION_RATIO balance))
+  (let
+    (
+      (redemptionAmountScaled (* (var-get redemptionRatio) balance))
       (redemptionAmount (/ redemptionAmountScaled REDEMPTION_SCALE_FACTOR))
       (contractCurrentBalance (get-redemption-current-balance))
     )
-    (if (< redemptionAmount contractCurrentBalance)
-      ;; if redemption amount is less than contract balance, return redemption amount
-      (ok redemptionAmount)
-      ;; if redemption amount is greater than contract balance, thrown an error
-      ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT
+    (if (> redemptionAmount u0)
+      (if (< redemptionAmount contractCurrentBalance)
+        ;; if redemption amount is less than contract balance, return redemption amount
+        (some redemptionAmount)
+        ;; if redemption amount is greater than contract balance, return contract balance
+        (some contractCurrentBalance)
+      )
+      ;; if redemption amount is 0, return none
+      none
     )
+  )
+)
+
+;; PRIVATE FUNCTIONS
+
+;; CREDIT: ALEX math-fixed-point-16.clar
+
+(define-private (scale-up (a uint))
+  (* a REDEMPTION_SCALE_FACTOR)
+)
+
+(define-private (scale-down (a uint))
+  (/ a REDEMPTION_SCALE_FACTOR)
+)
+
+(define-private (calculate-redemption-ratio (balance uint) (supply uint))
+  (if (or (is-eq supply u0) (is-eq balance u0))
+    none
+    (some (/ (* balance REDEMPTION_SCALE_FACTOR) supply))
   )
 )

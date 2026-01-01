@@ -1,7 +1,7 @@
 ;; TRAITS
 
 (impl-trait 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.proposal-trait.proposal-trait)
-;; (impl-trait 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait.ccip015-trait)
+(impl-trait 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait.ccip015-trait)
 
 ;; ERRORS
 
@@ -80,7 +80,7 @@
           enabled: true,
         }
       )))
-    (try! (contract-call? .ccd013-burn-to-exit-mia initialize))
+    (try! (contract-call? .ccd013-burn-to-exit-mia initialize-redemption))
     (ok true)
   )
 )

@@ -113,8 +113,8 @@ describe("CCIP026 Core", () => {
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
     );
 
-    // Should return a boolean
-    expect(isActive.result).toBeBool(true);
+    // Should return (some bool) for ccip015 compatibility
+    expect(isActive.result).toBeSome(boolCV(true));
   });
 
   it("should deactive vote after voting period", async () => {
@@ -125,7 +125,7 @@ describe("CCIP026 Core", () => {
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
     );
 
-    expect(isActive.result).toBeBool(true);
+    expect(isActive.result).toBeSome(boolCV(true));
 
     // Advance to the end of the voting period
     expect(simnet.blockHeight).toBe(3491156);
@@ -138,7 +138,7 @@ describe("CCIP026 Core", () => {
       [],
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
     );
-    expect(isActiveAfter.result).toBeBool(true);
+    expect(isActiveAfter.result).toBeSome(boolCV(true));
 
     simnet.mineEmptyBlocks(1);
 
@@ -149,7 +149,7 @@ describe("CCIP026 Core", () => {
       [],
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
     );
-    expect(isActiveAfter2.result).toBeBool(false);
+    expect(isActiveAfter2.result).toBeSome(boolCV(false));
   });
 
   it("should return empty vote totals initially", async () => {

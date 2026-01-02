@@ -96,8 +96,10 @@
       ))
       (voterRecord (map-get? UserVotes voterId))
     )
-    ;; check if vote is active
-    (asserts! (is-vote-active) ERR_PROPOSAL_NOT_ACTIVE)
+    ;; check if vote is active (use var directly like ccip022)
+    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
+    ;; check if within voting period
+    (asserts! (and (>= burn-block-height (var-get voteStart)) (<= burn-block-height (var-get voteEnd))) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists for user
     (match voterRecord
       record
@@ -156,10 +158,11 @@
 )
 
 (define-read-only (is-vote-active)
-  (if (and (>= burn-block-height (var-get voteStart)) (<= burn-block-height (var-get voteEnd)))
-    true
-    false
-  )
+  (some (and
+    (var-get voteActive)
+    (>= burn-block-height (var-get voteStart))
+    (<= burn-block-height (var-get voteEnd))
+  ))
 )
 
 (define-read-only (get-proposal-info)

@@ -1,10 +1,15 @@
 
 (define-public (test-get-redemption-for-balance (amountUMia uint))
-  (match (get-redemption-for-balance (* amountUMia u1000000000))
-    uStx (begin
-      (asserts! (is-eq uStx  (/ (* u1700 amountUMia u1000000000) u1000000)) (err u9999))
-      (ok true))
-    error (ok false)
+  (let (
+      (ratio (get-redemption-ratio))
+      (scaleFactor u1000000)
+    )
+    (match (get-redemption-for-balance (* amountUMia u1000000000))
+      uStx (begin
+        (asserts! (is-eq uStx (/ (* ratio amountUMia u1000000000) scaleFactor)) (err u9999))
+        (ok true))
+      (ok false) ;; none case - ratio not initialized yet
+    )
   )
 )
 
@@ -14,7 +19,7 @@
       (result (redeem-mia amountUMia))
       (maxExpectedStx (match (get-redemption-for-balance amountUMia)
         expectedStx expectedStx
-        error u0))
+        u0)) ;; none case
     )
     (match result
       success (begin
@@ -51,13 +56,15 @@
 (define-public (test-redeem-mia-ratio-consistency (amountUMia uint))
   (let (
       (result (redeem-mia amountUMia))
+      (ratio (get-redemption-ratio))
+      (scaleFactor u1000000)
     )
     (match result
       redeemed (begin
         (let (
             (redeemedMia (get uMia redeemed))
             (redeemedStx (get uStx redeemed))
-            (expectedStx (/ (* redeemedMia u1700) u1000000)) ;; REDEMPTION_RATIO / REDEMPTION_SCALE_FACTOR
+            (expectedStx (/ (* redeemedMia ratio) scaleFactor))
           )
           ;; Property: STX received should match the redemption ratio for the actual MIA redeemed
           ;; Allow for some tolerance due to rounding

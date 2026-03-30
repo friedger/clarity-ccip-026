@@ -1,46 +1,10 @@
-import { Tx, tx } from "@hirosystems/clarinet-sdk";
+import { tx } from "@stacks/clarinet-sdk";
 import { Cl } from "@stacks/transactions";
 import { vote as vote026 } from "./ccip026-miamicoin-burn-to-exit-client";
 
-import type {
-  ClarityAbi,
-  ClarityAbiArgsToPrimitiveTypes,
-  ClarityAbiFunction,
-  ClarityAbiOutputToPrimitiveType,
-  ExtractAbiFunction,
-  ExtractAbiFunctionNames,
-} from "clarity-abitype";
-import { ccd001DirectExecuteAbi } from "./ccd001-direct-execute";
-
-// Use a const assertion so TypeScript preserves literal types from the JSON ABI
-
-type DirectExecuteFn = ExtractAbiFunction<typeof ccd001DirectExecuteAbi , "direct-execute">;
-export type DirectExecuteArgs = ClarityAbiArgsToPrimitiveTypes<
-  DirectExecuteFn["args"]
->;
-export const DIRECTEXECUTE_FN: ExtractAbiFunctionNames<typeof ccd001DirectExecuteAbi> =
-  "direct-execute";
-
-function callPublicFn<
-  abi extends ClarityAbi,
-  functionName extends ExtractAbiFunctionNames<abi, "public">,
-  abiFunction extends ClarityAbiFunction = ExtractAbiFunction<
-    abi,
-    functionName
-  >,
->(config: {
-  abi: abi;
-  functionName: functionName | ExtractAbiFunctionNames<abi, "public">;
-  functionArgs: ClarityAbiArgsToPrimitiveTypes<abiFunction["args"]>;
-}, senderAddress: string): Tx {
-  return tx.callPublicFn(
-    "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute",
-    config.functionName,
-    config.functionArgs,
-    senderAddress,
-  );
-}
-
+import { typedCallPublicFn } from "clarity-abitype/clarinet-sdk";
+import { ccd001DirectExecuteAbi } from "../abis/abi-ccd001-direct-execute";
+import { abiCcd013BurnToExitMia } from "../abis/abi-ccd013-burn-to-exit-mia";
 
 export const directExecute = (
   sender: string,
@@ -48,28 +12,29 @@ export const directExecute = (
   proposalName: string = "ccip026-miamicoin-burn-to-exit",
 ) => {
   // The ABI provides static typing (see `DirectExecuteArgs`), at runtime we still pass the CVs expected by the SDK.
-  return callPublicFn({
+  return typedCallPublicFn({
+    simnet,
     abi: ccd001DirectExecuteAbi,
-    functionName: DIRECTEXECUTE_FN,
-    functionArgs: [
-      Cl.contractPrincipal(proposalContract, proposalName),
-      Cl.uint(0),
-    ],
-  }, sender);
+    contract: "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute",
+    functionName: "direct-execute",
+    functionArgs: [`${proposalContract}.${proposalName}`],
+    sender,
+  });
 };
-
 
 export const vote = (sender: string) => {
   return vote026(sender, true);
 };
 
-export const redeem = (sender: string, amount: number) => {
-  return tx.callPublicFn(
-    "ccd013-burn-to-exit-mia",
-    "redeem-mia",
-    [Cl.uint(amount)],
+export const redeem = (sender: string, amount: bigint) => {
+  return typedCallPublicFn({
+    simnet,
+    abi: abiCcd013BurnToExitMia,
+    contract: "ccd013-burn-to-exit-mia",
+    functionName: "redeem-mia",
+    functionArgs: [amount],
     sender,
-  );
+  });
 };
 
 export const convertToV2 = (sender: string) => {

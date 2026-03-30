@@ -1,15 +1,13 @@
 import {
   boolCV,
-  ClarityType,
-  ResponseCV,
-  responseErrorCV,
-  responseOkCV,
   SomeCV,
   TupleCV,
   UIntCV,
-  uintCV,
+  uintCV
 } from "@stacks/transactions";
+import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
+import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
 import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 
 const checkVotes = async (
@@ -36,58 +34,51 @@ const checkVotes = async (
   expect(result.value.value.totalVotesNo.value).toBe(totalVotesNo);
 };
 
-const checkIsExecutable = (expected: ResponseCV) => {
-  const receipt = simnet.callReadOnlyFn(
-    "ccip026-miamicoin-burn-to-exit",
-    "is-executable",
-    [],
-    simnet.deployer
-  ) as ClarityType;
-  expect(receipt.result).toStrictEqual(expected);
+const checkIsExecutable = (response: {ok: boolean} | {error: bigint}) => {
+  const receipt = typedCallReadOnlyFn({
+    simnet,
+    abi: abiCcip026MiamicoinBurnToExit,
+    contract: "ccip026-miamicoin-burn-to-exit",
+    functionName: "is-executable",
+    functionArgs: [],
+    sender: simnet.deployer,
+  });
+  expect(receipt.result).toEqual(response);
 };
 
 describe("CCIP026 Vote", () => {
   it("should not allow non-holders or non stackers to vote", async () => {
-    let txReceipts: any;
-    txReceipts = simnet.mineBlock([
-      vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true), // not a holder
-      vote("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", true), // holder of v1
-    ]);
-    expect(txReceipts[0].result).toBeErr(uintCV(26003));
-    expect(txReceipts[1].result).toBeErr(uintCV(26004));
-    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
+    let txReceipt = 
+      vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true); // not a holder
+    expect(txReceipt.result).toEqual({error: 26003n});
+
+    txReceipt = vote("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", true); // holder of v1
+    expect(txReceipt.result).toEqual({error: 26004n});
+
+    checkIsExecutable({error: 26007n}); // vote failed
   });
 
   it("should not allow voting twice with same choice", async () => {
-    let txReceipts: any;
-
     // First vote
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
+    let txReceipt = 
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    expect(txReceipt.result).toEqual({ok: true});
 
     // Try to vote with same choice again
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
-    ]);
-    expect(txReceipts[0].result).toBeErr(uintCV(26002)); // ERR_VOTED_ALREADY
+    txReceipt = vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    expect(txReceipt.result).toEqual({error: 26002n}); // ERR_VOTED_ALREADY
   });
 
   it("should allow changing vote from yes to no", async () => {
-    let txReceipts: any;
 
     // First vote yes
-    txReceipts = simnet.mineBlock([
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
+    let txReceipt = 
+      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+    expect(txReceipt.result).toEqual({ok: true});
     checkVotes(2086372000000n, 1n, 0n, 0n);
     // Change vote to no
-    txReceipts = simnet.mineBlock([
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
+    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    expect(txReceipt.result).toEqual({ok: true});
     checkVotes(0n, 0n, 2086372000000n, 1n);
   });
 
@@ -114,58 +105,53 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - yes-no", async () => {
-    let txReceipts: any;
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
-    expect(txReceipts[1].result).toBeOk(boolCV(true));
+    let txReceipt =
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    expect(txReceipt.result).toEqual({ok: true});
+    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
     checkVotes(144479012000000n, 1n, 2086372000000n, 1n);
-    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
+    checkIsExecutable({error: 26007n}); // vote failed
   });
 
   it("should count user votes - no-yes", async () => {
-    let txReceipts: any;
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false),
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
-    expect(txReceipts[1].result).toBeOk(boolCV(true));
+    let txReceipt = 
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false);
+      expect(txReceipt.result).toEqual({ok: true});
+
+    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+    expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
     checkVotes(2086372000000n, 1n, 144479012000000n, 1n);
-    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
+    checkIsExecutable({error: 26007n}); // vote failed
   });
 
   it("should count user votes - yes-yes", async () => {
-    let txReceipts: any;
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true),
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
-    expect(txReceipts[1].result).toBeOk(boolCV(true));
+    let txReceipt = 
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+      expect(txReceipt.result).toEqual({ok: true});
+
+    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+    expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
     checkVotes(146565384000000n, 2n, 0n, 0n);
-    checkIsExecutable(responseOkCV(boolCV(true)));
+    checkIsExecutable({ok: true});
   });
 
   it("should count user votes - no-no", async () => {
-    let txReceipts: any;
-    txReceipts = simnet.mineBlock([
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false),
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false),
-    ]);
-    expect(txReceipts[0].result).toBeOk(boolCV(true));
-    expect(txReceipts[1].result).toBeOk(boolCV(true));
+    let txReceipt = 
+      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false);
+      expect(txReceipt.result).toEqual({ok: true});
+
+    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
     checkVotes(0n, 0n, 146565384000000n, 2n);
-    checkIsExecutable(responseErrorCV(uintCV(26007))); // vote failed
+    checkIsExecutable({error: 26007n}); // vote failed
   });
 });

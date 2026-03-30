@@ -11,12 +11,9 @@
 (define-constant ERR_NOTHING_STACKED (err u26003))
 (define-constant ERR_USER_NOT_FOUND (err u26004))
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u26005))
-(define-constant ERR_PROPOSAL_STILL_ACTIVE (err u26006))
 (define-constant ERR_VOTE_FAILED (err u26007))
 
 ;; CONSTANTS
-
-(define-constant SELF (as-contract tx-sender))
 (define-constant CCIP_026 {
   name: "MiamiCoin Burn to Exit",
   link: "https://github.com/citycoins/governance/blob/eea941ea40c16428b4806d1808e7dab9fc095e0a/ccips/ccip-026/ccip-026-miamicoin-burn-to-exit.md",

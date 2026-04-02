@@ -1,6 +1,51 @@
 export const abiCcd013BurnToExitMia = {
   "functions": [
     {
+      "name": "calculate-redemption-ratio",
+      "access": "private",
+      "args": [
+        {
+          "name": "balance",
+          "type": "uint128"
+        },
+        {
+          "name": "supply",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "optional": "uint128"
+        }
+      }
+    },
+    {
+      "name": "scale-down",
+      "access": "private",
+      "args": [
+        {
+          "name": "a",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "scale-up",
+      "access": "private",
+      "args": [
+        {
+          "name": "a",
+          "type": "uint128"
+        }
+      ],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
       "name": "callback",
       "access": "public",
       "args": [
@@ -27,7 +72,7 @@ export const abiCcd013BurnToExitMia = {
       }
     },
     {
-      "name": "initialize",
+      "name": "initialize-redemption",
       "access": "public",
       "args": [],
       "outputs": {
@@ -39,7 +84,7 @@ export const abiCcd013BurnToExitMia = {
                   "name": "notification",
                   "type": {
                     "string-ascii": {
-                      "length": 18
+                      "length": 19
                     }
                   }
                 },
@@ -47,6 +92,14 @@ export const abiCcd013BurnToExitMia = {
                   "name": "payload",
                   "type": {
                     "tuple": [
+                      {
+                        "name": "blockHeight",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "contractBalance",
+                        "type": "uint128"
+                      },
                       {
                         "name": "currentContractBalance",
                         "type": "uint128"
@@ -61,6 +114,10 @@ export const abiCcd013BurnToExitMia = {
                       },
                       {
                         "name": "totalRedeemed",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "totalSupply",
                         "type": "uint128"
                       },
                       {
@@ -128,6 +185,59 @@ export const abiCcd013BurnToExitMia = {
       }
     },
     {
+      "name": "get-mia-balances",
+      "access": "read_only",
+      "args": [
+        {
+          "name": "address",
+          "type": "principal"
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "address",
+                  "type": "principal"
+                },
+                {
+                  "name": "balanceV1",
+                  "type": "uint128"
+                },
+                {
+                  "name": "balanceV2",
+                  "type": "uint128"
+                },
+                {
+                  "name": "totalBalance",
+                  "type": "uint128"
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-redemption-block-height",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-redemption-contract-balance",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
       "name": "get-redemption-current-balance",
       "access": "read_only",
       "args": [],
@@ -146,10 +256,7 @@ export const abiCcd013BurnToExitMia = {
       ],
       "outputs": {
         "type": {
-          "response": {
-            "ok": "uint128",
-            "error": "uint128"
-          }
+          "optional": "uint128"
         }
       }
     },
@@ -160,6 +267,14 @@ export const abiCcd013BurnToExitMia = {
       "outputs": {
         "type": {
           "tuple": [
+            {
+              "name": "blockHeight",
+              "type": "uint128"
+            },
+            {
+              "name": "contractBalance",
+              "type": "uint128"
+            },
             {
               "name": "currentContractBalance",
               "type": "uint128"
@@ -177,6 +292,10 @@ export const abiCcd013BurnToExitMia = {
               "type": "uint128"
             },
             {
+              "name": "totalSupply",
+              "type": "uint128"
+            },
+            {
               "name": "totalTransferred",
               "type": "uint128"
             }
@@ -186,6 +305,14 @@ export const abiCcd013BurnToExitMia = {
     },
     {
       "name": "get-redemption-ratio",
+      "access": "read_only",
+      "args": [],
+      "outputs": {
+        "type": "uint128"
+      }
+    },
+    {
+      "name": "get-redemption-total-supply",
       "access": "read_only",
       "args": [],
       "outputs": {
@@ -219,25 +346,59 @@ export const abiCcd013BurnToExitMia = {
       ],
       "outputs": {
         "type": {
-          "tuple": [
-            {
-              "name": "totalRedeemed",
-              "type": {
-                "optional": {
-                  "tuple": [
-                    {
-                      "name": "uMia",
-                      "type": "uint128"
-                    },
-                    {
-                      "name": "uStx",
-                      "type": "uint128"
-                    }
-                  ]
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "address",
+                  "type": "principal"
+                },
+                {
+                  "name": "miaBalances",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "address",
+                        "type": "principal"
+                      },
+                      {
+                        "name": "balanceV1",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "balanceV2",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "totalBalance",
+                        "type": "uint128"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "redemptionAmount",
+                  "type": "uint128"
+                },
+                {
+                  "name": "redemptionClaims",
+                  "type": {
+                    "tuple": [
+                      {
+                        "name": "uMia",
+                        "type": "uint128"
+                      },
+                      {
+                        "name": "uStx",
+                        "type": "uint128"
+                      }
+                    ]
+                  }
                 }
-              }
-            }
-          ]
+              ]
+            },
+            "error": "uint128"
+          }
         }
       }
     },
@@ -252,7 +413,37 @@ export const abiCcd013BurnToExitMia = {
   ],
   "variables": [
     {
+      "name": "ERR_ALREADY_ENABLED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
       "name": "ERR_BALANCE_NOT_FOUND",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_GETTING_REDEMPTION_BALANCE",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_GETTING_TOTAL_SUPPLY",
       "type": {
         "response": {
           "ok": "none",
@@ -282,7 +473,17 @@ export const abiCcd013BurnToExitMia = {
       "access": "constant"
     },
     {
-      "name": "ERR_NOT_ENOUGH_FUNDS_IN_CONTRACT",
+      "name": "ERR_PANIC",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_SUPPLY_CALCULATION",
       "type": {
         "response": {
           "ok": "none",
@@ -312,14 +513,24 @@ export const abiCcd013BurnToExitMia = {
       "access": "constant"
     },
     {
-      "name": "REDEMPTION_RATIO",
+      "name": "REDEMPTION_SCALE_FACTOR",
       "type": "uint128",
       "access": "constant"
     },
     {
-      "name": "REDEMPTION_SCALE_FACTOR",
+      "name": "blockHeight",
       "type": "uint128",
-      "access": "constant"
+      "access": "variable"
+    },
+    {
+      "name": "contractBalance",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "redemptionRatio",
+      "type": "uint128",
+      "access": "variable"
     },
     {
       "name": "redemptionsEnabled",
@@ -328,6 +539,11 @@ export const abiCcd013BurnToExitMia = {
     },
     {
       "name": "totalRedeemed",
+      "type": "uint128",
+      "access": "variable"
+    },
+    {
+      "name": "totalSupply",
       "type": "uint128",
       "access": "variable"
     },
@@ -357,6 +573,6 @@ export const abiCcd013BurnToExitMia = {
   ],
   "fungible_tokens": [],
   "non_fungible_tokens": [],
-  "epoch": "Epoch33",
-  "clarity_version": "Clarity4"
+  "epoch": "Epoch34",
+  "clarity_version": "Clarity5"
 } as const;

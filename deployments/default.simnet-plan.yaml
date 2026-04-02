@@ -66,20 +66,20 @@ plan:
       contract-name: ccd013-burn-to-exit-mia
       emulated-sender: SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R
       path: contracts/ccd013-burn-to-exit-mia.clar
-      clarity-version: 4
+      clarity-version: 5
     - transaction-type: emulated-contract-publish
       contract-name: ccd013-burn-to-exit-mia_test
       emulated-sender: SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R
       path: tests/ccd013-burn-to-exit-mia_test.clar
-      clarity-version: 4
+      clarity-version: 5
     - transaction-type: emulated-contract-publish
       contract-name: ccip026-miamicoin-burn-to-exit
       emulated-sender: SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R
       path: contracts/ccip026-miamicoin-burn-to-exit.clar
-      clarity-version: 4
+      clarity-version: 5
     - transaction-type: emulated-contract-publish
       contract-name: ccip026-miamicoin-burn-to-exit_flow_test
       emulated-sender: SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R
       path: tests/ccip026-miamicoin-burn-to-exit_flow_test.clar
-      clarity-version: 4
-    epoch: '3.3'
+      clarity-version: 5
+    epoch: '3.4'

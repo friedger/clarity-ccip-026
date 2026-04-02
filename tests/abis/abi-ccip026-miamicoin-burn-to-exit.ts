@@ -1,39 +1,163 @@
 export const abiCcip026MiamicoinBurnToExit = {
   "functions": [
     {
-      "name": "get-block-hash",
+      "name": "fold-proof-step-inner",
       "access": "private",
       "args": [
         {
-          "name": "blockHeight",
+          "name": "idx",
+          "type": "uint128"
+        },
+        {
+          "name": "acc",
+          "type": {
+            "response": {
+              "ok": {
+                "tuple": [
+                  {
+                    "name": "current",
+                    "type": {
+                      "optional": {
+                        "buffer": {
+                          "length": 32
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "positions",
+                    "type": {
+                      "list": {
+                        "type": "bool",
+                        "length": 32
+                      }
+                    }
+                  },
+                  {
+                    "name": "proof",
+                    "type": {
+                      "list": {
+                        "type": {
+                          "buffer": {
+                            "length": 32
+                          }
+                        },
+                        "length": 32
+                      }
+                    }
+                  }
+                ]
+              },
+              "error": "uint128"
+            }
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": {
+              "tuple": [
+                {
+                  "name": "current",
+                  "type": {
+                    "optional": {
+                      "buffer": {
+                        "length": 32
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "positions",
+                  "type": {
+                    "list": {
+                      "type": "bool",
+                      "length": 32
+                    }
+                  }
+                },
+                {
+                  "name": "proof",
+                  "type": {
+                    "list": {
+                      "type": {
+                        "buffer": {
+                          "length": 32
+                        }
+                      },
+                      "length": 32
+                    }
+                  }
+                }
+              ]
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "hash-leaf",
+      "access": "private",
+      "args": [
+        {
+          "name": "account",
+          "type": "principal"
+        },
+        {
+          "name": "field-id",
+          "type": "uint128"
+        },
+        {
+          "name": "amount",
           "type": "uint128"
         }
       ],
       "outputs": {
         "type": {
-          "optional": {
+          "response": {
+            "ok": {
+              "buffer": {
+                "length": 32
+              }
+            },
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
+      "name": "hash-parent",
+      "access": "private",
+      "args": [
+        {
+          "name": "left",
+          "type": {
             "buffer": {
               "length": 32
             }
+          }
+        },
+        {
+          "name": "right",
+          "type": {
+            "buffer": {
+              "length": 32
+            }
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "buffer": {
+            "length": 32
           }
         }
       }
     },
     {
       "name": "scale-down",
-      "access": "private",
-      "args": [
-        {
-          "name": "a",
-          "type": "uint128"
-        }
-      ],
-      "outputs": {
-        "type": "uint128"
-      }
-    },
-    {
-      "name": "scale-up",
       "access": "private",
       "args": [
         {
@@ -71,6 +195,58 @@ export const abiCcip026MiamicoinBurnToExit = {
       }
     },
     {
+      "name": "verify-proof",
+      "access": "private",
+      "args": [
+        {
+          "name": "leaf",
+          "type": {
+            "buffer": {
+              "length": 32
+            }
+          }
+        },
+        {
+          "name": "proof",
+          "type": {
+            "list": {
+              "type": {
+                "buffer": {
+                  "length": 32
+                }
+              },
+              "length": 32
+            }
+          }
+        },
+        {
+          "name": "positions",
+          "type": {
+            "list": {
+              "type": "bool",
+              "length": 32
+            }
+          }
+        },
+        {
+          "name": "expected-root",
+          "type": {
+            "buffer": {
+              "length": 32
+            }
+          }
+        }
+      ],
+      "outputs": {
+        "type": {
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
+        }
+      }
+    },
+    {
       "name": "execute",
       "access": "public",
       "args": [
@@ -89,12 +265,16 @@ export const abiCcip026MiamicoinBurnToExit = {
       }
     },
     {
-      "name": "vote-on-proposal",
+      "name": "set-snapshot-root",
       "access": "public",
       "args": [
         {
-          "name": "vote",
-          "type": "bool"
+          "name": "root",
+          "type": {
+            "buffer": {
+              "length": 32
+            }
+          }
         }
       ],
       "outputs": {
@@ -107,21 +287,46 @@ export const abiCcip026MiamicoinBurnToExit = {
       }
     },
     {
-      "name": "get-mia-vote",
-      "access": "read_only",
+      "name": "vote-on-proposal",
+      "access": "public",
       "args": [
         {
-          "name": "userId",
+          "name": "vote",
+          "type": "bool"
+        },
+        {
+          "name": "scaledMiaVoteAmount",
           "type": "uint128"
         },
         {
-          "name": "scaled",
-          "type": "bool"
+          "name": "proof",
+          "type": {
+            "list": {
+              "type": {
+                "buffer": {
+                  "length": 32
+                }
+              },
+              "length": 32
+            }
+          }
+        },
+        {
+          "name": "positions",
+          "type": {
+            "list": {
+              "type": "bool",
+              "length": 32
+            }
+          }
         }
       ],
       "outputs": {
         "type": {
-          "optional": "uint128"
+          "response": {
+            "ok": "bool",
+            "error": "uint128"
+          }
         }
       }
     },
@@ -346,7 +551,9 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "read_only",
       "args": [],
       "outputs": {
-        "type": "bool"
+        "type": {
+          "optional": "bool"
+        }
       }
     }
   ],
@@ -384,6 +591,26 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
+      "name": "ERR_CONSENSUS_ENCODING_FAILED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_FOLD_FAILED",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
       "name": "ERR_NOTHING_STACKED",
       "type": {
         "response": {
@@ -394,7 +621,27 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
+      "name": "ERR_NOT_ADMIN",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
       "name": "ERR_PANIC",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_PROOF_INVALID",
       "type": {
         "response": {
           "ok": "none",
@@ -415,6 +662,16 @@ export const abiCcip026MiamicoinBurnToExit = {
     },
     {
       "name": "ERR_SAVING_VOTE",
+      "type": {
+        "response": {
+          "ok": "none",
+          "error": "uint128"
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "ERR_SNAPSHOT_NOT_SET",
       "type": {
         "response": {
           "ok": "none",
@@ -454,8 +711,36 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
+      "name": "MERKLE_LEAF_TAG",
+      "type": {
+        "buffer": {
+          "length": 11
+        }
+      },
+      "access": "constant"
+    },
+    {
+      "name": "MERKLE_PARENT_TAG",
+      "type": {
+        "buffer": {
+          "length": 13
+        }
+      },
+      "access": "constant"
+    },
+    {
       "name": "MIA_ID",
       "type": "uint128",
+      "access": "constant"
+    },
+    {
+      "name": "PROOF_INDICES",
+      "type": {
+        "list": {
+          "type": "uint128",
+          "length": 32
+        }
+      },
       "access": "constant"
     },
     {
@@ -467,6 +752,22 @@ export const abiCcip026MiamicoinBurnToExit = {
       "name": "VOTE_SCALE_FACTOR",
       "type": "uint128",
       "access": "constant"
+    },
+    {
+      "name": "snapshotAdmin",
+      "type": "principal",
+      "access": "variable"
+    },
+    {
+      "name": "snapshotMerkleRoot",
+      "type": {
+        "optional": {
+          "buffer": {
+            "length": 32
+          }
+        }
+      },
+      "access": "variable"
     },
     {
       "name": "voteActive",
@@ -528,6 +829,6 @@ export const abiCcip026MiamicoinBurnToExit = {
   ],
   "fungible_tokens": [],
   "non_fungible_tokens": [],
-  "epoch": "Epoch33",
-  "clarity_version": "Clarity4"
+  "epoch": "Epoch34",
+  "clarity_version": "Clarity5"
 } as const;

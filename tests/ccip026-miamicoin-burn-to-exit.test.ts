@@ -12,11 +12,39 @@ import {
 } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
-import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { vote, setSnapshotRoot } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
+
+const VOTE_SCALE_FACTOR = 10n ** 16n;
+
+// Mock voters with their scaled vote amounts
+// SP39EH... had 144479012000000 MIA stacked in both cycle 82 and 83
+// scaledVote = (144479012000000 * 10^16 + 144479012000000 * 10^16) / 2 = 144479012000000 * 10^16
+const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
+const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
+
+// SP1T91... a second voter with a different amount
+const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
+const VOTER_B_SCALED = 50000000000n * VOTE_SCALE_FACTOR;
+
+// SP18Z9... has zero stacked (should fail to vote)
+const VOTER_ZERO = "SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD";
+
+const voters: VoterEntry[] = [
+  { address: VOTER_A, scaledVote: VOTER_A_SCALED },
+  { address: VOTER_B, scaledVote: VOTER_B_SCALED },
+];
+
+const { root, proofs } = buildMerkleTree(voters);
+const [proofA, proofB] = proofs;
 
 describe("CCIP026 Core", () => {
   it("should not allow users to execute", async () => {
-    const voteResult = vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    // Set snapshot root before voting
+    const rootResult = setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
+    expect(rootResult.result).toEqual({ ok: true });
+
+    const voteResult = vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(voteResult.result).toEqual({ ok: true });
 
     const txReceipts = typedCallPublicFn({
@@ -86,8 +114,9 @@ describe("CCIP026 Core", () => {
 
     expect(voterInfo.result).toBeNone();
 
-    // Vote
-    vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    // Set snapshot root and vote
+    setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
+    vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
 
     // Check voter info after voting
     voterInfo = simnet.callReadOnlyFn(
@@ -113,8 +142,8 @@ describe("CCIP026 Core", () => {
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
     );
 
-    // Should return a boolean
-    expect(isActive.result).toBeBool(true);
+    // Should return (some bool) for ccip015 compatibility
+    expect(isActive.result).toBeSome(boolCV(true));
   });
 
   it("should deactive vote after voting period", async () => {
@@ -125,7 +154,7 @@ describe("CCIP026 Core", () => {
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
     );
 
-    expect(isActive.result).toBeBool(true);
+    expect(isActive.result).toBeSome(boolCV(true));
 
     // Advance to the end of the voting period
     expect(simnet.blockHeight).toBe(3491157);
@@ -138,7 +167,7 @@ describe("CCIP026 Core", () => {
       [],
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
     );
-    expect(isActiveAfter.result).toBeBool(true);
+    expect(isActiveAfter.result).toBeSome(boolCV(true));
 
     simnet.mineEmptyBlocks(1);
 
@@ -149,7 +178,7 @@ describe("CCIP026 Core", () => {
       [],
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
     );
-    expect(isActiveAfter2.result).toBeBool(false);
+    expect(isActiveAfter2.result).toBeSome(boolCV(false));
   });
 
   it("should return empty vote totals initially", async () => {

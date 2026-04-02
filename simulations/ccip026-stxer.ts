@@ -128,4 +128,4 @@ const block_height_empty = 3425439;
 const block_height_31k_stx = 3491155;
 
 //main(block_height_empty).catch(console.error);
-main(block_height_31k_stx).catch(console.error);
+main(7444340).catch(console.error);

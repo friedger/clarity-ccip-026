@@ -2,13 +2,35 @@ import {
   boolCV,
   SomeCV,
   TupleCV,
+  tupleCV,
   UIntCV,
   uintCV
 } from "@stacks/transactions";
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
-import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { vote, setSnapshotRoot } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
+
+const VOTE_SCALE_FACTOR = 10n ** 16n;
+
+const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
+const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
+const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
+const VOTER_B_SCALED = 2086372000000n * VOTE_SCALE_FACTOR;
+
+const voters: VoterEntry[] = [
+  { address: VOTER_A, scaledVote: VOTER_A_SCALED },
+  { address: VOTER_B, scaledVote: VOTER_B_SCALED },
+];
+
+const { root, proofs } = buildMerkleTree(voters);
+const [proofA, proofB] = proofs;
+
+/** Set snapshot root once (idempotent per simnet reset). */
+function ensureSnapshotRoot() {
+  setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
+}
 
 const checkVotes = async (
   totalAmountYes: bigint,
@@ -48,67 +70,71 @@ const checkIsExecutable = (response: {ok: boolean} | {error: bigint}) => {
 
 describe("CCIP026 Vote", () => {
   it("should not allow non-holders or non stackers to vote", async () => {
+    ensureSnapshotRoot();
     let txReceipt = 
-      vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true); // not a holder
-    expect(txReceipt.result).toEqual({error: 26003n});
+      vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true, 0n, [], []); // not in tree
+    expect(txReceipt.result).toEqual({error: 26008n}); // ERR_PROOF_INVALID
 
-    txReceipt = vote("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", true); // holder of v1
+    txReceipt = vote("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", true, 0n, [], []); // holder of v1
     expect(txReceipt.result).toEqual({error: 26004n});
 
     checkIsExecutable({error: 26007n}); // vote failed
   });
 
   it("should not allow voting twice with same choice", async () => {
+    ensureSnapshotRoot();
     // First vote
     let txReceipt = 
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+      vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(txReceipt.result).toEqual({ok: true});
 
-    // Try to vote with same choice again
-    txReceipt = vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+    // Try to vote with same choice again (no proof needed, record exists)
+    txReceipt = vote(VOTER_A, true, 0n, [], []);
     expect(txReceipt.result).toEqual({error: 26002n}); // ERR_VOTED_ALREADY
   });
 
   it("should allow changing vote from yes to no", async () => {
+    ensureSnapshotRoot();
 
     // First vote yes
     let txReceipt = 
-      vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+      vote(VOTER_B, true, VOTER_B_SCALED, proofB.proof, proofB.positions);
     expect(txReceipt.result).toEqual({ok: true});
     checkVotes(2086372000000n, 1n, 0n, 0n);
-    // Change vote to no
-    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    // Change vote to no (record exists, proof ignored)
+    txReceipt = vote(VOTER_B, false, 0n, [], []);
     expect(txReceipt.result).toEqual({ok: true});
     checkVotes(0n, 0n, 2086372000000n, 1n);
   });
 
-  it("should calculate MIA vote amounts correctly", async () => {
-    // Test for a known stacker
-    const miaVoteScaled = simnet.callReadOnlyFn(
+  it("should store correct vote amounts from Merkle proof", async () => {
+    ensureSnapshotRoot();
+
+    // Vote with known scaled amount
+    vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
+
+    // Check that stored vote amount equals scaledVote / VOTE_SCALE_FACTOR
+    const voterInfo = simnet.callReadOnlyFn(
       "ccip026-miamicoin-burn-to-exit",
-      "get-mia-vote",
-      [uintCV(1), boolCV(true)], // userId 1, scaled
+      "get-voter-info",
+      [uintCV(187)], // VOTER_A userId
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
     );
 
-    const miaVoteUnscaled = simnet.callReadOnlyFn(
-      "ccip026-miamicoin-burn-to-exit",
-      "get-mia-vote",
-      [uintCV(1), boolCV(false)], // userId 1, unscaled
-      "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R"
+    expect(voterInfo.result).toBeSome(
+      tupleCV({
+        mia: uintCV(144479012000000), // VOTER_A_SCALED / 10^16
+        vote: boolCV(true),
+      })
     );
-
-    expect(miaVoteScaled.result).toBeSome(
-      uintCV(4443750000000000000000000000n)
-    );
-    expect(miaVoteUnscaled.result).toBeSome(uintCV(444375000000));
   });
 
   it("should count user votes - yes-no", async () => {
+    ensureSnapshotRoot();
     let txReceipt =
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+      vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(txReceipt.result).toEqual({ok: true});
-    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    txReceipt = vote(VOTER_B, false, VOTER_B_SCALED, proofB.proof, proofB.positions);
     expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
@@ -117,11 +143,12 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - no-yes", async () => {
+    ensureSnapshotRoot();
     let txReceipt = 
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false);
+      vote(VOTER_A, false, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
 
-    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+    txReceipt = vote(VOTER_B, true, VOTER_B_SCALED, proofB.proof, proofB.positions);
     expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
@@ -130,11 +157,12 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - yes-yes", async () => {
+    ensureSnapshotRoot();
     let txReceipt = 
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", true);
+      vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
 
-    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", true);
+    txReceipt = vote(VOTER_B, true, VOTER_B_SCALED, proofB.proof, proofB.positions);
     expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
@@ -143,15 +171,52 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - no-no", async () => {
-    let txReceipt = 
-      vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", false);
+    ensureSnapshotRoot();
+    let txReceipt =
+      vote(VOTER_A, false, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
 
-    txReceipt = vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", false);
+    txReceipt = vote(VOTER_B, false, VOTER_B_SCALED, proofB.proof, proofB.positions);
     expect(txReceipt.result).toEqual({ok: true});
 
     // check votes
     checkVotes(0n, 0n, 146565384000000n, 2n);
     checkIsExecutable({error: 26007n}); // vote failed
+  });
+
+  it("should fail set-snapshot-root from non-admin", async () => {
+    const result = setSnapshotRoot(VOTER_A, root);
+    expect(result.result).toEqual({error: 26010n}); // ERR_NOT_ADMIN
+  });
+
+  it("should fail vote with invalid merkle proof", async () => {
+    ensureSnapshotRoot();
+    // Use VOTER_B's address to proof voter A
+    const badProof = [...proofB.proof];
+    const txReceipt = vote(VOTER_A, true, VOTER_A_SCALED, badProof, proofA.positions);
+    expect(txReceipt.result).toEqual({error: 26008n}); // ERR_PROOF_INVALID
+  });
+
+  it("should fail vote with wrong scaled amount", async () => {
+    ensureSnapshotRoot();
+    // Use VOTER_A's proof but with a different amount — leaf won't match
+    const wrongAmount = VOTER_A_SCALED + 1n;
+    const txReceipt = vote(VOTER_A, true, wrongAmount, proofA.proof, proofA.positions);
+    expect(txReceipt.result).toEqual({error: 26008n}); // ERR_PROOF_INVALID
+  });
+
+  it("should allow changing vote from no to yes", async () => {
+    ensureSnapshotRoot();
+
+    // First vote no
+    let txReceipt =
+      vote(VOTER_B, false, VOTER_B_SCALED, proofB.proof, proofB.positions);
+    expect(txReceipt.result).toEqual({ok: true});
+    checkVotes(0n, 0n, 2086372000000n, 1n);
+
+    // Change vote to yes (record exists, proof ignored)
+    txReceipt = vote(VOTER_B, true, 0n, [], []);
+    expect(txReceipt.result).toEqual({ok: true});
+    checkVotes(2086372000000n, 1n, 0n, 0n);
   });
 });

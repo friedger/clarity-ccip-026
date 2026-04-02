@@ -22,9 +22,8 @@
 (define-constant ERR_VOTE_FAILED (err u26007))                 ;; yes votes do not exceed no votes (execution rejected)
 (define-constant ERR_PROOF_INVALID (err u26008))               ;; Merkle proof does not verify against snapshot root
 (define-constant ERR_SNAPSHOT_NOT_SET (err u26009))             ;; snapshotMerkleRoot is none when first-time voter tries to vote
-(define-constant ERR_NOT_ADMIN (err u26010))                   ;; caller of set-snapshot-root is not snapshotAdmin
-(define-constant ERR_FOLD_FAILED (err u26011))                 ;; internal Merkle proof fold step encountered unexpected none
-(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26012))   ;; to-consensus-buff? returned none during leaf hashing
+(define-constant ERR_FOLD_FAILED (err u26010))                 ;; internal Merkle proof fold step encountered unexpected none
+(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26011))   ;; to-consensus-buff? returned none during leaf hashing
 
 ;; CONSTANTS
 
@@ -68,10 +67,8 @@
 (var-set voteStart burn-block-height)
 (var-set voteEnd (+ burn-block-height VOTE_LENGTH))
 
-;; The principal authorized to call set-snapshot-root (deployer at init)
-(define-data-var snapshotAdmin principal tx-sender)
 ;; Merkle root of voter balance snapshots; must be set before any voting
-(define-data-var snapshotMerkleRoot (optional (buff 32)) none)
+(define-constant snapshotMerkleRoot 0x870b69af2f419063d1e38838b7b74bdab8dfdcbca1efd92bfacf314274a3bbf1)
 
 ;; DATA MAPS
 
@@ -98,15 +95,6 @@
 )
 
 ;; PUBLIC FUNCTIONS
-
-;; Sets the Merkle root used to verify voter balances.
-;; Only callable by snapshotAdmin. Must be called before any voting begins.
-(define-public (set-snapshot-root (root (buff 32)))
-  (begin
-    (asserts! (is-eq contract-caller (var-get snapshotAdmin)) ERR_NOT_ADMIN)
-    (ok (var-set snapshotMerkleRoot (some root)))
-  )
-)
 
 ;; Executes the proposal after the vote passes. Checks that yes > no,
 ;; deactivates voting, enables the ccd013 extension in the DAO, and
@@ -150,8 +138,8 @@
 (define-public (vote-on-proposal
     (vote bool)
     (scaledMiaVoteAmount uint)
-    (proof (list 32 (buff 32)))
-    (positions (list 32 bool))
+    (proof (list 7 (buff 32)))
+    (positions (list 7 bool))
   )
   (let (
       (voterId (unwrap!
@@ -184,9 +172,8 @@
       )
       ;; if the voterRecord does not exist, verify merkle proof
       (let (
-          (root (unwrap! (var-get snapshotMerkleRoot) ERR_SNAPSHOT_NOT_SET))
           (leaf (try! (hash-leaf contract-caller MIA_ID scaledMiaVoteAmount)))
-          (verified (try! (verify-proof leaf proof positions root)))
+          (verified (try! (verify-proof leaf proof positions snapshotMerkleRoot)))
           (miaVoteAmount (scale-down scaledMiaVoteAmount))
         )
         ;; check merkle proof
@@ -377,7 +364,7 @@
 ;; (true = sibling is on the left).
 (define-private (fold-proof-step-inner
     (idx uint)
-    (acc (response { current: (optional (buff 32)), proof: (list 32 (buff 32)), positions: (list 32 bool) } uint))
+    (acc (response { current: (optional (buff 32)), proof: (list 7 (buff 32)), positions: (list 7 bool) } uint))
   )
   (let (
       (data (unwrap! acc ERR_FOLD_FAILED))
@@ -411,7 +398,7 @@
 
 ;; Verifies a Merkle proof by folding over PROOF_INDICES, then comparing
 ;; the computed root to expected-root. Returns (ok true) if they match.
-(define-private (verify-proof (leaf (buff 32)) (proof (list 32 (buff 32))) (positions (list 32 bool)) (expected-root (buff 32)))
+(define-private (verify-proof (leaf (buff 32)) (proof (list 7 (buff 32))) (positions (list 7 bool)) (expected-root (buff 32)))
   (let (
       (initial { current: (some leaf), proof: proof, positions: positions })
       (folded (try! (fold fold-proof-step-inner PROOF_INDICES (ok initial))))

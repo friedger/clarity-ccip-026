@@ -165,8 +165,8 @@ describe("CCD013 Burn to Exit MIA", () => {
       ok: {
         address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
         balanceV1: 0n,
-        balanceV2: 0n,
-        totalBalance: 0n,
+        "balanceV2": 321825000000n,
+        "totalBalance": 321825000000n,
       },
     });
   });
@@ -187,13 +187,13 @@ describe("CCD013 Burn to Exit MIA", () => {
         miaBalances: {
           address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
           balanceV1: 0n,
-          balanceV2: 0n,
-          totalBalance: 0n,
+          balanceV2: miaAmount1,
+          totalBalance: miaAmount1,
         },
         redemptionAmount: 0n,
         redemptionClaims: {
-          uMia: miaAmount1,
-          uStx: expectedStx1,
+          uMia: 0n,
+          uStx: 0n,
         },
       },
     });

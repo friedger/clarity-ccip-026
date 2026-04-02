@@ -21,9 +21,8 @@
 (define-constant ERR_PROPOSAL_NOT_ACTIVE (err u26005))         ;; vote is inactive or current block is outside vote period
 (define-constant ERR_VOTE_FAILED (err u26007))                 ;; yes votes do not exceed no votes (execution rejected)
 (define-constant ERR_PROOF_INVALID (err u26008))               ;; Merkle proof does not verify against snapshot root
-(define-constant ERR_SNAPSHOT_NOT_SET (err u26009))             ;; snapshotMerkleRoot is none when first-time voter tries to vote
-(define-constant ERR_FOLD_FAILED (err u26010))                 ;; internal Merkle proof fold step encountered unexpected none
-(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26011))   ;; to-consensus-buff? returned none during leaf hashing
+(define-constant ERR_FOLD_FAILED (err u26009))                 ;; internal Merkle proof fold step encountered unexpected none
+(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26010))   ;; to-consensus-buff? returned none during leaf hashing
 
 ;; CONSTANTS
 
@@ -68,7 +67,7 @@
 (var-set voteEnd (+ burn-block-height VOTE_LENGTH))
 
 ;; Merkle root of voter balance snapshots; must be set before any voting
-(define-constant snapshotMerkleRoot 0x870b69af2f419063d1e38838b7b74bdab8dfdcbca1efd92bfacf314274a3bbf1)
+(define-constant snapshotMerkleRoot 0x776695e7e2659b4a92ed54d411456f244568e2572d8e8133fc0c2381c9d154b3)
 
 ;; DATA MAPS
 
@@ -138,8 +137,8 @@
 (define-public (vote-on-proposal
     (vote bool)
     (scaledMiaVoteAmount uint)
-    (proof (list 7 (buff 32)))
-    (positions (list 7 bool))
+    (proof (list 9 (buff 32)))
+    (positions (list 9 bool))
   )
   (let (
       (voterId (unwrap!
@@ -364,7 +363,7 @@
 ;; (true = sibling is on the left).
 (define-private (fold-proof-step-inner
     (idx uint)
-    (acc (response { current: (optional (buff 32)), proof: (list 7 (buff 32)), positions: (list 7 bool) } uint))
+    (acc (response { current: (optional (buff 32)), proof: (list 9 (buff 32)), positions: (list 9 bool) } uint))
   )
   (let (
       (data (unwrap! acc ERR_FOLD_FAILED))
@@ -398,7 +397,7 @@
 
 ;; Verifies a Merkle proof by folding over PROOF_INDICES, then comparing
 ;; the computed root to expected-root. Returns (ok true) if they match.
-(define-private (verify-proof (leaf (buff 32)) (proof (list 7 (buff 32))) (positions (list 7 bool)) (expected-root (buff 32)))
+(define-private (verify-proof (leaf (buff 32)) (proof (list 9 (buff 32))) (positions (list 9 bool)) (expected-root (buff 32)))
   (let (
       (initial { current: (some leaf), proof: proof, positions: positions })
       (folded (try! (fold fold-proof-step-inner PROOF_INDICES (ok initial))))

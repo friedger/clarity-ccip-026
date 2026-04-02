@@ -1,13 +1,6 @@
 ;; @name vote and execute
 (define-public (test-vote)
   (begin
-    ;; @caller deployer
-    (unwrap!
-      (contract-call? .ccip026-miamicoin-burn-to-exit set-snapshot-root
-        0x9e0bb5a4ccfbd877c801f4b5570807d8db165dba5f0dee1deecc2dab4e37a061
-      )
-      (err "set-snapshot-root failed")
-    )
     ;; @caller 'SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA
     (unwrap!
       (contract-call? .ccip026-miamicoin-burn-to-exit vote-on-proposal true u1444790120000000000000000000000 (list 0x43f51785937b153496e1bd092a4999405d697138273681aba55e841756043fe2) (list false))

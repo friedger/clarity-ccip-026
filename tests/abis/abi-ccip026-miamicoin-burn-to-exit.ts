@@ -29,7 +29,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                     "type": {
                       "list": {
                         "type": "bool",
-                        "length": 32
+                        "length": 9
                       }
                     }
                   },
@@ -42,7 +42,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                             "length": 32
                           }
                         },
-                        "length": 32
+                        "length": 9
                       }
                     }
                   }
@@ -73,7 +73,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                   "type": {
                     "list": {
                       "type": "bool",
-                      "length": 32
+                      "length": 9
                     }
                   }
                 },
@@ -86,7 +86,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                           "length": 32
                         }
                       },
-                      "length": 32
+                      "length": 9
                     }
                   }
                 }
@@ -215,7 +215,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                   "length": 32
                 }
               },
-              "length": 32
+              "length": 9
             }
           }
         },
@@ -224,7 +224,7 @@ export const abiCcip026MiamicoinBurnToExit = {
           "type": {
             "list": {
               "type": "bool",
-              "length": 32
+              "length": 9
             }
           }
         },
@@ -265,28 +265,6 @@ export const abiCcip026MiamicoinBurnToExit = {
       }
     },
     {
-      "name": "set-snapshot-root",
-      "access": "public",
-      "args": [
-        {
-          "name": "root",
-          "type": {
-            "buffer": {
-              "length": 32
-            }
-          }
-        }
-      ],
-      "outputs": {
-        "type": {
-          "response": {
-            "ok": "bool",
-            "error": "uint128"
-          }
-        }
-      }
-    },
-    {
       "name": "vote-on-proposal",
       "access": "public",
       "args": [
@@ -307,7 +285,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                   "length": 32
                 }
               },
-              "length": 32
+              "length": 9
             }
           }
         },
@@ -316,7 +294,7 @@ export const abiCcip026MiamicoinBurnToExit = {
           "type": {
             "list": {
               "type": "bool",
-              "length": 32
+              "length": 9
             }
           }
         }
@@ -621,16 +599,6 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
-      "name": "ERR_NOT_ADMIN",
-      "type": {
-        "response": {
-          "ok": "none",
-          "error": "uint128"
-        }
-      },
-      "access": "constant"
-    },
-    {
       "name": "ERR_PANIC",
       "type": {
         "response": {
@@ -662,16 +630,6 @@ export const abiCcip026MiamicoinBurnToExit = {
     },
     {
       "name": "ERR_SAVING_VOTE",
-      "type": {
-        "response": {
-          "ok": "none",
-          "error": "uint128"
-        }
-      },
-      "access": "constant"
-    },
-    {
-      "name": "ERR_SNAPSHOT_NOT_SET",
       "type": {
         "response": {
           "ok": "none",
@@ -754,20 +712,13 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
-      "name": "snapshotAdmin",
-      "type": "principal",
-      "access": "variable"
-    },
-    {
       "name": "snapshotMerkleRoot",
       "type": {
-        "optional": {
-          "buffer": {
-            "length": 32
-          }
+        "buffer": {
+          "length": 32
         }
       },
-      "access": "variable"
+      "access": "constant"
     },
     {
       "name": "voteActive",

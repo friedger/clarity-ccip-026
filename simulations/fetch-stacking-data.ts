@@ -151,7 +151,8 @@ async function getBlockHash(height: number): Promise<string> {
     throw new Error(`Failed to get block ${height}: ${await response.text()}`);
   }
   const data = await response.json();
-  return data.index_block_hash;
+  // Strip 0x prefix — the ?tip parameter does not accept it
+  return (data.index_block_hash as string).replace(/^0x/, "");
 }
 
 // ---------------------------------------------------------------------------
@@ -211,14 +212,13 @@ async function getStacking(
     [Cl.uint(MIA_ID), Cl.uint(cycle), Cl.uint(userId)],
     tip
   );
-
-  console.log(result);
   // get-stacker returns a tuple { stacked: uint, claimable: uint }
   const tuple = result as any;
   if (tuple.value && tuple.value.stacked) {
     return extractUint(tuple.value.stacked);
+  } else {
+    throw new Error(`Unexpected get-stacker result for user ${userId}, cycle ${cycle}: ${cvToString(result)}`);
   }
-  return 0n;
 }
 
 async function getUserPrincipal(userId: number): Promise<string | null> {
@@ -268,6 +268,9 @@ async function main() {
     // Query cycle 82 + 83 for all users in this batch in parallel
     const batchResults = await Promise.all(
       userIds.map(async (userId) => {
+        if (userId===23){
+          console.log(`Debug: Fetching stacking for user ${userId}...`);
+        }
         try {
           const [stacked82, stacked83] = await Promise.all([
             getStacking(userId, 82, cycle82Hash),
@@ -275,8 +278,13 @@ async function main() {
           ]);
           return { userId, stacked82, stacked83 };
         } catch (err: any) {
-          console.error(`  Error for user ${userId}: ${err.message}`);
-          return { userId, stacked82: 0n, stacked83: 0n };
+          console.warn(`  Error for user ${userId}, retrying: ${err.message}`);
+          await sleep(DELAY_MS * 5);
+          const [stacked82, stacked83] = await Promise.all([
+            getStacking(userId, 82, cycle82Hash),
+            getStacking(userId, 83, cycle83Hash),
+          ]);
+          return { userId, stacked82, stacked83 };
         }
       })
     );
@@ -289,9 +297,12 @@ async function main() {
       const address = await getUserPrincipal(userId);
       if (!address) {
         console.warn(`  User ${userId} has stacking but no registry entry!`);
-        continue;
+        throw new Error(`User ${userId} has stacking but no registry entry`);
       }
 
+      if (userId===23){
+        console.log(`Debug: User ${userId} has address ${address}, cycle82=${stacked82}, cycle83=${stacked83}`);
+      }
       results.push({
         userId,
         address,

@@ -18,9 +18,24 @@ export const stackingData: {
   cycle83Stacked: bigint;
 }[] = [
   {
+    address: "SP0570FCRVNHMV6BE7XSPGB5E7AX967EJ46YR5F3",
+    cycle82Stacked: 175000000000n,
+    cycle83Stacked: 175000000000n,
+  },
+  {
     address: "SP0ESHJJ1FA7KBJ26SE4Z5W4TQR2BWPDX8PX72GK",
     cycle82Stacked: 286026000000n,
     cycle83Stacked: 286026000000n,
+  },
+  {
+    address: "SP12CWQSX4G83343RNF88HTPMXWEQX6XAPQMBBPJS",
+    cycle82Stacked: 201214500000000n,
+    cycle83Stacked: 201214500000000n,
+  },
+  {
+    address: "SP12SQM6S940WFX3BP35TT2K3ZBAGHWN959YES8S",
+    cycle82Stacked: 105218000000n,
+    cycle83Stacked: 105218000000n,
   },
   {
     address: "SP12WX5WJSKYETBGE7E3NMDQTW17K99T4C5ZEJC6F",
@@ -30,7 +45,7 @@ export const stackingData: {
   {
     address: "SP13EZ58DXARG85WFX41KKSPZ9G8BTADRZCTZEZMM",
     cycle82Stacked: 3798495000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 3937114000000n,
   },
   {
     address: "SP13NKC4KRXT3QVE1AWYNM10SRGPJ59J9TWA8HAQS",
@@ -40,7 +55,12 @@ export const stackingData: {
   {
     address: "SP143YHR805B8S834BWJTMZVFR1WP5FFC03WZE4BF",
     cycle82Stacked: 5386156000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 5386156000000n,
+  },
+  {
+    address: "SP14E544B2FY8BSKTV5V7W8NCRYX2B7NXRQ7B7NJ9",
+    cycle82Stacked: 1515653000000n,
+    cycle83Stacked: 1515653000000n,
   },
   {
     address: "SP14WPH8AMBFF0X45EJTE3T00P7GTD5GX43SDTGXD",
@@ -48,14 +68,64 @@ export const stackingData: {
     cycle83Stacked: 52967000000n,
   },
   {
+    address: "SP150468S75AQM2DZQ5K1DRSWHPRW3E92FFF2PVQE",
+    cycle82Stacked: 2608698000000n,
+    cycle83Stacked: 2608698000000n,
+  },
+  {
+    address: "SP15KVVEHEWZP7G4GYKAGA71K6NQE73ZEHMEWC5VS",
+    cycle82Stacked: 23018885000000n,
+    cycle83Stacked: 23018885000000n,
+  },
+  {
+    address: "SP162914TAAZVKBZX1N69ZSTWGDQJCAHCXH8XS7RR",
+    cycle82Stacked: 199870000000n,
+    cycle83Stacked: 0n,
+  },
+  {
+    address: "SP16AG2XE83DB2CX396NS2FZTM6PY253MRR6SMYBP",
+    cycle82Stacked: 5509820000000n,
+    cycle83Stacked: 5509820000000n,
+  },
+  {
+    address: "SP16BC59Y29FYZPP7WF8QB376STCVW33W4J9BWP06",
+    cycle82Stacked: 11688413000000n,
+    cycle83Stacked: 10688413000000n,
+  },
+  {
+    address: "SP16H5R1ZDFJQ7FE3ZYZKGFD8QTGPAGVEYWQXJMS5",
+    cycle82Stacked: 1263383000000n,
+    cycle83Stacked: 0n,
+  },
+  {
+    address: "SP17CWC8DXXA5293ZD8RS5SM9CKAFBH3234VC8G26",
+    cycle82Stacked: 2055988000000n,
+    cycle83Stacked: 2055988000000n,
+  },
+  {
     address: "SP18R44071H3AJD1Z1HR4GAAS2FE0PQ33ADMWKSJP",
     cycle82Stacked: 50000000000n,
     cycle83Stacked: 0n,
   },
   {
+    address: "SP18W9S29V63HJQR2Z73363NMXX22W3TYWA4XD3QB",
+    cycle82Stacked: 61187000000n,
+    cycle83Stacked: 61187000000n,
+  },
+  {
     address: "SP18WRH4SF7F1M5QZZ2BQDZZYBCJWT9VWQMDSTFY5",
     cycle82Stacked: 16652000000n,
     cycle83Stacked: 16652000000n,
+  },
+  {
+    address: "SP19070T5BARA5WR36SXV2JXB6GYFTKH8FMJDFMWN",
+    cycle82Stacked: 95860000000n,
+    cycle83Stacked: 95860000000n,
+  },
+  {
+    address: "SP1911P9FK27G4ED4WEJ8QSC0B0NAWDCF8GWYH9GV",
+    cycle82Stacked: 1070000000000n,
+    cycle83Stacked: 1070000000000n,
   },
   {
     address: "SP19264KS3Z0BN93RHZKM0DKP9D1WPQ27FWKPMM3C",
@@ -68,9 +138,19 @@ export const stackingData: {
     cycle83Stacked: 1337281000000n,
   },
   {
+    address: "SP19PMPW8J540BTF9S2D4J7W3RBB5CZM28P1BK573",
+    cycle82Stacked: 45773000000n,
+    cycle83Stacked: 45773000000n,
+  },
+  {
     address: "SP19WSDJWTH4CW3YG554XS5CAXJJGAN83P8CFZ4K1",
     cycle82Stacked: 1142330000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 1142330000000n,
+  },
+  {
+    address: "SP1AJVR541WH6AA3ACSTHZ0AFAKDG2E6ETX3G7WWX",
+    cycle82Stacked: 269699000000n,
+    cycle83Stacked: 269699000000n,
   },
   {
     address: "SP1AQDVJF18XEFVXMWTRAW9TQ0N2DCN0178FKW03R",
@@ -79,8 +159,18 @@ export const stackingData: {
   },
   {
     address: "SP1BCE6B3Q5ET0H9HNV7SZJQR3MSGB8QWGG5AXCAQ",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 71145000000n,
     cycle83Stacked: 71145000000n,
+  },
+  {
+    address: "SP1BR2G4YY0E9RVB5D83TZSP2Y0R6KGP2G222RWWC",
+    cycle82Stacked: 41160000000n,
+    cycle83Stacked: 41160000000n,
+  },
+  {
+    address: "SP1C0QWQYH99W7EBMGKET4Z6SK3Q44KCHM4YD2H6V",
+    cycle82Stacked: 42335000000n,
+    cycle83Stacked: 42335000000n,
   },
   {
     address: "SP1C6WQ9KTV3769S8X8YNAWBXKDG2Y65P5EEDRWR6",
@@ -88,9 +178,64 @@ export const stackingData: {
     cycle83Stacked: 2298988000000n,
   },
   {
+    address: "SP1CM0AWD5FCT7RMNCQJ29XTX7ANXH4HMDDY3QW9H",
+    cycle82Stacked: 2659896000000n,
+    cycle83Stacked: 2659896000000n,
+  },
+  {
+    address: "SP1CNY3NC4C4961K7QNDHQJK18YJ48XA05WHJ5T96",
+    cycle82Stacked: 120288701000000n,
+    cycle83Stacked: 120288701000000n,
+  },
+  {
+    address: "SP1CSHK9V43Y682QDMGW7TW88RFYRX91X7E6PVX6C",
+    cycle82Stacked: 50139000000n,
+    cycle83Stacked: 50139000000n,
+  },
+  {
     address: "SP1E5KVXXSSBT5D3ZRBPCT33PNR9EDEN5341XGQ70",
     cycle82Stacked: 11720000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 11720000000n,
+  },
+  {
+    address: "SP1EHG5M8H61ACV1JYRD9Z9TC8BKSW519YZ4WE5Z4",
+    cycle82Stacked: 17494304000000n,
+    cycle83Stacked: 17494304000000n,
+  },
+  {
+    address: "SP1EMHSG9FS73TMRJWY679GSGZ7HQ54HG73PD6VZD",
+    cycle82Stacked: 2675914000000n,
+    cycle83Stacked: 2675914000000n,
+  },
+  {
+    address: "SP1FG986K6M9Y5WGZZBS6TQ8J9C81Y5PCJJ144N04",
+    cycle82Stacked: 558477000000n,
+    cycle83Stacked: 558477000000n,
+  },
+  {
+    address: "SP1FJ0MY8M18KZF43E85WJN48SDXYS1EC4BCQW02S",
+    cycle82Stacked: 450000000000000n,
+    cycle83Stacked: 450000000000000n,
+  },
+  {
+    address: "SP1GGDWH3QHWZ4PBQS332MT5C9V9ZER8W9FFKVHQA",
+    cycle82Stacked: 1297087000000n,
+    cycle83Stacked: 1297087000000n,
+  },
+  {
+    address: "SP1GW5QD8S9BEFMYC0T7JW3DCS4WF04D4ZJDGKXXY",
+    cycle82Stacked: 32749000000n,
+    cycle83Stacked: 32749000000n,
+  },
+  {
+    address: "SP1H45JS07GWQWMT57JE20X17AQCNVYAS7NHW2HVR",
+    cycle82Stacked: 7030405000000n,
+    cycle83Stacked: 7030405000000n,
+  },
+  {
+    address: "SP1H533C73A6HZD08QRSHK0TBPBJBNK2A00JG3SRH",
+    cycle82Stacked: 119722000000n,
+    cycle83Stacked: 119722000000n,
   },
   {
     address: "SP1J4W7VYR4QXZKSPSMV70EFCD5DH50GKKE6T8VCK",
@@ -98,9 +243,49 @@ export const stackingData: {
     cycle83Stacked: 251019000000n,
   },
   {
+    address: "SP1JRGSKN76086C4MXCPZRB9C9ZHKKYJ0FZNKX749",
+    cycle82Stacked: 164060000000n,
+    cycle83Stacked: 164060000000n,
+  },
+  {
+    address: "SP1KNK0HP2ZTGHEE1YAPM85HTDHF89G2MCEJCP08G",
+    cycle82Stacked: 1000000000000n,
+    cycle83Stacked: 0n,
+  },
+  {
+    address: "SP1KVKBYWMCK7WSDYS0DDF8R3XT5RD5QKBPQK3SBB",
+    cycle82Stacked: 62691981000000n,
+    cycle83Stacked: 62691981000000n,
+  },
+  {
+    address: "SP1KWCYXS5N2C0CWDBXFJWRXXWVGVPDBG008Q1C6D",
+    cycle82Stacked: 54267000000n,
+    cycle83Stacked: 54267000000n,
+  },
+  {
+    address: "SP1MGH8BH1KRY49Z7EE5TY0JVKT6C3NT9RTVM8FND",
+    cycle82Stacked: 124459461000000n,
+    cycle83Stacked: 124459461000000n,
+  },
+  {
+    address: "SP1MWYHQ191VX3NB0X6ZTSFJ9QPHVYTXREJHRPW4E",
+    cycle82Stacked: 240933000000n,
+    cycle83Stacked: 240933000000n,
+  },
+  {
+    address: "SP1NH4GPKAQHAD5MMJS34V1CFXQ1EST8MFMAP0H5B",
+    cycle82Stacked: 26283000000n,
+    cycle83Stacked: 26283000000n,
+  },
+  {
     address: "SP1NNJSHTNQ551JNJB79YVNY16EW9AW50YF60AREW",
     cycle82Stacked: 0n,
     cycle83Stacked: 2000000000n,
+  },
+  {
+    address: "SP1P8NFZ9JPWVJD1FRVX4R5T9GDG6K3GBSDX05J9S",
+    cycle82Stacked: 600000000000n,
+    cycle83Stacked: 600000000000n,
   },
   {
     address: "SP1PKK6KJPM826D0X6AMCJ63KEH2M456M4T22WAPQ",
@@ -108,9 +293,14 @@ export const stackingData: {
     cycle83Stacked: 323000000n,
   },
   {
+    address: "SP1PMPGSAE19QJ21WK5G578HVBRHBQ15M20XFXES",
+    cycle82Stacked: 5679738000000n,
+    cycle83Stacked: 5679738000000n,
+  },
+  {
     address: "SP1Q849DX9ER6STVMCWEXACXZF8S21YMSYBTGGDJP",
     cycle82Stacked: 16763000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 16763000000n,
   },
   {
     address: "SP1QF902WKKJ0YHT6BD5Q5GSWHM7RKR53MWWN8PHR",
@@ -129,8 +319,18 @@ export const stackingData: {
   },
   {
     address: "SP1SZ9W813P723B8H27TZGTG7MZPKQB7JT149HH4Q",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 318345000000n,
     cycle83Stacked: 318345000000n,
+  },
+  {
+    address: "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A",
+    cycle82Stacked: 2086372000000n,
+    cycle83Stacked: 2086372000000n,
+  },
+  {
+    address: "SP1V4BWKPD559WP67GWCV8VR0VRKJ7ESS8WHKYEJP",
+    cycle82Stacked: 50313276000000n,
+    cycle83Stacked: 50313276000000n,
   },
   {
     address: "SP1WHYWV80ARXGFDJD63R0V87S2547H1ETZNC4B16",
@@ -138,9 +338,54 @@ export const stackingData: {
     cycle83Stacked: 59444000000n,
   },
   {
+    address: "SP1WNCJQSZXAW34CN1ESVP3BDJQQB4CS2RTX4JJ9G",
+    cycle82Stacked: 10000010000000n,
+    cycle83Stacked: 10000010000000n,
+  },
+  {
+    address: "SP1WRDS7DQQS8KYEKTNKRE55Z9MS0BRE2CQYA48G8",
+    cycle82Stacked: 212295000000n,
+    cycle83Stacked: 212295000000n,
+  },
+  {
+    address: "SP1XGQNEBDY7EYAY7KYNG1R3EAKECR2QNED7TNS02",
+    cycle82Stacked: 312452000000n,
+    cycle83Stacked: 494081000000n,
+  },
+  {
+    address: "SP1XHV60VPS13DYRN0HEYG8GYYA1S6QF90AXJ0NQR",
+    cycle82Stacked: 17500000000000n,
+    cycle83Stacked: 17500000000000n,
+  },
+  {
+    address: "SP1XKHXQFEQXZ8ZFKSRG7J393YE73ZN89THVGC9C2",
+    cycle82Stacked: 10000295000000n,
+    cycle83Stacked: 10000295000000n,
+  },
+  {
+    address: "SP1ZC3EFEVB8CY8CTTGS7G0YV4YJR79CF6AD2PDXR",
+    cycle82Stacked: 20000000000000n,
+    cycle83Stacked: 20000000000000n,
+  },
+  {
+    address: "SP20E0RC1NWFVD6A2QC8Z4CTWK7X5FKFCB6M6P6W4",
+    cycle82Stacked: 89183000000n,
+    cycle83Stacked: 89183000000n,
+  },
+  {
+    address: "SP20EX7RWFWP789GBNSG108QMZA650XF97CYTT3RD",
+    cycle82Stacked: 999000000000n,
+    cycle83Stacked: 999000000000n,
+  },
+  {
     address: "SP20N3J7JV41062GPJ2MGWFGNQ1QSRT8Y2EEWZP14",
     cycle82Stacked: 2590000000n,
     cycle83Stacked: 2590000000n,
+  },
+  {
+    address: "SP20N3V2AF88G9VM10VBX01TB5R16ATE53AGFKYPV",
+    cycle82Stacked: 361068000000n,
+    cycle83Stacked: 361068000000n,
   },
   {
     address: "SP20NZZ0ZBAWN69Y82ABT140DS8DBG43H4YR7B5F",
@@ -158,6 +403,21 @@ export const stackingData: {
     cycle83Stacked: 27504000000n,
   },
   {
+    address: "SP2215FJ1C6ESQDBYFR08P0YX71FWCW79Q1FSYD7V",
+    cycle82Stacked: 17020974400000n,
+    cycle83Stacked: 14461310600000n,
+  },
+  {
+    address: "SP22WC3WNHQ07DF7R29612P4VE3F9N80D03W18Y3Z",
+    cycle82Stacked: 657136000000n,
+    cycle83Stacked: 657136000000n,
+  },
+  {
+    address: "SP22XACEYG5VZ3QGHHRXYMQBXPZYGT972RNVW4C2R",
+    cycle82Stacked: 250000000000n,
+    cycle83Stacked: 250000000000n,
+  },
+  {
     address: "SP231JVP5X4A18T60YKAXF0TP3FEZ0ZJQ1FWSQ11E",
     cycle82Stacked: 1008977000000n,
     cycle83Stacked: 1008977000000n,
@@ -168,13 +428,43 @@ export const stackingData: {
     cycle83Stacked: 20616000000n,
   },
   {
+    address: "SP245RKH32CE9JPM26XKM4S0EVX3J17ANA595GA2Y",
+    cycle82Stacked: 277572000000n,
+    cycle83Stacked: 277572000000n,
+  },
+  {
+    address: "SP249AVXAABB31ZKDEDSF4S22DD6X2208PXYC6GPP",
+    cycle82Stacked: 2773394000000n,
+    cycle83Stacked: 2773394000000n,
+  },
+  {
+    address: "SP24GE0F7NRQ8VFTQZ025N94STXW7PGSVBEH2ZRZ7",
+    cycle82Stacked: 1694000000000n,
+    cycle83Stacked: 1694000000000n,
+  },
+  {
+    address: "SP24KJQH6AW02J40BJ626YZJK0J0GD6FP2YPQ09M1",
+    cycle82Stacked: 1000000000000n,
+    cycle83Stacked: 1000000000000n,
+  },
+  {
+    address: "SP262V6XJAHKMGZ254W06WMH3HF21EH8KH6967H5A",
+    cycle82Stacked: 0n,
+    cycle83Stacked: 18583000000n,
+  },
+  {
     address: "SP26A8HH1ZJWVJ044RW6S37AR573GNHJFDRRXWKD3",
     cycle82Stacked: 61526000000n,
     cycle83Stacked: 61526000000n,
   },
   {
+    address: "SP26FZS4XMPT3184XXRAAYMYCQ2VEXNY1SJZKK6RC",
+    cycle82Stacked: 187047000000n,
+    cycle83Stacked: 187047000000n,
+  },
+  {
     address: "SP281DHYZ11K3B0BQHPWBBH5SRB457270073RVVES",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 673000000000n,
     cycle83Stacked: 673000000000n,
   },
   {
@@ -188,6 +478,11 @@ export const stackingData: {
     cycle83Stacked: 2565000000000n,
   },
   {
+    address: "SP28R593JKNFH8PTWNECR84A83EESKC3CC5P826R5",
+    cycle82Stacked: 14590883000000n,
+    cycle83Stacked: 14590883000000n,
+  },
+  {
     address: "SP29HNRYW6EW0QYFET68PFM6F28G2T6BKXHK798D4",
     cycle82Stacked: 580850000000n,
     cycle83Stacked: 580850000000n,
@@ -198,9 +493,29 @@ export const stackingData: {
     cycle83Stacked: 2298257000000n,
   },
   {
+    address: "SP2BMZVJXG2QK31BBZVGBSQ1RFG6FK9VSSA9Z25G4",
+    cycle82Stacked: 143700000000n,
+    cycle83Stacked: 143700000000n,
+  },
+  {
     address: "SP2BXXX2YN2BTZZM93SNTYZHFPARMDHXN13QHES6M",
     cycle82Stacked: 29796000000n,
     cycle83Stacked: 29796000000n,
+  },
+  {
+    address: "SP2DG03SMAV8Q8JTDHF9F32Y7B3523ZJYM0Q3MK3Y",
+    cycle82Stacked: 2781261000000n,
+    cycle83Stacked: 2781261000000n,
+  },
+  {
+    address: "SP2DP70FRC4FFCZR5B2F6S112NK79WAFWHCWPYKQZ",
+    cycle82Stacked: 1955814000000n,
+    cycle83Stacked: 1955814000000n,
+  },
+  {
+    address: "SP2DXMR7YQ671X1CEFPC2R3V5056CS5YF2YXWXPH6",
+    cycle82Stacked: 225000000000n,
+    cycle83Stacked: 225000000000n,
   },
   {
     address: "SP2DZW1E6R5NEYXRHXW1RS1M4Y55Y4M52T9633M45",
@@ -215,7 +530,27 @@ export const stackingData: {
   {
     address: "SP2EE2R53ZJ4XVAQ0K9XNRFDDNWQE5R48AR1R3Z2R",
     cycle82Stacked: 16708000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 16708000000n,
+  },
+  {
+    address: "SP2F79WM0KA67R3KNBHJCP9A27EV9DAVSP4TGZV5Y",
+    cycle82Stacked: 454444000000n,
+    cycle83Stacked: 454444000000n,
+  },
+  {
+    address: "SP2FHRXHTZBFGPFKSNWFGYPNBQXKSXC2JFJZ7BY7D",
+    cycle82Stacked: 525000000000n,
+    cycle83Stacked: 525000000000n,
+  },
+  {
+    address: "SP2FSVSGZF6FQY0PG6NH8MGRFV43460GEGHB47CZK",
+    cycle82Stacked: 1070733000000n,
+    cycle83Stacked: 1070733000000n,
+  },
+  {
+    address: "SP2FZ154ESZ8NB34RZ3RS147GD6DSEYNE8DQD0XDM",
+    cycle82Stacked: 1000000000000n,
+    cycle83Stacked: 1000000000000n,
   },
   {
     address: "SP2G52KJHH94FDMWW75B9EEB3TRCPXD4NKMBT3NXG",
@@ -223,18 +558,58 @@ export const stackingData: {
     cycle83Stacked: 665251000000n,
   },
   {
+    address: "SP2G70P78F2TR3HCZWDBBTM6K0GEMBCH97P3H07KV",
+    cycle82Stacked: 566062000000n,
+    cycle83Stacked: 566062000000n,
+  },
+  {
+    address: "SP2GGT4HSMSGS5XPEYHCAJTB7HJBPTMHJJ0MBSGHP",
+    cycle82Stacked: 1995911000000n,
+    cycle83Stacked: 0n,
+  },
+  {
+    address: "SP2GHK9R3PVN7E7PAN8GDTNXEFNHG3FD1ANEHFSN8",
+    cycle82Stacked: 1776217000000n,
+    cycle83Stacked: 1776217000000n,
+  },
+  {
+    address: "SP2H4HFERWC4208VW51BPGT9C2J74MT1W5JDBGZAZ",
+    cycle82Stacked: 339912000000n,
+    cycle83Stacked: 0n,
+  },
+  {
     address: "SP2HP0DA4G75QM1K9S5W06GAD15MABJ6M11YQS7SV",
     cycle82Stacked: 0n,
     cycle83Stacked: 2070027000000n,
   },
   {
+    address: "SP2HSFTNTARNXD6Y0X6A3BYFS9D072Z2VAJND5GZQ",
+    cycle82Stacked: 2050000000000n,
+    cycle83Stacked: 2050000000000n,
+  },
+  {
     address: "SP2JDKWQ77WN7S0PRCS872HFJ21ZT78P6G1WCW2B",
     cycle82Stacked: 30167000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 30167000000n,
+  },
+  {
+    address: "SP2MT9KM3H9AM79EW0ER6SQTWJB2HDB3CY6GPKH8V",
+    cycle82Stacked: 1908418000000n,
+    cycle83Stacked: 1908418000000n,
+  },
+  {
+    address: "SP2N0C3WGE7AY3HPA1XWFJ2MFJRB2QSGGAGHKR88M",
+    cycle82Stacked: 26389141753016n,
+    cycle83Stacked: 23090498158889n,
+  },
+  {
+    address: "SP2NBQJ2KCEMP0MY1AQZS1X9BX6E9PF3VWSBX0PBR",
+    cycle82Stacked: 108575000000000n,
+    cycle83Stacked: 108575000000000n,
   },
   {
     address: "SP2QE3SKKZAY68Z3KN4TTJN41BVE3B5QVJMNKJAZB",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 246200000000n,
     cycle83Stacked: 246200000000n,
   },
   {
@@ -244,8 +619,13 @@ export const stackingData: {
   },
   {
     address: "SP2RWVYPRJAJY35179GS0JNXXX2K9K380J7F563N0",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 30000000000000n,
     cycle83Stacked: 30000000000000n,
+  },
+  {
+    address: "SP2S7Y7BMX7Y73FHV3SV9W1EE63EQ98BE95PZ4C4E",
+    cycle82Stacked: 42371063000000n,
+    cycle83Stacked: 42371063000000n,
   },
   {
     address: "SP2SSHDSGHHEQN1A7Z0RP0YJ6QECE8TGQTYN594PM",
@@ -253,14 +633,64 @@ export const stackingData: {
     cycle83Stacked: 328442000000n,
   },
   {
+    address: "SP2SYXN2Y1P9T762KQ3TJ3FMSVANF9M19AWWYW64Y",
+    cycle82Stacked: 14410000000n,
+    cycle83Stacked: 0n,
+  },
+  {
     address: "SP2TX10NFHAFSWJ67CSJCSZZHR0NQ8PTSHQBNG3JC",
     cycle82Stacked: 5385000000000n,
     cycle83Stacked: 5385000000000n,
   },
   {
+    address: "SP2VKCNC1M54EENQT3TWC4D974XRM4519YHKR24PK",
+    cycle82Stacked: 714323000000n,
+    cycle83Stacked: 1191719000000n,
+  },
+  {
+    address: "SP2W4B3KR2PYA980C4DFACT6K4MG6Z0DPT6X4CWH7",
+    cycle82Stacked: 3975859000000n,
+    cycle83Stacked: 3593266000000n,
+  },
+  {
+    address: "SP2W5AT6FW839WN5VSNCZ6BTTHZRBKC9Y3H2NAZEJ",
+    cycle82Stacked: 579522000000n,
+    cycle83Stacked: 579522000000n,
+  },
+  {
     address: "SP2W759AWBSYJ7HCA8K5CRV06DN1WGPH7C926YHJ3",
     cycle82Stacked: 1111052000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 1111052000000n,
+  },
+  {
+    address: "SP2W7YWSWFMW9D4GCCAYSA9DYYX98Y6ANMMX1WTXC",
+    cycle82Stacked: 922080000000n,
+    cycle83Stacked: 922080000000n,
+  },
+  {
+    address: "SP2WJ32PB88AX1EWKCM634ND259CWQS5D5DVBZ0WT",
+    cycle82Stacked: 48000000000n,
+    cycle83Stacked: 48000000000n,
+  },
+  {
+    address: "SP2WJ9190S4R1DCSPS6BVDVZF775KNQCA137N987C",
+    cycle82Stacked: 493418000000n,
+    cycle83Stacked: 493418000000n,
+  },
+  {
+    address: "SP2XFCB6GNDZYFWGAY330TW50FSBEZG9BGDPN49W8",
+    cycle82Stacked: 437898000000n,
+    cycle83Stacked: 437898000000n,
+  },
+  {
+    address: "SP2XMCX1AST1PM21CWDHW5YBSSKXG0TXAB45JCS6",
+    cycle82Stacked: 84382000000n,
+    cycle83Stacked: 84382000000n,
+  },
+  {
+    address: "SP2XVKPNAKAQAWTV8396JV58NTT1YAY3K4M1PGCD9",
+    cycle82Stacked: 1273994000000n,
+    cycle83Stacked: 1273994000000n,
   },
   {
     address: "SP2YEWM6EJW0BXNDJ1C6FXXWEA6VBA1QWAYCFEBTZ",
@@ -268,9 +698,69 @@ export const stackingData: {
     cycle83Stacked: 475000000000n,
   },
   {
+    address: "SP2YF67GVR3Y49FKPYDSBKX5P2T0D0X6P5FVSA04D",
+    cycle82Stacked: 11959318000000n,
+    cycle83Stacked: 11959318000000n,
+  },
+  {
     address: "SP2YGEPBKGPFR3X6HMY1FV60XJ6ACEWRNAS1GC01G",
     cycle82Stacked: 357210000000n,
     cycle83Stacked: 357210000000n,
+  },
+  {
+    address: "SP2YM5DT3RG8BBD10C59V3AGVTN66GKQ1A91T85Q4",
+    cycle82Stacked: 50000000000n,
+    cycle83Stacked: 95000000000n,
+  },
+  {
+    address: "SP2YSTAQBK2YGPTSHEF9NFPXCQCG5BB4RX6VNFGPE",
+    cycle82Stacked: 7667341000000n,
+    cycle83Stacked: 7667341000000n,
+  },
+  {
+    address: "SP30ESSHCAHZ51EF69JT7C1YEZPPX56NRBNJ9Z4ZP",
+    cycle82Stacked: 91299959000000n,
+    cycle83Stacked: 91299959000000n,
+  },
+  {
+    address: "SP31EKHDK5EAM3HXWATXJSARBJW8E4KR99A6BQ6KM",
+    cycle82Stacked: 2077839000000n,
+    cycle83Stacked: 2077839000000n,
+  },
+  {
+    address: "SP31GQBM80BBKWABPHGZPRY6W97QTNJX6Z39NZQHV",
+    cycle82Stacked: 8000000000000n,
+    cycle83Stacked: 8000000000000n,
+  },
+  {
+    address: "SP31JJ58QAQGVFGCKXZ6QPV3XWATQNCNSJQC3BNWZ",
+    cycle82Stacked: 2000000000000n,
+    cycle83Stacked: 2000000000000n,
+  },
+  {
+    address: "SP31SYCQVVS1TE6CHYDTFE89XQ6SVBSM3V6VGBTF5",
+    cycle82Stacked: 104780000000n,
+    cycle83Stacked: 104780000000n,
+  },
+  {
+    address: "SP32D4KF64M0FQQK267W8PA08SDXG00DNBB3WCXKT",
+    cycle82Stacked: 16587934000000n,
+    cycle83Stacked: 16587934000000n,
+  },
+  {
+    address: "SP32Q1VN8E3DK8H5MB15GVTES95TN23MJN2FWQ3QT",
+    cycle82Stacked: 42556000000n,
+    cycle83Stacked: 42556000000n,
+  },
+  {
+    address: "SP32VE3A2AXWPGT7HH4B76005TJZQK7CF1MM9R0MD",
+    cycle82Stacked: 455283000000n,
+    cycle83Stacked: 455283000000n,
+  },
+  {
+    address: "SP33MYZ91SFK6354WSH8N6JDD4X8CZR4G9MHHHMDB",
+    cycle82Stacked: 1286833000000n,
+    cycle83Stacked: 1286833000000n,
   },
   {
     address: "SP33VQ5RY02W5496T79VM5NBHMR4CKNYX84PNRHMZ",
@@ -278,14 +768,49 @@ export const stackingData: {
     cycle83Stacked: 150000000000n,
   },
   {
+    address: "SP34BXNXWBRF60TGR7SSRBQ7HPD7FEQ6BTD1AZZ4D",
+    cycle82Stacked: 100433051000000n,
+    cycle83Stacked: 100433051000000n,
+  },
+  {
     address: "SP34T0DS0ECN32J0JK891YP6JQ8VZDHJ98MPR74GX",
     cycle82Stacked: 4919000000n,
     cycle83Stacked: 4919000000n,
   },
   {
+    address: "SP35AXQQB08XEYAC28PJA61C6KSSKV6Q4T6GME8RJ",
+    cycle82Stacked: 2881978000000n,
+    cycle83Stacked: 2881978000000n,
+  },
+  {
+    address: "SP35MER4PHM6XGB99YDRQAK0M0JQ8F9CVF04VZ1VX",
+    cycle82Stacked: 38964000000n,
+    cycle83Stacked: 38964000000n,
+  },
+  {
+    address: "SP35QMJW42CSCFFFQZDYAA36FFRZF3WCSWA4VR1RK",
+    cycle82Stacked: 114028710000000n,
+    cycle83Stacked: 114028710000000n,
+  },
+  {
     address: "SP35WWW7CNKJG7W1QEMRFGJY09X563GANENG9JJQK",
     cycle82Stacked: 606865000000n,
     cycle83Stacked: 606865000000n,
+  },
+  {
+    address: "SP36GSEC1W1P101YMCJG2S9P2J2VHQ8Q384H7VK0V",
+    cycle82Stacked: 650000000000n,
+    cycle83Stacked: 740000000000n,
+  },
+  {
+    address: "SP374RMXRCP8SZCWYT21KX7ETY3V2WSQPNGEZ7GF8",
+    cycle82Stacked: 9963379000000n,
+    cycle83Stacked: 9963379000000n,
+  },
+  {
+    address: "SP37HEXP81KEHTPGZ89XR50M04KHZHQSMPBDYPZWM",
+    cycle82Stacked: 2003878000000n,
+    cycle83Stacked: 2003878000000n,
   },
   {
     address: "SP3888WNJZZE2P2HAJQVJANHKYTZZM765T2D0ED4V",
@@ -295,12 +820,87 @@ export const stackingData: {
   {
     address: "SP38B7GRE0MZ8P2W9553VF2H8CQPBWQ49TBVQYDA3",
     cycle82Stacked: 57317000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 57317000000n,
+  },
+  {
+    address: "SP38BRTH6N2Q7N3H38Z4BN69H4JEX4A1DDJ0VE2C",
+    cycle82Stacked: 1776981000000n,
+    cycle83Stacked: 1776981000000n,
+  },
+  {
+    address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
+    cycle82Stacked: 144479012000000n,
+    cycle83Stacked: 144479012000000n,
+  },
+  {
+    address: "SP39XMB07QV4KN4PB6X3KHNQKWARB0F9AXY6K41E0",
+    cycle82Stacked: 59221223000000n,
+    cycle83Stacked: 59221223000000n,
+  },
+  {
+    address: "SP3AEDNY49C70TWRV6G01PJBGYTW4AJ38Y2N5F1YH",
+    cycle82Stacked: 1410063000000n,
+    cycle83Stacked: 1410063000000n,
   },
   {
     address: "SP3BSWJTYBDJGDGZ54T4T0NMBGQ6BBFZCWD44VMH9",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 10083040000000n,
     cycle83Stacked: 10083040000000n,
+  },
+  {
+    address: "SP3CEXDC4GNW13YDZMQW8G3VBPGDM9C42HW7ARSB5",
+    cycle82Stacked: 450089000000n,
+    cycle83Stacked: 450089000000n,
+  },
+  {
+    address: "SP3CHC5CKZGPZ3W4Q4JASMM5ZSMD3P7TQWNSE6BQ8",
+    cycle82Stacked: 7025335000000n,
+    cycle83Stacked: 7025335000000n,
+  },
+  {
+    address: "SP3CR0AREGTXKGQWGDQE0J4D9Y3NJVQN5VX4KQJY8",
+    cycle82Stacked: 4222000000n,
+    cycle83Stacked: 4222000000n,
+  },
+  {
+    address: "SP3ET5CBCDYSXZVZBS87JMACSRE7DSYJGVCJB84Z",
+    cycle82Stacked: 605532000000n,
+    cycle83Stacked: 605532000000n,
+  },
+  {
+    address: "SP3EXTHZ7PHAJ8DDJB7AMVQXDZ6T68364EZ01WB20",
+    cycle82Stacked: 250000000000n,
+    cycle83Stacked: 250000000000n,
+  },
+  {
+    address: "SP3F0GZC9WG53MH7SHMFVSM54XKNNHQXJ8Q301GQ7",
+    cycle82Stacked: 11000000000000n,
+    cycle83Stacked: 11000000000000n,
+  },
+  {
+    address: "SP3FZSBX2TN9H961FH1P4C5J3NYD4GWM136VVXXTE",
+    cycle82Stacked: 146000000000n,
+    cycle83Stacked: 146000000000n,
+  },
+  {
+    address: "SP3G1537AQPYPX7VPTE143VTPK3N9VZCDK5FDVDGV",
+    cycle82Stacked: 497954000000n,
+    cycle83Stacked: 497954000000n,
+  },
+  {
+    address: "SP3G8G17DHB8PDP611B1AQPXN0FHSB57F73HM6CDP",
+    cycle82Stacked: 4706000000n,
+    cycle83Stacked: 4706000000n,
+  },
+  {
+    address: "SP3GT6YMNTGNZ50RBFAPR5WWJMQ2XKJCJAY6KQTFD",
+    cycle82Stacked: 1089524000000n,
+    cycle83Stacked: 1089524000000n,
+  },
+  {
+    address: "SP3H7FH0V2EDE3PRR600N4HZ9YZ3T6RNRJZNXM3KJ",
+    cycle82Stacked: 4500000000000n,
+    cycle83Stacked: 4500000000000n,
   },
   {
     address: "SP3HHP7MRDVJHDHRSZWKWB2WGZ4YHD51S7BG5YSA6",
@@ -314,7 +914,7 @@ export const stackingData: {
   },
   {
     address: "SP3JXKKD4MAN04MC0AYJ7WKAKXYJ8RC1S60D6CVPX",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 4924210000000n,
     cycle83Stacked: 3731000000000n,
   },
   {
@@ -329,8 +929,13 @@ export const stackingData: {
   },
   {
     address: "SP3KC5Q27SMPSEN9M8RHM7VXN8GMHM0AVZ19TGMD6",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 100000000000n,
     cycle83Stacked: 100000000000n,
+  },
+  {
+    address: "SP3KY9D092ZVXYSQ2Z43XH8DGK319PWBX848XWM4P",
+    cycle82Stacked: 1536845000000n,
+    cycle83Stacked: 1536845000000n,
   },
   {
     address: "SP3M6D6M2BS7FNEFV111ZF6WQYATNJZ89Q7MXSPAE",
@@ -341,6 +946,11 @@ export const stackingData: {
     address: "SP3M6FBPS8WM4JA0FCHPG8J72KGW2DGDB9YTKG0A2",
     cycle82Stacked: 228726000000n,
     cycle83Stacked: 228726000000n,
+  },
+  {
+    address: "SP3MKSPVFCM8PH7ASEHZD4CT1C4BTAS4F6VMW3Y49",
+    cycle82Stacked: 335307000000n,
+    cycle83Stacked: 335307000000n,
   },
   {
     address: "SP3N66VSF1HAH9BP36XEAT2JZWZ45TDJXWENGS7Y5",
@@ -358,8 +968,13 @@ export const stackingData: {
     cycle83Stacked: 1848162000000n,
   },
   {
+    address: "SP3PQ8GHX9H258709P7GSX7XSZKH6BA6ZXJDEQ0NH",
+    cycle82Stacked: 285001000000n,
+    cycle83Stacked: 285001000000n,
+  },
+  {
     address: "SP3PX186AERH9CD2A2R73KJYGX79EXHJP23RFGCZ4",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 1410292000000n,
     cycle83Stacked: 1410292000000n,
   },
   {
@@ -370,7 +985,7 @@ export const stackingData: {
   {
     address: "SP3S9C308H0GJQMT3PEEXHCN7210RJ1A4S5PZFT58",
     cycle82Stacked: 118054000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 118054000000n,
   },
   {
     address: "SP3SFN52APS1B02KNW2J1TTKGESTRX8RNATYDXBCM",
@@ -378,19 +993,64 @@ export const stackingData: {
     cycle83Stacked: 1334980000000n,
   },
   {
+    address: "SP3SSYSMJ89JAC7RMR9AMK9YXAA683KKSMHKYNFVG",
+    cycle82Stacked: 36609357000000n,
+    cycle83Stacked: 36609357000000n,
+  },
+  {
+    address: "SP3SWR3FZRKMG2NX1MEDGEHTG90P0ESH46A2D14DV",
+    cycle82Stacked: 144887000000n,
+    cycle83Stacked: 144887000000n,
+  },
+  {
+    address: "SP3TDF0NBG1SFWG0ZMQCXY8GB3SN02M458ET473MF",
+    cycle82Stacked: 105642000000n,
+    cycle83Stacked: 0n,
+  },
+  {
+    address: "SP3TKT08Y3NA1R6MYR4YVCQ36Q0EV0KK3Z2VH38G0",
+    cycle82Stacked: 500181000000n,
+    cycle83Stacked: 500181000000n,
+  },
+  {
+    address: "SP3TP1PGKWSTGV6YM7H5KVB7JVYE7PSK8DVJPSXBE",
+    cycle82Stacked: 2078767000000n,
+    cycle83Stacked: 2078767000000n,
+  },
+  {
     address: "SP3TQWW8KGD58T0N2VX72RAFBMS0BGA61PS52ANFF",
     cycle82Stacked: 106750000000n,
     cycle83Stacked: 106750000000n,
   },
   {
+    address: "SP3TYAQVV9378DDA1HF118CH6521NRCY7YBCWAX6G",
+    cycle82Stacked: 541000000000n,
+    cycle83Stacked: 541000000000n,
+  },
+  {
+    address: "SP3VMBBVG44321NVAECA9C2EN2W7WVXE33S211KB5",
+    cycle82Stacked: 600000000000n,
+    cycle83Stacked: 600000000000n,
+  },
+  {
+    address: "SP3VSH6NQX0N9Y1JFNFN4E3AG6HTP161CRW3XXD1B",
+    cycle82Stacked: 25347000000n,
+    cycle83Stacked: 463963000000n,
+  },
+  {
     address: "SP3W83KG17KJZZXPDZQDTRQKQRGHNFZN410R9P02E",
     cycle82Stacked: 300000000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 300000000000n,
+  },
+  {
+    address: "SP3W8BCK1KKJB8H34QA2RWV2Z35E7RNPKEXJSFAF0",
+    cycle82Stacked: 44000000000000n,
+    cycle83Stacked: 44000000000000n,
   },
   {
     address: "SP3WBYAEWN0JER1VPBW8TRT1329BGP9RGC5S2519W",
     cycle82Stacked: 283021000000n,
-    cycle83Stacked: 0n,
+    cycle83Stacked: 283021000000n,
   },
   {
     address: "SP3WEC9Q4NZA654SMVPX8EPJNF1D890ZS2B21H6FM",
@@ -403,14 +1063,34 @@ export const stackingData: {
     cycle83Stacked: 24999000000n,
   },
   {
+    address: "SP3WHK0Z53Y4K300KPJ9A6SNCG5KKGBNQGANATJ3F",
+    cycle82Stacked: 1373323000000n,
+    cycle83Stacked: 1373323000000n,
+  },
+  {
     address: "SP3WYZ13JQ4NQHGTC5XQ6K40R65PAGCH896M3T7RQ",
     cycle82Stacked: 2620000000000n,
     cycle83Stacked: 2620000000000n,
   },
   {
+    address: "SP3YF6YT03MYKWRRF9S16A50EQVDJEX5EWK7GGP8X",
+    cycle82Stacked: 4611413000000n,
+    cycle83Stacked: 4611413000000n,
+  },
+  {
     address: "SP3YJ9487PS0JDDYBBVH0RW3JPY48V0A86PQGDA6V",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 2026459000000n,
     cycle83Stacked: 2026459000000n,
+  },
+  {
+    address: "SP3YKKE23MAQA1CSQJGWXBKYXMVGGH3G6AYHHBXHR",
+    cycle82Stacked: 5591409000000n,
+    cycle83Stacked: 5591409000000n,
+  },
+  {
+    address: "SP3YP6MJQ3WXGXF5ZZ1BG5564G9TJ8QYC7Q2XY3YK",
+    cycle82Stacked: 2104132000000n,
+    cycle83Stacked: 2104132000000n,
   },
   {
     address: "SP3YTHQCEX8A77NM7NZTK5VNDQPKBJCKDZNR34096",
@@ -418,9 +1098,24 @@ export const stackingData: {
     cycle83Stacked: 177093000000n,
   },
   {
+    address: "SP3YVQ8MM21R2GYRAD6Y2MP4C8YYNDG6RGQPR95ZN",
+    cycle82Stacked: 5530123000000n,
+    cycle83Stacked: 5530123000000n,
+  },
+  {
+    address: "SP3Z2YV12ZXH50T21Y75YER236YE88F3Q7QCCD5W8",
+    cycle82Stacked: 181608000000n,
+    cycle83Stacked: 181608000000n,
+  },
+  {
     address: "SP3ZCKGQW8GSE0TSFJNC8V7W0HEQSNV67P0YST3ZS",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 830000000n,
     cycle83Stacked: 830000000n,
+  },
+  {
+    address: "SP3ZCZ0CDR5EH8XYYXQ9H6P5G43N6YYCYYYX0BTMJ",
+    cycle82Stacked: 9753630000000n,
+    cycle83Stacked: 9753630000000n,
   },
   {
     address: "SP3ZNS0EG8FS11EAZBQ2W77PFCA1G1BQNB8PDDPY5",
@@ -428,9 +1123,59 @@ export const stackingData: {
     cycle83Stacked: 176746000000n,
   },
   {
+    address: "SP3ZYM6BAPGK109KR940QEEAZF2NJ2YVGDCGJFCPQ",
+    cycle82Stacked: 5465000000n,
+    cycle83Stacked: 5465000000n,
+  },
+  {
+    address: "SP409Z7BFBBEJWMHVAXRZMEVGBMYX22511363CZF",
+    cycle82Stacked: 644531000000n,
+    cycle83Stacked: 644531000000n,
+  },
+  {
+    address: "SP45EQPYG0FR57MZK7SFQ4VDEJ9MH7HZJE4EP3Z0",
+    cycle82Stacked: 101174000000n,
+    cycle83Stacked: 101174000000n,
+  },
+  {
+    address: "SP4VX529NN4XTFCR7WJ2VXB4GNGR2R7KHSN29RSK",
+    cycle82Stacked: 61000000000000n,
+    cycle83Stacked: 61000000000000n,
+  },
+  {
+    address: "SP5GYXXXADFKZV4A4B4396JQTM6TT6H63C6HA3MW",
+    cycle82Stacked: 150000000000n,
+    cycle83Stacked: 150000000000n,
+  },
+  {
+    address: "SP5RTD66Q0VC1MY3DN9VG1WD3MNZKRGDRRGZ65BG",
+    cycle82Stacked: 239887000000n,
+    cycle83Stacked: 239887000000n,
+  },
+  {
     address: "SP5Z477DWBXEBNR1KTN8J15GEMZ433D79RJCA806",
     cycle82Stacked: 5479000000n,
     cycle83Stacked: 5479000000n,
+  },
+  {
+    address: "SP60EC74B4J7E894CXCSCRHXX0EKSX6P0BSWN1R7",
+    cycle82Stacked: 24778873000000n,
+    cycle83Stacked: 48865173000000n,
+  },
+  {
+    address: "SP6EVC36M0JCYMHGGKJJP807QS39FRJP2ZNNFAK7",
+    cycle82Stacked: 1210800000000n,
+    cycle83Stacked: 1210800000000n,
+  },
+  {
+    address: "SP6FXFH3X03PVGX6ZRGKKQBWBHP3EK1DGXVNVDZ3",
+    cycle82Stacked: 740366000000n,
+    cycle83Stacked: 740366000000n,
+  },
+  {
+    address: "SP6MFHN7M3228KSRT2TNX152YT37HJQ1525XZHP0",
+    cycle82Stacked: 2061396000000n,
+    cycle83Stacked: 2061396000000n,
   },
   {
     address: "SP6WZ56TPD7D90188P0EM8YXT5D0EAW3MV3N4J6N",
@@ -438,9 +1183,24 @@ export const stackingData: {
     cycle83Stacked: 413561000000n,
   },
   {
+    address: "SP779SC9CDWQVMTRXT0HZCEHSDBXCHNGG7BC1H9B",
+    cycle82Stacked: 182243000000n,
+    cycle83Stacked: 182243000000n,
+  },
+  {
     address: "SP8QXHTJAZBXKQV7ZYK5YBQ6D29DQ50HMAV97C2S",
     cycle82Stacked: 0n,
     cycle83Stacked: 2000000000n,
+  },
+  {
+    address: "SPA5TQXK1FEEV8SA0S6G2PPZCWKDQQCSRG0N5BM4",
+    cycle82Stacked: 627054000000n,
+    cycle83Stacked: 627054000000n,
+  },
+  {
+    address: "SPAFJV4RV0EFSB9FXT4BZ337FYDGVKA9H091WZMS",
+    cycle82Stacked: 4467115000000n,
+    cycle83Stacked: 4467115000000n,
   },
   {
     address: "SPBA7BPCQTPVJATE06PPRJZ5ND1QK5V6ZAAQN9B7",
@@ -448,9 +1208,24 @@ export const stackingData: {
     cycle83Stacked: 313304000000n,
   },
   {
+    address: "SPBQDFM7GQHE5N3T4E5JV74HGZV89GK1DVMTNBRD",
+    cycle82Stacked: 156260000000n,
+    cycle83Stacked: 156260000000n,
+  },
+  {
+    address: "SPBYDYDRMRNG8ADJFS7812FB41GRRYWD26XP53QH",
+    cycle82Stacked: 5165884000000n,
+    cycle83Stacked: 5165884000000n,
+  },
+  {
     address: "SPC8DYBHD10DGX1AQWM5PCHW6NYMTAZWHHN5YE25",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 5421774000000n,
     cycle83Stacked: 5421774000000n,
+  },
+  {
+    address: "SPCH4F28VMJTA3KT9T9FRKCWF1H285E3GZ1KB1XJ",
+    cycle82Stacked: 630107000000n,
+    cycle83Stacked: 630107000000n,
   },
   {
     address: "SPCXYQ2AF41TJZ69J3MV8ZEVRNBWHTD93PH2YGEC",
@@ -458,9 +1233,24 @@ export const stackingData: {
     cycle83Stacked: 1432526000000n,
   },
   {
+    address: "SPDD2PYX9QCZGMKJ5Y96NRCRABX632V6FM5GW83H",
+    cycle82Stacked: 1135935000000n,
+    cycle83Stacked: 1135935000000n,
+  },
+  {
     address: "SPDESG36WC08RBEMYJEXRQD8D7ESW16TPXDRZZBX",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 766000000n,
     cycle83Stacked: 766000000n,
+  },
+  {
+    address: "SPDN0KSAMXYZVACXMM1RDNR8ZH6NQ4Z55K6TCY7Q",
+    cycle82Stacked: 192427000000n,
+    cycle83Stacked: 192427000000n,
+  },
+  {
+    address: "SPEA1PCAEQV70Q1T89J6R7PJMX94SHF8M9NYN6KH",
+    cycle82Stacked: 1460404000000n,
+    cycle83Stacked: 1460404000000n,
   },
   {
     address: "SPEGKP7BK0JF4830AQY18FHH0JXVABCGV7DWFG33",
@@ -468,9 +1258,19 @@ export const stackingData: {
     cycle83Stacked: 1034936000000n,
   },
   {
+    address: "SPEW3AKP366Y0CY2322M6BWQY0C00JZAG59EP93C",
+    cycle82Stacked: 3215566000000n,
+    cycle83Stacked: 3215566000000n,
+  },
+  {
     address: "SPF1TS8E9FVS438KD9KXV3VCR228R3DZ97ZT2592",
     cycle82Stacked: 4565000000000n,
     cycle83Stacked: 4565000000000n,
+  },
+  {
+    address: "SPF4K0B9M86P5JKX8444369BYQ0YHCA1X8R9QYC8",
+    cycle82Stacked: 3033434000000n,
+    cycle83Stacked: 3033434000000n,
   },
   {
     address: "SPFBKCWWQ5B0HKJRJ87SY0QXJZ487BE5DDMR8C8E",
@@ -478,9 +1278,29 @@ export const stackingData: {
     cycle83Stacked: 1580000000000n,
   },
   {
+    address: "SPFCFYYJGV3YR9HN9NTQ5P0THR788X260F3BS5VH",
+    cycle82Stacked: 1181694000000n,
+    cycle83Stacked: 881694000000n,
+  },
+  {
+    address: "SPGN1MV1HR1ECZYYQENGWFS57QEF0PCR2B05EJFD",
+    cycle82Stacked: 3675731000000n,
+    cycle83Stacked: 3675731000000n,
+  },
+  {
     address: "SPKDKR58FY2MAWRRJ5R56BKJM9R1868276K73KWJ",
     cycle82Stacked: 576947000000n,
     cycle83Stacked: 576947000000n,
+  },
+  {
+    address: "SPKFZ21KXCYMYSKH9806J2PW7GDBVEP6G8DC4KE7",
+    cycle82Stacked: 264224000000n,
+    cycle83Stacked: 264224000000n,
+  },
+  {
+    address: "SPKN9G4XHTR3QKGE13YT8M9WFVR91GFS6D81R7J2",
+    cycle82Stacked: 592497000000n,
+    cycle83Stacked: 592497000000n,
   },
   {
     address: "SPKSV1X7MA5XGJ8Y42Y3E0N9E21DHWHZ589B3ZX",
@@ -488,14 +1308,44 @@ export const stackingData: {
     cycle83Stacked: 191233000000n,
   },
   {
+    address: "SPM3GE47QTMMVBT6DH0XFBXYS1AJHSSAQMYSB4J8",
+    cycle82Stacked: 50007596000000n,
+    cycle83Stacked: 50007596000000n,
+  },
+  {
+    address: "SPMJ6PTDSHM17HCDQBV7FYYMM98R1Y2ZQ7GRM06W",
+    cycle82Stacked: 6241958000000n,
+    cycle83Stacked: 6241958000000n,
+  },
+  {
+    address: "SPMN4MJ4TBS028C24ZCBEYTHY7J0E5WCG9W0YQVG",
+    cycle82Stacked: 500248000000n,
+    cycle83Stacked: 500248000000n,
+  },
+  {
     address: "SPN3MVJV4MDY9GWYP6TNQN4ETS5T5D82FQ4N648Y",
     cycle82Stacked: 100000000000n,
     cycle83Stacked: 100000000000n,
   },
   {
+    address: "SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X",
+    cycle82Stacked: 327452000000n,
+    cycle83Stacked: 327452000000n,
+  },
+  {
+    address: "SPN4ZVGB9XE19FP80EDND6C3SDE97XEJT18EF30Y",
+    cycle82Stacked: 6776796000000n,
+    cycle83Stacked: 6776796000000n,
+  },
+  {
     address: "SPN5HJN2H6H2SH0VPSVFAEB41KQT0E7Q3EPWDDJ1",
     cycle82Stacked: 193069000000n,
     cycle83Stacked: 193069000000n,
+  },
+  {
+    address: "SPP6SYHXDNZHYT25QEHRWYH9N9NG2FXHVVK9SFF7",
+    cycle82Stacked: 1977674000000n,
+    cycle83Stacked: 1977674000000n,
   },
   {
     address: "SPP7KGFMRTF86E4P8348BDJD6ETES2VP88C38R51",
@@ -513,29 +1363,74 @@ export const stackingData: {
     cycle83Stacked: 241177000000n,
   },
   {
+    address: "SPPYQ5TW7PWMNKHVNG194MACDAEGA1759D5DC7YA",
+    cycle82Stacked: 190338000000n,
+    cycle83Stacked: 0n,
+  },
+  {
     address: "SPQAT5WJ9Q290JT3V5MHCP2GAJP7GNC3MNB2B95A",
     cycle82Stacked: 2583000000n,
     cycle83Stacked: 2583000000n,
   },
   {
+    address: "SPQBNBMF8B91D1H92BEC9PS8BXMA4WX3H618YQE7",
+    cycle82Stacked: 1545513000000n,
+    cycle83Stacked: 1556193000000n,
+  },
+  {
+    address: "SPQQV2QN22NAT45PREHH73T5RHF9HZJS7MC3EWCE",
+    cycle82Stacked: 11095477000000n,
+    cycle83Stacked: 11095477000000n,
+  },
+  {
+    address: "SPQR489BFKKAQPNF3KRTAVVBJ404DWY42KRPHQQ0",
+    cycle82Stacked: 15637244600000n,
+    cycle83Stacked: 13225830600000n,
+  },
+  {
     address: "SPQZB84K0ZW6BNAVWETXHY6THQT1RYEMF930QZS2",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 6190845000000n,
     cycle83Stacked: 6190845000000n,
   },
   {
+    address: "SPR51QGAQ1QKCZ8YBJFHKVMTS6Z858BV20QY0819",
+    cycle82Stacked: 10000000000000n,
+    cycle83Stacked: 3000000000000n,
+  },
+  {
+    address: "SPR5CK16H6C824Z2C58TH9DP69R5GFS94FPN488K",
+    cycle82Stacked: 36578120000000n,
+    cycle83Stacked: 36578120000000n,
+  },
+  {
+    address: "SPR6RNTSP1TRMNXG17DHN7S2EVQ4AVDK9Y38MK88",
+    cycle82Stacked: 37373137000000n,
+    cycle83Stacked: 37373137000000n,
+  },
+  {
     address: "SPRADAE89F2YM9J9QZANK903SS63BY9XDK0HHHNV",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 329593000000n,
     cycle83Stacked: 329593000000n,
   },
   {
     address: "SPRBP4PRWH2M4ZH95W1R117JCD7PS072ZQ1MC2KK",
-    cycle82Stacked: 0n,
+    cycle82Stacked: 687578000000n,
     cycle83Stacked: 687578000000n,
   },
   {
     address: "SPS49P4V2R4T28PBTW2YDDPCR5NRT36NNERZAQDX",
     cycle82Stacked: 745000000000n,
     cycle83Stacked: 745000000000n,
+  },
+  {
+    address: "SPSN6K776CXQBFSVM74W4SAR8W7HCQD6844FA4XC",
+    cycle82Stacked: 3639284000000n,
+    cycle83Stacked: 3639284000000n,
+  },
+  {
+    address: "SPSRVTE1KRB00KK1XYWT1Z6WZE8YZZS7J0REK86D",
+    cycle82Stacked: 11335726000000n,
+    cycle83Stacked: 11335726000000n,
   },
   {
     address: "SPTW0D20AEHC07D0NZEHZBCPZ3JGST5271KSK9SA",
@@ -548,6 +1443,16 @@ export const stackingData: {
     cycle83Stacked: 279875000000n,
   },
   {
+    address: "SPV30G5RDZ2TJ8Y9TQJZHJJCNFQ8AXXTYSFP6P33",
+    cycle82Stacked: 281815000000n,
+    cycle83Stacked: 281815000000n,
+  },
+  {
+    address: "SPV48Q8E5WP4TCQ63E9TV6KF9R4HP01Z8WS3FBTG",
+    cycle82Stacked: 2048574000000n,
+    cycle83Stacked: 2048574000000n,
+  },
+  {
     address: "SPV6T5ANHZ4JKA58C9WY53CPJDVGW1VVQRAKPA36",
     cycle82Stacked: 483817000000n,
     cycle83Stacked: 483817000000n,
@@ -558,9 +1463,49 @@ export const stackingData: {
     cycle83Stacked: 34834000000n,
   },
   {
+    address: "SPVJT7ARYH3XK1W5YT0C0N1G87WQB61NEBVBZQHN",
+    cycle82Stacked: 43610477000000n,
+    cycle83Stacked: 43610477000000n,
+  },
+  {
     address: "SPW129P4FRMJ7TCGZ6XMN5MTAH428DWR0XJ990N1",
     cycle82Stacked: 600000000000n,
     cycle83Stacked: 600000000000n,
+  },
+  {
+    address: "SPXGFH9JTKPF2TQZJ2AH7NSMMMXJ72VMGH8PR654",
+    cycle82Stacked: 109576000000n,
+    cycle83Stacked: 109576000000n,
+  },
+  {
+    address: "SPXM59SGN55QFP68NX4VXJS24P1ER5QGJ12HBXAX",
+    cycle82Stacked: 12430344000000n,
+    cycle83Stacked: 12430344000000n,
+  },
+  {
+    address: "SPY3WAAMSF7DQQPJTB8VA8FRB30P7J3GZ32ZJQ45",
+    cycle82Stacked: 12000000000000n,
+    cycle83Stacked: 12000000000000n,
+  },
+  {
+    address: "SPYS54QW0VWYNRPCJG06G9SBSX7ZD4SC6R98GR4B",
+    cycle82Stacked: 21129938000000n,
+    cycle83Stacked: 21129938000000n,
+  },
+  {
+    address: "SPZ0FZ0162H8YH2535YJF6WHYMDENAS0FHXDGGR4",
+    cycle82Stacked: 455227000000n,
+    cycle83Stacked: 455227000000n,
+  },
+  {
+    address: "SPZ3W41ZBP1FCW23TG94H2S0WMFRZJSNG4TC7NGP",
+    cycle82Stacked: 2600000000000n,
+    cycle83Stacked: 2600000000000n,
+  },
+  {
+    address: "SPZ7YBW5J8Z43T6VKR4JSY4GV222RM5QXETBWA6Z",
+    cycle82Stacked: 1047794000000n,
+    cycle83Stacked: 1047794000000n,
   },
   {
     address: "SPZCES20JGFFJ1FT1Z50TH9T6X9C95QCJD79HVSF",

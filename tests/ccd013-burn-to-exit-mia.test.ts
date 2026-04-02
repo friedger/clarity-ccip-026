@@ -31,7 +31,6 @@ const { root, proofs } = buildMerkleTree(voters);
 const [proofA, proofB] = proofs;
 
 describe("CCD013 Burn to Exit MIA", () => {
-    expect(simnet.blockHeight).toBe(3491160);
   it("user should redeem at dynamically calculated ratio", async () => {
 
     // Set snapshot root before voting

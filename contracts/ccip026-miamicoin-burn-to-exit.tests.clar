@@ -140,14 +140,6 @@
 
 ;; INVARIANTS
 
-;; Once the snapshot root is set, it should remain set.
-(define-read-only (invariant-snapshot-root-persists)
-  (implies
-    (is-some (var-get snapshotMerkleRoot))
-    (is-some (var-get snapshotMerkleRoot))
-  )
-)
-
 ;; CityVotes totals should be internally consistent: total amount > 0 implies total votes > 0.
 (define-read-only (invariant-vote-amounts-consistent)
   (let ((totals (get-vote-total-mia-or-default)))

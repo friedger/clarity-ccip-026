@@ -161,7 +161,7 @@ function buildMerkleTree(leaves: Uint8Array[]): {
  * @param cycle83Amount - MIA stacked in cycle 83 (micro units)
  * @returns The scaled vote amount (before scale-down)
  */
-function calculateScaledMiaVote(
+export function calculateScaledMiaVote(
   cycle82Amount: bigint,
   cycle83Amount: bigint,
 ): bigint {
@@ -207,7 +207,9 @@ async function main() {
     const entry = entries[i];
     const { proof, positions } = proofs[i];
     const voteAfterScaleDown = entry.scaledVote / VOTE_SCALE_FACTOR;
-
+    if (entry.address === "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A" ||
+        entry.address === "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA") {
+    
     console.log(`--- ${entry.address} ---`);
     console.log(`  scaledMiaVoteAmount: u${entry.scaledVote}`);
     console.log(`  vote (after scale-down): ${voteAfterScaleDown}`);
@@ -216,6 +218,7 @@ async function main() {
     );
     console.log(`  positions: (list ${positions.join(" ")})`);
     console.log("");
+  }
   }
 
   // Output Clarity-ready set-snapshot-root call

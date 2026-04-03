@@ -1,17 +1,6 @@
 import { typedCallPublicFn } from "clarity-abitype/clarinet-sdk";
 import { abiCcip026MiamicoinBurnToExit } from "../abis/abi-ccip026-miamicoin-burn-to-exit";
 
-export const setSnapshotRoot = (sender: string, root: string) => {
-  return typedCallPublicFn({
-    simnet,
-    abi: abiCcip026MiamicoinBurnToExit,
-    contract: "ccip026-miamicoin-burn-to-exit",
-    functionName: "set-snapshot-root",
-    functionArgs: [root],
-    sender,
-  });
-};
-
 export const vote = (
   sender: string,
   voteValue: boolean,

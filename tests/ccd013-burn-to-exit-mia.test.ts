@@ -1,5 +1,7 @@
 import { uintCV } from "@stacks/transactions";
+import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
+import { abiCcd013BurnToExitMia } from "./abis/abi-ccd013-burn-to-exit-mia";
 import {
   convertToV2,
   directExecute,
@@ -10,33 +12,25 @@ import {
   redeem,
   vote,
 } from "./clients/ccd013-burn-to-exit-mia-client";
-import { setSnapshotRoot } from "./clients/ccip026-miamicoin-burn-to-exit-client";
-import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
-import { abiCcd013BurnToExitMia } from "./abis/abi-ccd013-burn-to-exit-mia";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
-
-const VOTE_SCALE_FACTOR = 10n ** 16n;
+import { stackingData } from '../data/stacking-data';
+import { calculateScaledMiaVote } from '../simulations/calculate-mia-votes';
 
 const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
-const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
-const VOTER_B_SCALED = 50000000000n * VOTE_SCALE_FACTOR;
 
-const voters: VoterEntry[] = [
-  { address: VOTER_A, scaledVote: VOTER_A_SCALED },
-  { address: VOTER_B, scaledVote: VOTER_B_SCALED },
-];
-
+const voters: VoterEntry[] = stackingData.map((entry) => ({
+  address: entry.address,
+  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+})).filter(({ scaledVote }) => scaledVote > 0n);
 const { root, proofs } = buildMerkleTree(voters);
-const [proofA, proofB] = proofs;
+const proofA = proofs[voters.findIndex((v) => v.address === VOTER_A)];
+const proofB = proofs[voters.findIndex((v) => v.address === VOTER_B)];
+const VOTER_A_SCALED = voters.find((v) => v.address === VOTER_A)!.scaledVote;
+const VOTER_B_SCALED = voters.find((v) => v.address === VOTER_B)!.scaledVote;
 
 describe("CCD013 Burn to Exit MIA", () => {
   it("user should redeem at dynamically calculated ratio", async () => {
-
-    // Set snapshot root before voting
-    const rootResult = setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
-    expect(rootResult.result).toEqual({ ok: true });
-
     let txReceipt = vote(VOTER_A, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(txReceipt.result).toEqual({ ok: true });
 

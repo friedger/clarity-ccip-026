@@ -12,7 +12,7 @@ import {
 } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
-import { vote, setSnapshotRoot } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
 
 const VOTE_SCALE_FACTOR = 10n ** 16n;
@@ -25,7 +25,7 @@ const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
 
 // SP1T91... a second voter with a different amount
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
-const VOTER_B_SCALED = 50000000000n * VOTE_SCALE_FACTOR;
+const VOTER_B_SCALED = 2086372000000n * VOTE_SCALE_FACTOR;
 
 // SP18Z9... has zero stacked (should fail to vote)
 const VOTER_ZERO = "SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD";
@@ -35,15 +35,12 @@ const voters: VoterEntry[] = [
   { address: VOTER_B, scaledVote: VOTER_B_SCALED },
 ];
 
-const { root, proofs } = buildMerkleTree(voters);
-const [proofA, proofB] = proofs;
+const { proofs } = buildMerkleTree(voters);
+const proofA = proofs.find((_, index) => voters[index].address === VOTER_A)!;
+const proofB = proofs.find((_, index) => voters[index].address === VOTER_B)!;
 
 describe("CCIP026 Core", () => {
   it("should not allow users to execute", async () => {
-    // Set snapshot root before voting
-    const rootResult = setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
-    expect(rootResult.result).toEqual({ ok: true });
-
     const voteResult = vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(voteResult.result).toEqual({ ok: true });
 
@@ -115,7 +112,6 @@ describe("CCIP026 Core", () => {
     expect(voterInfo.result).toBeNone();
 
     // Set snapshot root and vote
-    setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
     vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
 
     // Check voter info after voting

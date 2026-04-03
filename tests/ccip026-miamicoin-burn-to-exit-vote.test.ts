@@ -8,8 +8,10 @@ import {
 } from "@stacks/transactions";
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
+import { stackingData } from "../data/stacking-data";
+import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
-import { vote, setSnapshotRoot } from "./clients/ccip026-miamicoin-burn-to-exit-client";
+import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
 
 const VOTE_SCALE_FACTOR = 10n ** 16n;
@@ -19,18 +21,15 @@ const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
 const VOTER_B_SCALED = 2086372000000n * VOTE_SCALE_FACTOR;
 
-const voters: VoterEntry[] = [
-  { address: VOTER_A, scaledVote: VOTER_A_SCALED },
-  { address: VOTER_B, scaledVote: VOTER_B_SCALED },
-];
+const voters: VoterEntry[] = stackingData.map((entry) => ({
+  address: entry.address,
+  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+})).filter(({ scaledVote }) => scaledVote > 0n);
 
-const { root, proofs } = buildMerkleTree(voters);
-const [proofA, proofB] = proofs;
+const { proofs } = buildMerkleTree(voters);
+const proofA = proofs.find((_, index) => voters[index].address === VOTER_A);
+const proofB = proofs.find((_, index) => voters[index].address === VOTER_B);
 
-/** Set snapshot root once (idempotent per simnet reset). */
-function ensureSnapshotRoot() {
-  setSnapshotRoot("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R", root);
-}
 
 const checkVotes = async (
   totalAmountYes: bigint,
@@ -70,7 +69,6 @@ const checkIsExecutable = (response: {ok: boolean} | {error: bigint}) => {
 
 describe("CCIP026 Vote", () => {
   it("should not allow non-holders or non stackers to vote", async () => {
-    ensureSnapshotRoot();
     let txReceipt = 
       vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", true, 0n, [], []); // not in tree
     expect(txReceipt.result).toEqual({error: 26008n}); // ERR_PROOF_INVALID
@@ -82,7 +80,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should not allow voting twice with same choice", async () => {
-    ensureSnapshotRoot();
     // First vote
     let txReceipt = 
       vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
@@ -94,8 +91,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should allow changing vote from yes to no", async () => {
-    ensureSnapshotRoot();
-
     // First vote yes
     let txReceipt = 
       vote(VOTER_B, true, VOTER_B_SCALED, proofB.proof, proofB.positions);
@@ -108,8 +103,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should store correct vote amounts from Merkle proof", async () => {
-    ensureSnapshotRoot();
-
     // Vote with known scaled amount
     vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
 
@@ -130,7 +123,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - yes-no", async () => {
-    ensureSnapshotRoot();
     let txReceipt =
       vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
     expect(txReceipt.result).toEqual({ok: true});
@@ -143,7 +135,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - no-yes", async () => {
-    ensureSnapshotRoot();
     let txReceipt = 
       vote(VOTER_A, false, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
@@ -157,7 +148,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - yes-yes", async () => {
-    ensureSnapshotRoot();
     let txReceipt = 
       vote(VOTER_A, true, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
@@ -171,7 +161,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should count user votes - no-no", async () => {
-    ensureSnapshotRoot();
     let txReceipt =
       vote(VOTER_A, false, VOTER_A_SCALED, proofA.proof, proofA.positions);
       expect(txReceipt.result).toEqual({ok: true});
@@ -184,13 +173,7 @@ describe("CCIP026 Vote", () => {
     checkIsExecutable({error: 26007n}); // vote failed
   });
 
-  it("should fail set-snapshot-root from non-admin", async () => {
-    const result = setSnapshotRoot(VOTER_A, root);
-    expect(result.result).toEqual({error: 26010n}); // ERR_NOT_ADMIN
-  });
-
   it("should fail vote with invalid merkle proof", async () => {
-    ensureSnapshotRoot();
     // Use VOTER_B's address to proof voter A
     const badProof = [...proofB.proof];
     const txReceipt = vote(VOTER_A, true, VOTER_A_SCALED, badProof, proofA.positions);
@@ -198,7 +181,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should fail vote with wrong scaled amount", async () => {
-    ensureSnapshotRoot();
     // Use VOTER_A's proof but with a different amount — leaf won't match
     const wrongAmount = VOTER_A_SCALED + 1n;
     const txReceipt = vote(VOTER_A, true, wrongAmount, proofA.proof, proofA.positions);
@@ -206,8 +188,6 @@ describe("CCIP026 Vote", () => {
   });
 
   it("should allow changing vote from no to yes", async () => {
-    ensureSnapshotRoot();
-
     // First vote no
     let txReceipt =
       vote(VOTER_B, false, VOTER_B_SCALED, proofB.proof, proofB.positions);

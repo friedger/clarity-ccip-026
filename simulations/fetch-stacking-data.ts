@@ -335,6 +335,7 @@ async function main() {
     " * Each entry represents a user's stacking amounts:",
     " *   Cycle 82: at STX block 145,643 (BTC 838,250)",
     " *   Cycle 83: at STX block 147,282 (BTC 840,350)",
+    " *   average: (cycle82Stacked + cycle83Stacked) / 2 — the voting power",
     " *",
     " * Source: ccd007-citycoin-stacking.get-stacker(u1, cycle, userId)",
     " * Principal: ccd003-user-registry.get-user(userId)",
@@ -343,14 +344,17 @@ async function main() {
     "  address: string;",
     "  cycle82Stacked: bigint;",
     "  cycle83Stacked: bigint;",
+    "  average: bigint;",
     "}[] = [",
   ];
 
   for (const entry of results) {
+    const average = (entry.cycle82Stacked + entry.cycle83Stacked) / 2n;
     lines.push("  {");
     lines.push(`    address: "${entry.address}",`);
     lines.push(`    cycle82Stacked: ${entry.cycle82Stacked}n,`);
     lines.push(`    cycle83Stacked: ${entry.cycle83Stacked}n,`);
+    lines.push(`    average: ${average}n,`);
     lines.push("  },");
   }
 

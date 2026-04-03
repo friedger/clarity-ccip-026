@@ -14,30 +14,22 @@ import { describe, expect, it } from "vitest";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
 import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
+import { stackingData } from '../data/stacking-data';
+import { calculateScaledMiaVote } from '../simulations/calculate-mia-votes';
 
-const VOTE_SCALE_FACTOR = 10n ** 16n;
-
-// Mock voters with their scaled vote amounts
-// SP39EH... had 144479012000000 MIA stacked in both cycle 82 and 83
-// scaledVote = (144479012000000 * 10^16 + 144479012000000 * 10^16) / 2 = 144479012000000 * 10^16
 const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
-const VOTER_A_SCALED = 144479012000000n * VOTE_SCALE_FACTOR;
-
-// SP1T91... a second voter with a different amount
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
-const VOTER_B_SCALED = 2086372000000n * VOTE_SCALE_FACTOR;
 
-// SP18Z9... has zero stacked (should fail to vote)
-const VOTER_ZERO = "SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD";
-
-const voters: VoterEntry[] = [
-  { address: VOTER_A, scaledVote: VOTER_A_SCALED },
-  { address: VOTER_B, scaledVote: VOTER_B_SCALED },
-];
+const voters: VoterEntry[] = stackingData.map((entry) => ({
+  address: entry.address,
+  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+})).filter(({ scaledVote }) => scaledVote > 0n);
 
 const { proofs } = buildMerkleTree(voters);
-const proofA = proofs.find((_, index) => voters[index].address === VOTER_A)!;
-const proofB = proofs.find((_, index) => voters[index].address === VOTER_B)!;
+const proofA = proofs[voters.findIndex((v) => v.address === VOTER_A)];
+const proofB = proofs[voters.findIndex((v) => v.address === VOTER_B)];
+const VOTER_A_SCALED = voters.find((v) => v.address === VOTER_A)!.scaledVote;
+const VOTER_B_SCALED = voters.find((v) => v.address === VOTER_B)!.scaledVote;
 
 describe("CCIP026 Core", () => {
   it("should not allow users to execute", async () => {

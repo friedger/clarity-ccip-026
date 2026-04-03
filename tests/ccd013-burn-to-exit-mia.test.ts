@@ -29,6 +29,15 @@ const proofB = proofs[voters.findIndex((v) => v.address === VOTER_B)];
 const VOTER_A_SCALED = voters.find((v) => v.address === VOTER_A)!.scaledVote;
 const VOTER_B_SCALED = voters.find((v) => v.address === VOTER_B)!.scaledVote;
 
+/** Vote and execute the proposal, enabling redemptions. */
+function setupVoteAndExecute() {
+  vote(VOTER_A, VOTER_A_SCALED, proofA.proof, proofA.positions);
+  vote(VOTER_B, VOTER_B_SCALED, proofB.proof, proofB.positions);
+  directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE");
+  directExecute("SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ");
+  directExecute("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X");
+}
+
 describe("CCD013 Burn to Exit MIA", () => {
   it("user should redeem at dynamically calculated ratio", async () => {
     let txReceipt = vote(VOTER_A, VOTER_A_SCALED, proofA.proof, proofA.positions);
@@ -145,6 +154,7 @@ describe("CCD013 Burn to Exit MIA", () => {
   });
 
   it("should report redemption as enabled after initialization", () => {
+    setupVoteAndExecute();
     const result = isRedemptionEnabled("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
     expect(result.result).toBe(true);
   });
@@ -194,6 +204,8 @@ describe("CCD013 Burn to Exit MIA", () => {
   });
 
   it("should track treasury balance decrease after redemptions", () => {
+    setupVoteAndExecute();
+    redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000n);
     const info = getRedemptionInfo("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
     const result = info.result;
     // currentContractBalance should be less than the initial contractBalance
@@ -205,6 +217,8 @@ describe("CCD013 Burn to Exit MIA", () => {
   });
 
   it("should return complete redemption info", () => {
+    setupVoteAndExecute();
+    redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000n);
     const info = getRedemptionInfo("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
     const result = info.result;
     expect(result.redemptionsEnabled).toBe(true);

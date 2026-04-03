@@ -20,20 +20,20 @@ requirements = [
 
 [contracts.ccd013-burn-to-exit-mia]
 path = "contracts/ccd013-burn-to-exit-mia.clar"
-epoch = "latest"
+epoch = "3.4"
 
 [contracts.ccip026-miamicoin-burn-to-exit]
 path = "contracts/ccip026-miamicoin-burn-to-exit.clar"
-epoch = "latest"
+epoch = "3.4"
 
 ### tests
 [contracts.ccd013-burn-to-exit-mia_test]
 path = "tests/ccd013-burn-to-exit-mia_test.clar"
-epoch = "latest"
+epoch = "3.4"
 
 [contracts.ccip026-miamicoin-burn-to-exit_flow_test]
 path = "tests/ccip026-miamicoin-burn-to-exit_flow_test.clar"
-epoch = "latest"
+epoch = "3.4"
 
 [repl.remote_data]
 # Enable mainnet execution simulation
@@ -42,6 +42,7 @@ enabled = true
 initial_height = 3491155
 use_mainnet_wallets = true
 api_url = "https://api.hiro.so"
+#api_url = "http://localhost:3999"
 
 #[repl.analysis]
 #passes = ["check_checker"]

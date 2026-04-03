@@ -1,0 +1,290 @@
+id: 0
+name: Devnet deployment
+network: devnet
+stacks-node: http://localhost:20443
+bitcoin-node: http://devnet:devnet@localhost:18443
+plan:
+  batches:
+  - id: 0
+    transactions:
+    - transaction-type: requirement-publish
+      contract-id: SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.citycoin-core-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 5580
+      path: .cache/requirements/SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.citycoin-core-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.citycoin-token-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 4640
+      path: .cache/requirements/SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.citycoin-token-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-auth
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 167150
+      path: .cache/requirements/SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-auth.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 8400
+      path: .cache/requirements/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 52640
+      path: .cache/requirements/SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 4680
+      path: .cache/requirements/SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-auth
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 167570
+      path: .cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-auth.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 52270
+      path: .cache/requirements/SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-token.clar
+      clarity-version: 1
+    epoch: '2.0'
+  - id: 1
+    transactions:
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.extension-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 940
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.extension-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.proposal-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 820
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.proposal-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 26970
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 33540
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 7220
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.stacking-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 1480
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.stacking-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-stacking
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 53760
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-stacking.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-nyc-stacking
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 53760
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-nyc-stacking.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd003-user-registry
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 13140
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd003-user-registry.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd004-city-registry
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 13970
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd004-city-registry.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd005-city-data
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 62910
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd005-city-data.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 2140
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-token-v2-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 6600
+      path: .cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-token-v2-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 7660
+      path: .cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.citycoin-core-v2-trait.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 203270
+      path: .cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-auth-v2.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 103130
+      path: .cache/requirements/SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 203210
+      path: .cache/requirements/SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-auth-v2.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 18730
+      path: .cache/requirements/SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 102400
+      path: .cache/requirements/SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2.clar
+      clarity-version: 1
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 110470
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd007-citycoin-stacking.clar
+      clarity-version: 1
+    epoch: '2.05'
+  - id: 2
+    transactions:
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 1290
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccip015-trait.clar
+      clarity-version: 2
+    epoch: '2.4'
+  - id: 3
+    transactions:
+    - transaction-type: requirement-publish
+      contract-id: SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
+      remap-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      remap-principals:
+        SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 56190
+      path: .cache/requirements/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3.clar
+      clarity-version: 2
+    epoch: '2.5'
+  - id: 4
+    transactions:
+    - transaction-type: contract-publish
+      contract-name: ccd013-burn-to-exit-mia
+      expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 145780
+      path: contracts/ccd013-burn-to-exit-mia.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccd013-burn-to-exit-mia_test
+      expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 33740
+      path: tests/ccd013-burn-to-exit-mia_test.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccip026-miamicoin-burn-to-exit
+      expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 159720
+      path: contracts/ccip026-miamicoin-burn-to-exit.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccip026-miamicoin-burn-to-exit_flow_test
+      expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+      cost: 12240
+      path: tests/ccip026-miamicoin-burn-to-exit_flow_test.clar
+      anchor-block-only: true
+      clarity-version: 5
+    epoch: '3.4'

@@ -184,6 +184,36 @@
   )
 )
 
+;; Total MIA redeemed should never exceed the total supply snapshot.
+(define-read-only (invariant-total-redeemed-leq-supply)
+  (or
+    (not (var-get redemptionsEnabled))
+    (<= (get-total-redeemed) (var-get totalSupply))
+  )
+)
+
+;; Total STX transferred should never exceed the initial treasury balance snapshot.
+(define-read-only (invariant-total-transferred-leq-balance)
+  (or
+    (not (var-get redemptionsEnabled))
+    (<= (get-total-transferred) (var-get contractBalance))
+  )
+)
+
+;; Once redemptions are enabled, the ratio, total supply, and contract balance
+;; snapshots should never change (they are set once in initialize-redemption).
+;; This invariant checks that redemptionRatio is non-zero when enabled.
+(define-read-only (invariant-ratio-nonzero-when-enabled)
+  (or
+    (not (var-get redemptionsEnabled))
+    (and
+      (> (var-get redemptionRatio) u0)
+      (> (var-get totalSupply) u0)
+      (> (var-get contractBalance) u0)
+    )
+  )
+)
+
 ;; Helper function for logical implication (A implies B)
 (define-private (implies (a bool) (b bool))
   (or (not a) b)

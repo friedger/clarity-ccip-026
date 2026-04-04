@@ -76,9 +76,9 @@ describe("CCIP026 Core", () => {
 
     expect(votePeriod.result).toEqual(
       {
-        endBlock: 916482n,
+        "end-block": 945645n,
         length: 2016n,
-        startBlock: 914466n,
+        "start-block": 943629n,
       },
     );
   });
@@ -145,9 +145,9 @@ describe("CCIP026 Core", () => {
     expect(isActive.result).toBeSome(boolCV(true));
 
     // Advance to the end of the voting period
-    expect(simnet.blockHeight).toBe(3491157);
+    expect(simnet.blockHeight).toBe(7470590);
     simnet.mineEmptyBlocks(2016);
-    expect(simnet.blockHeight).toBe(3493173);
+    expect(simnet.blockHeight).toBe(7472606);
 
     const isActiveAfter = simnet.callReadOnlyFn(
       "ccip026-miamicoin-burn-to-exit",
@@ -159,7 +159,7 @@ describe("CCIP026 Core", () => {
 
     simnet.mineEmptyBlocks(1);
 
-    expect(simnet.blockHeight).toBe(3493174);
+    expect(simnet.blockHeight).toBe(7472607);
     const isActiveAfter2 = simnet.callReadOnlyFn(
       "ccip026-miamicoin-burn-to-exit",
       "is-vote-active",

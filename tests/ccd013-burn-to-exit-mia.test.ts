@@ -1,4 +1,5 @@
-import { uintCV } from "@stacks/transactions";
+import { tx } from "@stacks/clarinet-sdk";
+import { Cl, uintCV } from "@stacks/transactions";
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { abiCcd013BurnToExitMia } from "./abis/abi-ccd013-burn-to-exit-mia";
@@ -13,16 +14,21 @@ import {
   vote,
 } from "./clients/ccd013-burn-to-exit-mia-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
-import { stackingData } from '../data/stacking-data';
-import { calculateScaledMiaVote } from '../simulations/calculate-mia-votes';
+import { stackingData } from "../data/stacking-data";
+import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
 
 const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
 
-const voters: VoterEntry[] = stackingData.map((entry) => ({
-  address: entry.address,
-  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
-})).filter(({ scaledVote }) => scaledVote > 0n);
+const voters: VoterEntry[] = stackingData
+  .map((entry) => ({
+    address: entry.address,
+    scaledVote: calculateScaledMiaVote(
+      entry.cycle82Stacked,
+      entry.cycle83Stacked,
+    ),
+  }))
+  .filter(({ scaledVote }) => scaledVote > 0n);
 const { root, proofs } = buildMerkleTree(voters);
 const proofA = proofs[voters.findIndex((v) => v.address === VOTER_A)];
 const proofB = proofs[voters.findIndex((v) => v.address === VOTER_B)];
@@ -39,8 +45,69 @@ function setupVoteAndExecute() {
 }
 
 describe("CCD013 Burn to Exit MIA", () => {
+  it("should correctly round v1 burn amount", () => {
+    setupVoteAndExecute();
+
+    // Transfer 5 v1 tokens from a large v1 holder to a fresh address
+    const v1Holder = "SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX";
+    const recipient = "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R";
+    const transferReceipts = simnet.mineBlock([
+      tx.callPublicFn(
+        "SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token",
+        "transfer",
+        [
+          Cl.uint(5),
+          Cl.principal(v1Holder),
+          Cl.principal(recipient),
+          Cl.none(),
+        ],
+        v1Holder,
+      ),
+    ]);
+    expect(transferReceipts[0].result).toBeOk(Cl.bool(true));
+
+    // Redeem 3,500,000 micro-MIA (3.5 MIA) — NOT a clean multiple of 10^6
+    // The recipient has 5 v1 tokens (= 5,000,000 micro-MIA equivalent), 0 v2.
+    //
+    // v1 burn path:
+    //   redemptionAmountUMiaV1 = min(3_500_000, 5_000_000) = 3_500_000
+    //   redemptionV1InMia = floor(3_500_000 / 1_000_000) = 3 whole tokens
+    //   Actually burned: 3 v1 tokens = 3_000_000 micro-MIA
+    //
+    // Invalid through rounding: redemptionTotalUMia = 3_500_000
+    //   → STX paid for 500_000 phantom micro-MIA that were never burned
+    //   → uStx = (3_500_000 * 5) / 1_000_000 = 17
+    //
+    // Valid amount: redemptionTotalUMia = 3 * 1_000_000 = 3_000_000
+    //   → matches actual v1 burn, no overpayment
+    //   → uStx = (3_000_000 * 5) / 1_000_000 = 15
+
+    const txReceiptRedeemInvalid = redeem(recipient, 3_500_000n);
+    expect(txReceiptRedeemInvalid.result).toEqual({ error: 13010n }); // ERR_INVALID_REDEMPTION_AMOUNT
+
+    const txReceiptRedeem = redeem(recipient, 3_000_000n);
+    const ratio = 1710n;
+    const scaleFactor = 1_000_000n;
+    const actualBurnedUMia = 3_000_000n; // 3 whole v1 tokens
+    const expectedStx = (actualBurnedUMia * ratio) / scaleFactor; // 15
+
+    expect(txReceiptRedeem.result).toEqual({
+      ok: {
+        ustx: expectedStx, // 15 uSTX (old bug: 17)
+        umia: actualBurnedUMia, // 3_000_000 (old bug: 3_500_000)
+        "mia-v1": 3n, // 3 whole v1 tokens burned
+        "umia-v2": 0n,
+      },
+    });
+  });
+
   it("user should redeem at dynamically calculated ratio", async () => {
-    let txReceipt = vote(VOTER_A, VOTER_A_SCALED, proofA.proof, proofA.positions);
+    let txReceipt = vote(
+      VOTER_A,
+      VOTER_A_SCALED,
+      proofA.proof,
+      proofA.positions,
+    );
     expect(txReceipt.result).toEqual({ ok: true });
 
     txReceipt = vote(VOTER_B, VOTER_B_SCALED, proofB.proof, proofB.positions);
@@ -73,7 +140,7 @@ describe("CCD013 Burn to Exit MIA", () => {
       sender: "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
     });
     const ratio = ratioResult.result;
-    expect(ratio).toBe(5n); 
+    expect(ratio).toBe(1710n);
 
     // Calculate expected STX amounts based on dynamic ratio
     const miaAmount1 = 321_825_000000n;
@@ -89,10 +156,10 @@ describe("CCD013 Burn to Exit MIA", () => {
     );
     expect(txReceiptRedeem.result).toEqual({
       ok: {
-        uStx: expectedStx1,
-        uMia: 321_825_000000n,
-        miaV1: 0n,
-        uMiaV2: 321_825_000000n,
+        ustx: expectedStx1,
+        umia: 321_825_000000n,
+        "mia-v1": 0n,
+        "umia-v2": 321_825_000000n,
       },
     });
     // redeem more than user owns (0 MIA)
@@ -100,7 +167,7 @@ describe("CCD013 Burn to Exit MIA", () => {
       "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
       321_825_000000n,
     );
-    expect(txReceiptRedeem.result).toEqual({ error: 13006n });
+    expect(txReceiptRedeem.result).toEqual({ error: 13008n }); // ERR_ZERO_BALANCE
     // redeem holder of v1
     txReceiptRedeem = redeem(
       "SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX",
@@ -108,10 +175,10 @@ describe("CCD013 Burn to Exit MIA", () => {
     );
     expect(txReceiptRedeem.result).toEqual({
       ok: {
-        uStx: expectedStx2,
-        uMia: 800_000_000000n,
-        miaV1: 800_000n,
-        uMiaV2: 0n,
+        ustx: expectedStx2,
+        umia: 800_000_000000n,
+        "mia-v1": 800_000n,
+        "umia-v2": 0n,
       },
     });
     // convert to v2 (0 MIA)
@@ -125,7 +192,7 @@ describe("CCD013 Burn to Exit MIA", () => {
       "SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX",
       800_000_000000n,
     )),
-      expect(txReceiptRedeem.result).toEqual({ error: 13006n })); // nothing to redeem (0 MIA)
+      expect(txReceiptRedeem.result).toEqual({ error: 13008n })); // ERR_ZERO_BALANCE (0 MIA)
 
     // Verify redemption info is correct
     const redemptionInfo = simnet.callReadOnlyFn(
@@ -155,7 +222,9 @@ describe("CCD013 Burn to Exit MIA", () => {
 
   it("should report redemption as enabled after initialization", () => {
     setupVoteAndExecute();
-    const result = isRedemptionEnabled("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
+    const result = isRedemptionEnabled(
+      "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
+    );
     expect(result.result).toBe(true);
   });
 
@@ -168,9 +237,9 @@ describe("CCD013 Burn to Exit MIA", () => {
     expect(result.result).toEqual({
       ok: {
         address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
-        balanceV1: 0n,
-        "balanceV2": 321825000000n,
-        "totalBalance": 321825000000n,
+        "balance-v1-mia": 0n,
+        "balance-v2-umia": 321825000000n,
+        "total-balance-umia": 321825000000n,
       },
     });
   });
@@ -188,16 +257,19 @@ describe("CCD013 Burn to Exit MIA", () => {
     expect(result.result).toEqual({
       ok: {
         address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
-        miaBalances: {
+        "burn-amount-umia": 0n,
+        "burn-amount-v1-mia": 0n,
+        "burn-amount-v2-umia": 0n,
+        "mia-balances": {
           address: "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
-          balanceV1: 0n,
-          balanceV2: miaAmount1,
-          totalBalance: miaAmount1,
+          "balance-v1-mia": 0n,
+          "balance-v2-umia": miaAmount1,
+          "total-balance-umia": miaAmount1,
         },
-        redemptionAmount: 0n,
-        redemptionClaims: {
-          uMia: 0n,
-          uStx: 0n,
+        "redemption-amount-ustx": 0n,
+        "redemption-claims": {
+          umia: 0n,
+          ustx: 0n,
         },
       },
     });
@@ -205,29 +277,34 @@ describe("CCD013 Burn to Exit MIA", () => {
 
   it("should track treasury balance decrease after redemptions", () => {
     setupVoteAndExecute();
+    const infoBefore = getRedemptionInfo().result;
     redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000n);
-    const info = getRedemptionInfo("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
-    const result = info.result;
+    const info = getRedemptionInfo().result;
     // currentContractBalance should be less than the initial contractBalance
-    expect(result.currentContractBalance).toBeLessThan(result.contractBalance);
+    expect(info["current-contract-balance"]).toBeLessThan(
+      infoBefore["current-contract-balance"],
+    );
+    expect(info["total-transferred"]).toBe(
+      (321_825_000000n * 1710n) / 1_000_000n,
+    ); // amount redeemed * ratio
+    expect(info["mining-treasury-ustx"]).toBe(10241497066794n);
     // The difference should equal totalTransferred
-    expect(result.contractBalance - result.currentContractBalance).toBe(
-      result.totalTransferred,
+    expect(info["current-contract-balance"]).toBe(
+      infoBefore["current-contract-balance"] - info["total-transferred"],
     );
   });
 
   it("should return complete redemption info", () => {
     setupVoteAndExecute();
     redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000n);
-    const info = getRedemptionInfo("SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R");
+    const info = getRedemptionInfo();
     const result = info.result;
-    expect(result.redemptionsEnabled).toBe(true);
-    expect(result.redemptionRatio).toBe(5n);
-    expect(result.totalSupply).toBeGreaterThan(0n);
-    expect(result.contractBalance).toBeGreaterThan(0n);
-    expect(result.blockHeight).toBeGreaterThan(0n);
-    expect(result.totalRedeemed).toBeGreaterThan(0n);
-    expect(result.totalTransferred).toBeGreaterThan(0n);
+    expect(result["redemption-enabled"]).toBe(true);
+    expect(result["redemption-ratio"]).toBe(1710n);
+    expect(result["total-supply"]).toBeGreaterThan(0n);
+    expect(result["mining-treasury-ustx"]).toBeGreaterThan(0n);
+    expect(result["block-height"]).toBeGreaterThan(0n);
+    expect(result["total-redeemed"]).toBeGreaterThan(0n);
+    expect(result["total-transferred"]).toBeGreaterThan(0n);
   });
 });
-

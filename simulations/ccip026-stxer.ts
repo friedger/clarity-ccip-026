@@ -2,11 +2,16 @@ import {
   AnchorMode,
   PostConditionMode,
   boolCV,
+  bufferCV,
+  listCV,
   principalCV,
   uintCV,
 } from "@stacks/transactions";
 import { SimulationBuilder } from "stxer";
 import fs from "fs";
+import { stackingData } from "../data/stacking-data";
+import { calculateScaledMiaVote } from "./calculate-mia-votes";
+import { buildMerkleTree, type VoterEntry } from "../tests/merkle-helpers";
 
 const contract_name = "ccip026-miamicoin-burn-to-exit";
 const contract_name_redeem = "ccd013-burn-to-exit-mia";
@@ -19,11 +24,50 @@ const common_params = {
   fee: 100,
 };
 
-function vote(sender: string, nonce: number) {
+// Build Merkle tree from stacking data
+const voters: VoterEntry[] = stackingData
+  .map((entry) => ({
+    address: entry.address,
+    scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+  }))
+  .filter(({ scaledVote }) => scaledVote > 0n);
+const { proofs } = buildMerkleTree(voters);
+
+function getVoterProof(address: string) {
+  const idx = voters.findIndex((v) => v.address === address);
+  if (idx === -1) return null;
+  return {
+    scaledVote: voters[idx].scaledVote,
+    proof: proofs[idx].proof,
+    positions: proofs[idx].positions,
+  };
+}
+
+function fromHex(hex: string): Uint8Array {
+  const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
+  const bytes = new Uint8Array(clean.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+function vote(
+  sender: string,
+  nonce: number,
+  scaledMiaVoteAmount: bigint,
+  proof: string[],
+  positions: boolean[],
+) {
   return {
     contract_id,
     function_name: "vote-on-proposal",
-    function_args: [boolCV(true)],
+    function_args: [
+      boolCV(true),
+      uintCV(scaledMiaVoteAmount),
+      listCV(proof.map((h) => bufferCV(fromHex(h)))),
+      listCV(positions.map((p) => boolCV(p))),
+    ],
     nonce: nonce++,
     sender,
     ...common_params,
@@ -64,6 +108,9 @@ function convertToV2(sender: string, nonce: number) {
   };
 }
 
+const voterA = getVoterProof("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA")!;
+const voterB = getVoterProof("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A")!;
+
 function main(block_height: number) {
   return (
     SimulationBuilder.new()
@@ -84,9 +131,28 @@ function main(block_height: number) {
         ),
         deployer,
       })
-      .addContractCall(vote("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 74))
-      .addContractCall(vote("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A", 249))
-      .addContractCall(vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529))
+      .addContractCall(
+        vote(
+          "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
+          74,
+          voterA.scaledVote,
+          voterA.proof,
+          voterA.positions,
+        )
+      )
+      .addContractCall(
+        vote(
+          "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A",
+          249,
+          voterB.scaledVote,
+          voterB.proof,
+          voterB.positions,
+        )
+      )
+      .addContractCall(
+        // not in Merkle tree — expected to fail with ERR_PROOF_INVALID
+        vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529, 0n, [], [])
+      )
       // execute
       .addContractCall(
         directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE", 124)

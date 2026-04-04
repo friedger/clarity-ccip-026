@@ -14,7 +14,7 @@
 ;; ERRORS
 
 (define-constant ERR_PANIC (err u26000))                       ;; get-vote-totals returned none (should never happen)
-(define-constant ERR_SAVING_VOTE (err u26001))                 ;; map-insert for UserVotes failed unexpectedly
+(define-constant ERR_SAVING_VOTE (err u26001))                 ;; map-insert for user-votes failed unexpectedly
 (define-constant ERR_VOTED_ALREADY (err u26002))               ;; user already voted with the same boolean choice
 (define-constant ERR_NOTHING_STACKED (err u26003))             ;; Merkle-verified vote amount is zero after scale-down
 (define-constant ERR_USER_NOT_FOUND (err u26004))              ;; contract-caller not registered in ccd003-user-registry
@@ -41,7 +41,7 @@
 
 ;; MERKLE VERIFICATION
 ;; Domain separation tags for tagged SHA-256 hashing, preventing second-preimage attacks.
-;; Leaf:   SHA256("merkle-leaf"   || consensus(principal) || consensus(fieldId) || consensus(amount))
+;; Leaf:   SHA256("merkle-leaf"   || consensus(principal) || consensus(field-id) || consensus(amount))
 ;; Parent: SHA256("merkle-parent" || left || right)
 (define-constant MERKLE_LEAF_TAG 0x6d65726b6c652d6c656166) ;; "merkle-leaf"
 (define-constant MERKLE_PARENT_TAG 0x6d65726b6c652d706172656e74) ;; "merkle-parent"
@@ -58,34 +58,34 @@
 ;; DATA VARS
 
 ;; Whether the vote is currently accepting ballots
-(define-data-var voteActive bool true)
+(define-data-var vote-active bool true)
 ;; Bitcoin block height range for the voting window (set at deployment)
-(define-data-var voteStart uint u0)
-(define-data-var voteEnd uint u0)
+(define-data-var vote-start uint u0)
+(define-data-var vote-end uint u0)
 ;; start the vote when deployed
-(var-set voteStart burn-block-height)
-(var-set voteEnd (+ burn-block-height VOTE_LENGTH))
+(var-set vote-start burn-block-height)
+(var-set vote-end (+ burn-block-height VOTE_LENGTH))
 
 ;; Merkle root of voter balance snapshots; must be set before any voting
-(define-constant snapshotMerkleRoot 0x776695e7e2659b4a92ed54d411456f244568e2572d8e8133fc0c2381c9d154b3)
+(define-constant snapshot-merkle-root 0x776695e7e2659b4a92ed54d411456f244568e2572d8e8133fc0c2381c9d154b3)
 
 ;; DATA MAPS
 
 ;; Aggregated vote tallies per city ID. Tracks total MIA amounts and
 ;; vote counts for yes/no sides.
-(define-map CityVotes
+(define-map city-votes
   uint ;; city ID
   {
-    totalAmountYes: uint,   ;; cumulative MIA amount for yes votes
-    totalAmountNo: uint,    ;; cumulative MIA amount for no votes
-    totalVotesYes: uint,    ;; number of yes voters
-    totalVotesNo: uint,     ;; number of no voters
+    total-amount-yes: uint,   ;; cumulative MIA amount for yes votes
+    total-amount-no: uint,    ;; cumulative MIA amount for no votes
+    total-votes-yes: uint,    ;; number of yes voters
+    total-votes-no: uint,     ;; number of no voters
   }
 )
 
 ;; Per-user vote record, keyed by user registry ID.
 ;; Stores the vote direction and the unscaled MIA amount.
-(define-map UserVotes
+(define-map user-votes
   uint ;; user ID (from ccd003-user-registry)
   {
     vote: bool,  ;; true = yes, false = no
@@ -104,8 +104,8 @@
     ;; check vote is complete/passed
     (try! (is-executable))
     ;; update vote variables
-    (var-set voteEnd stacks-block-height)
-    (var-set voteActive false)
+    (var-set vote-end burn-block-height)
+    (var-set vote-active false)
     ;; enable new treasuries in the DAO
     (try! (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao
       set-extensions
@@ -123,78 +123,78 @@
 ;; Cast or change a vote on the proposal.
 ;;
 ;; Two code paths:
-;; 1. First-time voter: Merkle proof is verified against snapshotMerkleRoot.
-;;    The scaledMiaVoteAmount (amount * 10^16) is validated by the proof,
+;; 1. First-time voter: Merkle proof is verified against snapshot-merkle-root.
+;;    The scaled-mia-vote-amount (amount * 10^16) is validated by the proof,
 ;;    then divided by VOTE_SCALE_FACTOR to store the actual MIA amount.
 ;; 2. Returning voter: If the vote direction changed, the existing record
 ;;    is updated and city vote tallies are adjusted (no proof needed).
 ;;
 ;; Parameters:
 ;;   vote                - true for yes, false for no
-;;   scaledMiaVoteAmount - vote weight from Merkle tree (MIA * 10^16)
+;;   scaled-mia-vote-amount - vote weight from Merkle tree (MIA * 10^16)
 ;;   proof               - list of sibling hashes for Merkle verification
 ;;   positions           - list of booleans; true = sibling is on the left
 (define-public (vote-on-proposal
     (vote bool)
-    (scaledMiaVoteAmount uint)
+    (scaled-mia-vote-amount uint)
     (proof (list 9 (buff 32)))
     (positions (list 9 bool))
   )
   (let (
-      (voterId (unwrap!
+      (voter-id (unwrap!
         (contract-call?
           'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd003-user-registry
           get-user-id contract-caller
         )
         ERR_USER_NOT_FOUND
       ))
-      (voterRecord (map-get? UserVotes voterId))
+      (voter-record (map-get? user-votes voter-id))
     )
     ;; check if vote is active (use var directly like ccip022)
-    (asserts! (var-get voteActive) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts! (var-get vote-active) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if within voting period
-    (asserts! (and (>= burn-block-height (var-get voteStart)) (<= burn-block-height (var-get voteEnd))) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts! (and (>= burn-block-height (var-get vote-start)) (<= burn-block-height (var-get vote-end))) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if vote record exists for user
-    (match voterRecord
+    (match voter-record
       record
-      ;; if the voterRecord exists
+      ;; if the voter-record exists
       (let (
-          (oldVote (get vote record))
-          (miaVoteAmount (get mia record))
+          (old-vote (get vote record))
+          (mia-vote-amount (get mia record))
         )
         ;; check vote is not the same as before
-        (asserts! (not (is-eq oldVote vote)) ERR_VOTED_ALREADY)
+        (asserts! (not (is-eq old-vote vote)) ERR_VOTED_ALREADY)
         ;; record the new vote for the user
-        (map-set UserVotes voterId (merge record { vote: vote }))
+        (map-set user-votes voter-id (merge record { vote: vote }))
         ;; update vote stats for MIA
-        (update-city-votes MIA_ID miaVoteAmount vote true)
+        (update-city-votes MIA_ID mia-vote-amount vote true)
       )
-      ;; if the voterRecord does not exist, verify merkle proof
+      ;; if the voter-record does not exist, verify merkle proof
       (let (
-          (leaf (try! (hash-leaf contract-caller MIA_ID scaledMiaVoteAmount)))
-          (verified (try! (verify-proof leaf proof positions snapshotMerkleRoot)))
-          (miaVoteAmount (scale-down scaledMiaVoteAmount))
+          (leaf (try! (hash-leaf contract-caller MIA_ID scaled-mia-vote-amount)))
+          (verified (try! (verify-proof leaf proof positions snapshot-merkle-root)))
+          (mia-vote-amount (scale-down scaled-mia-vote-amount))
         )
         ;; check merkle proof
         (asserts! verified ERR_PROOF_INVALID)
         ;; check that the user has a positive vote
-        (asserts! (> miaVoteAmount u0) ERR_NOTHING_STACKED)
+        (asserts! (> mia-vote-amount u0) ERR_NOTHING_STACKED)
         ;; insert new user vote record
         (asserts!
-          (map-insert UserVotes voterId {
+          (map-insert user-votes voter-id {
             vote: vote,
-            mia: miaVoteAmount,
+            mia: mia-vote-amount,
           })
           ERR_SAVING_VOTE
         )
         ;; update vote stats for MIA
-        (update-city-votes MIA_ID miaVoteAmount vote false)
+        (update-city-votes MIA_ID mia-vote-amount vote false)
       )
     )
     ;; print voter info
     (print {
       notification: "vote-on-ccip-026",
-      payload: (get-voter-info voterId),
+      payload: (get-voter-info voter-id),
     })
     (ok true)
   )
@@ -205,11 +205,11 @@
 ;; Returns (ok true) if yes votes exceed no votes, otherwise ERR_VOTE_FAILED.
 (define-read-only (is-executable)
   (let (
-      (votingRecord (unwrap! (get-vote-totals) ERR_PANIC))
-      (voteTotals (get totals votingRecord))
+      (voting-record (unwrap! (get-vote-totals) ERR_PANIC))
+      (vote-totals (get totals voting-record))
     )
     ;; check that the yes total is more than no total, implies that there is at least one vote
-    (asserts! (> (get totalVotesYes voteTotals) (get totalVotesNo voteTotals))
+    (asserts! (> (get total-votes-yes vote-totals) (get total-votes-no vote-totals))
       ERR_VOTE_FAILED
     )
     ;; allow execution
@@ -220,9 +220,9 @@
 ;; Returns (some true) if voting is open and within the block window.
 (define-read-only (is-vote-active)
   (some (and
-    (var-get voteActive)
-    (>= burn-block-height (var-get voteStart))
-    (<= burn-block-height (var-get voteEnd))
+    (var-get vote-active)
+    (>= burn-block-height (var-get vote-start))
+    (<= burn-block-height (var-get vote-end))
   ))
 )
 
@@ -234,24 +234,24 @@
 ;; Returns the voting window: start block, end block, and length.
 (define-read-only (get-vote-period)
   (some {
-    startBlock: (var-get voteStart),
-    endBlock: (var-get voteEnd),
+    start-block: (var-get vote-start),
+    end-block: (var-get vote-end),
     length: VOTE_LENGTH,
   })
 )
 
-;; Returns the raw CityVotes entry for MIA, or none if no votes yet.
+;; Returns the raw city-votes entry for MIA, or none if no votes yet.
 (define-read-only (get-vote-total-mia)
-  (map-get? CityVotes MIA_ID)
+  (map-get? city-votes MIA_ID)
 )
 
-;; Returns the CityVotes entry for MIA with zeros as default.
+;; Returns the city-votes entry for MIA with zeros as default.
 (define-read-only (get-vote-total-mia-or-default)
   (default-to {
-    totalAmountYes: u0,
-    totalAmountNo: u0,
-    totalVotesYes: u0,
-    totalVotesNo: u0,
+    total-amount-yes: u0,
+    total-amount-no: u0,
+    total-votes-yes: u0,
+    total-votes-no: u0,
   }
     (get-vote-total-mia)
   )
@@ -259,14 +259,14 @@
 
 ;; Returns combined vote totals (mia record + aggregated totals).
 (define-read-only (get-vote-totals)
-  (let ((miaRecord (get-vote-total-mia-or-default)))
+  (let ((mia-record (get-vote-total-mia-or-default)))
     (some {
-      mia: miaRecord,
+      mia: mia-record,
       totals: {
-        totalAmountYes: (get totalAmountYes miaRecord),
-        totalAmountNo: (get totalAmountNo miaRecord),
-        totalVotesYes: (get totalVotesYes miaRecord),
-        totalVotesNo: (get totalVotesNo miaRecord),
+        total-amount-yes: (get total-amount-yes mia-record),
+        total-amount-no: (get total-amount-no mia-record),
+        total-votes-yes: (get total-votes-yes mia-record),
+        total-votes-no: (get total-votes-no mia-record),
       },
     })
   )
@@ -274,60 +274,60 @@
 
 ;; Returns the vote record for a user by their registry ID, or none.
 (define-read-only (get-voter-info (id uint))
-  (map-get? UserVotes id)
+  (map-get? user-votes id)
 )
 
 ;; PRIVATE FUNCTIONS
 
-;; Updates the CityVotes map for a given city.
-;; Four cases based on (vote, changedVote):
+;; Updates the city-votes map for a given city.
+;; Four cases based on (vote, changed-vote):
 ;;   (true,  false) - new yes vote:     increment yes amount/count
 ;;   (false, false) - new no vote:      increment no amount/count
 ;;   (true,  true)  - changed to yes:   increment yes, decrement no
 ;;   (false, true)  - changed to no:    increment no, decrement yes
 (define-private (update-city-votes
-    (cityId uint)
-    (voteAmount uint)
+    (city-id uint)
+    (vote-amount uint)
     (vote bool)
-    (changedVote bool)
+    (changed-vote bool)
   )
-  (let ((cityRecord (default-to {
-      totalAmountYes: u0,
-      totalAmountNo: u0,
-      totalVotesYes: u0,
-      totalVotesNo: u0,
+  (let ((city-record (default-to {
+      total-amount-yes: u0,
+      total-amount-no: u0,
+      total-votes-yes: u0,
+      total-votes-no: u0,
     }
-      (map-get? CityVotes cityId)
+      (map-get? city-votes city-id)
     )))
     ;; do not record if amount is 0
-    (if (> voteAmount u0)
+    (if (> vote-amount u0)
       ;; handle vote
       (if vote
         ;; handle yes vote
-        (map-set CityVotes cityId {
-          totalAmountYes: (+ voteAmount (get totalAmountYes cityRecord)),
-          totalVotesYes: (+ u1 (get totalVotesYes cityRecord)),
-          totalAmountNo: (if changedVote
-            (- (get totalAmountNo cityRecord) voteAmount)
-            (get totalAmountNo cityRecord)
+        (map-set city-votes city-id {
+          total-amount-yes: (+ vote-amount (get total-amount-yes city-record)),
+          total-votes-yes: (+ u1 (get total-votes-yes city-record)),
+          total-amount-no: (if changed-vote
+            (- (get total-amount-no city-record) vote-amount)
+            (get total-amount-no city-record)
           ),
-          totalVotesNo: (if changedVote
-            (- (get totalVotesNo cityRecord) u1)
-            (get totalVotesNo cityRecord)
+          total-votes-no: (if changed-vote
+            (- (get total-votes-no city-record) u1)
+            (get total-votes-no city-record)
           ),
         })
         ;; handle no vote
-        (map-set CityVotes cityId {
-          totalAmountYes: (if changedVote
-            (- (get totalAmountYes cityRecord) voteAmount)
-            (get totalAmountYes cityRecord)
+        (map-set city-votes city-id {
+          total-amount-yes: (if changed-vote
+            (- (get total-amount-yes city-record) vote-amount)
+            (get total-amount-yes city-record)
           ),
-          totalVotesYes: (if changedVote
-            (- (get totalVotesYes cityRecord) u1)
-            (get totalVotesYes cityRecord)
+          total-votes-yes: (if changed-vote
+            (- (get total-votes-yes city-record) u1)
+            (get total-votes-yes city-record)
           ),
-          totalAmountNo: (+ voteAmount (get totalAmountNo cityRecord)),
-          totalVotesNo: (+ u1 (get totalVotesNo cityRecord)),
+          total-amount-no: (+ vote-amount (get total-amount-no city-record)),
+          total-votes-no: (+ u1 (get total-votes-no city-record)),
         })
       )
       ;; ignore calls with vote amount equal to 0
@@ -340,7 +340,7 @@
 ;; MERKLE VERIFICATION
 
 ;; Computes the leaf hash for Merkle proof verification:
-;; SHA256("merkle-leaf" || consensus(principal) || consensus(fieldId) || consensus(amount))
+;; SHA256("merkle-leaf" || consensus(principal) || consensus(field-id) || consensus(amount))
 ;; Uses SIP-005 consensus serialization (to-consensus-buff?) for each value.
 (define-private (hash-leaf (account principal) (field-id uint) (amount uint))
   (let (

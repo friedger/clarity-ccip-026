@@ -174,11 +174,11 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "private",
       "args": [
         {
-          "name": "cityId",
+          "name": "city-id",
           "type": "uint128"
         },
         {
-          "name": "voteAmount",
+          "name": "vote-amount",
           "type": "uint128"
         },
         {
@@ -186,7 +186,7 @@ export const abiCcip026MiamicoinBurnToExit = {
           "type": "bool"
         },
         {
-          "name": "changedVote",
+          "name": "changed-vote",
           "type": "bool"
         }
       ],
@@ -273,7 +273,7 @@ export const abiCcip026MiamicoinBurnToExit = {
           "type": "bool"
         },
         {
-          "name": "scaledMiaVoteAmount",
+          "name": "scaled-mia-vote-amount",
           "type": "uint128"
         },
         {
@@ -354,7 +354,7 @@ export const abiCcip026MiamicoinBurnToExit = {
           "optional": {
             "tuple": [
               {
-                "name": "endBlock",
+                "name": "end-block",
                 "type": "uint128"
               },
               {
@@ -362,7 +362,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                 "type": "uint128"
               },
               {
-                "name": "startBlock",
+                "name": "start-block",
                 "type": "uint128"
               }
             ]
@@ -379,19 +379,19 @@ export const abiCcip026MiamicoinBurnToExit = {
           "optional": {
             "tuple": [
               {
-                "name": "totalAmountNo",
+                "name": "total-amount-no",
                 "type": "uint128"
               },
               {
-                "name": "totalAmountYes",
+                "name": "total-amount-yes",
                 "type": "uint128"
               },
               {
-                "name": "totalVotesNo",
+                "name": "total-votes-no",
                 "type": "uint128"
               },
               {
-                "name": "totalVotesYes",
+                "name": "total-votes-yes",
                 "type": "uint128"
               }
             ]
@@ -407,19 +407,19 @@ export const abiCcip026MiamicoinBurnToExit = {
         "type": {
           "tuple": [
             {
-              "name": "totalAmountNo",
+              "name": "total-amount-no",
               "type": "uint128"
             },
             {
-              "name": "totalAmountYes",
+              "name": "total-amount-yes",
               "type": "uint128"
             },
             {
-              "name": "totalVotesNo",
+              "name": "total-votes-no",
               "type": "uint128"
             },
             {
-              "name": "totalVotesYes",
+              "name": "total-votes-yes",
               "type": "uint128"
             }
           ]
@@ -439,19 +439,19 @@ export const abiCcip026MiamicoinBurnToExit = {
                 "type": {
                   "tuple": [
                     {
-                      "name": "totalAmountNo",
+                      "name": "total-amount-no",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalAmountYes",
+                      "name": "total-amount-yes",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalVotesNo",
+                      "name": "total-votes-no",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalVotesYes",
+                      "name": "total-votes-yes",
                       "type": "uint128"
                     }
                   ]
@@ -462,19 +462,19 @@ export const abiCcip026MiamicoinBurnToExit = {
                 "type": {
                   "tuple": [
                     {
-                      "name": "totalAmountNo",
+                      "name": "total-amount-no",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalAmountYes",
+                      "name": "total-amount-yes",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalVotesNo",
+                      "name": "total-votes-no",
                       "type": "uint128"
                     },
                     {
-                      "name": "totalVotesYes",
+                      "name": "total-votes-yes",
                       "type": "uint128"
                     }
                   ]
@@ -712,7 +712,7 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
-      "name": "snapshotMerkleRoot",
+      "name": "snapshot-merkle-root",
       "type": {
         "buffer": {
           "length": 32
@@ -721,48 +721,48 @@ export const abiCcip026MiamicoinBurnToExit = {
       "access": "constant"
     },
     {
-      "name": "voteActive",
+      "name": "vote-active",
       "type": "bool",
       "access": "variable"
     },
     {
-      "name": "voteEnd",
+      "name": "vote-end",
       "type": "uint128",
       "access": "variable"
     },
     {
-      "name": "voteStart",
+      "name": "vote-start",
       "type": "uint128",
       "access": "variable"
     }
   ],
   "maps": [
     {
-      "name": "CityVotes",
+      "name": "city-votes",
       "key": "uint128",
       "value": {
         "tuple": [
           {
-            "name": "totalAmountNo",
+            "name": "total-amount-no",
             "type": "uint128"
           },
           {
-            "name": "totalAmountYes",
+            "name": "total-amount-yes",
             "type": "uint128"
           },
           {
-            "name": "totalVotesNo",
+            "name": "total-votes-no",
             "type": "uint128"
           },
           {
-            "name": "totalVotesYes",
+            "name": "total-votes-yes",
             "type": "uint128"
           }
         ]
       }
     },
     {
-      "name": "UserVotes",
+      "name": "user-votes",
       "key": "uint128",
       "value": {
         "tuple": [

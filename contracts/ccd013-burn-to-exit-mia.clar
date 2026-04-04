@@ -24,8 +24,9 @@
 (define-constant ERR_NOT_ENABLED (err u13005))            ;; redemptions are not yet enabled
 (define-constant ERR_BALANCE_NOT_FOUND (err u13006))      ;; user has no MIA v1 or v2 balance
 (define-constant ERR_NOTHING_TO_REDEEM (err u13007))      ;; calculated STX amount is zero or treasury is empty
+(define-constant ERR_ZERO_BALANCE (err u13008))           ;; user's combined MIA v1+v2 balance is zero
 (define-constant ERR_SUPPLY_CALCULATION (err u13009))     ;; redemption ratio calculation returned none
-
+(define-constant ERR_INVALID_REDEMPTION_AMOUNT (err u13010)) ;; sanity check that burn amounts add up to the expected redemption amount
 ;; helpers
 ;; Conversion factor: MIA v1 uses whole tokens, v2 uses micro tokens (6 decimals)
 (define-constant MICRO_CITYCOINS (pow u10 u6))
@@ -36,29 +37,28 @@
 
 ;; DATA VARS
 ;; Whether redemptions are open (set to true once by initialize-redemption)
-(define-data-var redemptionsEnabled bool false)
+(define-data-var redemptions-enabled bool false)
 ;; Stacks block height at which redemptions were initialized
-(define-data-var blockHeight uint u0)
+(define-data-var redemption-block-height uint u0)
 ;; Total MIA supply snapshot (v1*10^6 + v2) at initialization
-(define-data-var totalSupply uint u0)
-;; Treasury STX balance snapshot at initialization
-(define-data-var contractBalance uint u0)
-;; Fixed-point ratio: (treasuryBalance * REDEMPTION_SCALE_FACTOR) / totalSupply
+(define-data-var total-supply uint u0)
+;; Mining treasury STX balance snapshot at initialization
+(define-data-var mining-treasury-ustx uint u0)
 ;; Immutable after initialization.
-(define-data-var redemptionRatio uint u0)
+(define-data-var redemption-ratio uint u0)
 ;; Running total of micro-MIA burned across all redemptions
-(define-data-var totalRedeemed uint u0)
+(define-data-var total-redeemed uint u0)
 ;; Running total of micro-STX transferred to redeemers
-(define-data-var totalTransferred uint u0)
+(define-data-var total-transferred uint u0)
 
 ;; DATA MAPS
 
 ;; Per-user cumulative redemption tracking
-(define-map RedemptionClaims
+(define-map redemption-claims
   principal
   {
-    uMia: uint,  ;; total micro-MIA redeemed by this user
-    uStx: uint,  ;; total micro-STX received by this user
+    umia: uint,  ;; total micro-MIA redeemed by this user
+    ustx: uint,  ;; total micro-STX received by this user
   }
 )
 
@@ -95,37 +95,37 @@
 (define-public (initialize-redemption)
   (let
     (
-      (miaTotalSupplyV1 (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-total-supply) ERR_PANIC))
-      (miaTotalSupplyV2 (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-total-supply) ERR_PANIC))
-      (miaTotalSupply (+ (* miaTotalSupplyV1 MICRO_CITYCOINS) miaTotalSupplyV2))
-      (miaRedemptionBalance (get-redemption-current-balance))
-      (miaRedemptionRatio (calculate-redemption-ratio miaRedemptionBalance miaTotalSupply))
+      (mia-total-supply-v1 (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-total-supply) ERR_PANIC))
+      (mia-total-supply-v2 (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-total-supply) ERR_PANIC))
+      (mia-total-supply (+ (* mia-total-supply-v1 MICRO_CITYCOINS) mia-total-supply-v2))
+      (mining-treasury-total-balance (get-mining-treasury-total-balance))
+      (mia-redemption-ratio (calculate-redemption-ratio mining-treasury-total-balance mia-total-supply))
     )
     ;; check if sender is DAO or extension
     (try! (is-dao-or-extension))
     ;; check that total supply is greater than 0
-    (asserts! (> miaTotalSupply u0) ERR_GETTING_TOTAL_SUPPLY)
-    ;; check that redemption balance is greater than 0
-    (asserts! (> miaRedemptionBalance u0) ERR_GETTING_REDEMPTION_BALANCE)
+    (asserts! (> mia-total-supply u0) ERR_GETTING_TOTAL_SUPPLY)
+    ;; check that mining treasury balance is greater than 0
+    (asserts! (> mining-treasury-total-balance u0) ERR_GETTING_REDEMPTION_BALANCE)
     ;; check that redemption ratio has a value
-    (asserts! (is-some miaRedemptionRatio) ERR_SUPPLY_CALCULATION)
+    (asserts! (is-some mia-redemption-ratio) ERR_SUPPLY_CALCULATION)
     ;; check if redemptions are already enabled
-    (asserts! (not (var-get redemptionsEnabled)) ERR_ALREADY_ENABLED)
+    (asserts! (not (var-get redemptions-enabled)) ERR_ALREADY_ENABLED)
     ;; revoke delegation before recording values
     (try! (contract-call?
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
       revoke-delegate-stx
     ))
     ;; record current block height
-    (var-set blockHeight stacks-block-height)
+    (var-set redemption-block-height stacks-block-height)
     ;; record total supply at block height
-    (var-set totalSupply miaTotalSupply)
-    ;; record contract balance at block height
-    (var-set contractBalance miaRedemptionBalance)
+    (var-set total-supply mia-total-supply)
+    ;; record mining treasury balance at block height
+    (var-set mining-treasury-ustx mining-treasury-total-balance)
     ;; calculate redemption ratio
-    (var-set redemptionRatio (unwrap-panic miaRedemptionRatio))
-    ;; set redemptionsEnabled to true, can only run once
-    (var-set redemptionsEnabled true)
+    (var-set redemption-ratio (unwrap-panic mia-redemption-ratio))
+    ;; set redemptions-enabled to true, can only run once
+    (var-set redemptions-enabled true)
     ;; print redemption info
     (ok (print {
       notification: "initialize-contract",
@@ -140,87 +140,50 @@
 ;; remainder. The requested amount is capped at MAX_PER_TRANSACTION (10M MIA).
 ;; STX amount is calculated via get-redemption-for-balance using the
 ;; initialized ratio. Order: burn v1 -> burn v2 -> transfer STX -> record claims.
-(define-public (redeem-mia (amountUMia uint))
+(define-public (redeem-mia (amount-umia uint))
   (let (
       ;; balances for user
-      (userAddress tx-sender)
-      (balanceV1 (unwrap!
-        (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token
-          get-balance userAddress
-        )
-        ERR_BALANCE_NOT_FOUND
-      ))
-      (balanceV2 (unwrap!
-        (contract-call?
-          'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
-          get-balance userAddress
-        )
-        ERR_BALANCE_NOT_FOUND
-      ))
-      ;; previous redemptions
-      (redemptionClaimed (default-to {
-        uMia: u0,
-        uStx: u0,
-      }
-        (map-get? RedemptionClaims userAddress)
-      ))
-      ;; limit to max amount per transaction and actual balance
-      (maxAmountUMia (if (> amountUMia MAX_PER_TRANSACTION)
-        MAX_PER_TRANSACTION
-        amountUMia
-      ))
-      ;; v1 amount in micro MIA
-      (redemptionAmountUMiaV1 (if (> maxAmountUMia (* balanceV1 MICRO_CITYCOINS))
-        (* balanceV1 MICRO_CITYCOINS)
-        maxAmountUMia
-      ))
-      (redemptionV1InMia (/ redemptionAmountUMiaV1 MICRO_CITYCOINS))
-      (remainingAmountUMia (- maxAmountUMia redemptionAmountUMiaV1))
-      ;; v2 amount in micro MIA
-      (redemptionAmountUMiaV2 (if (> remainingAmountUMia balanceV2)
-        balanceV2
-        remainingAmountUMia
-      ))
-      (redemptionTotalUMia (+ redemptionAmountUMiaV1 redemptionAmountUMiaV2))
-      ;; calculate redemption amount in uSTX
-      (redemptionAmount (get-redemption-for-balance redemptionTotalUMia))
-      (redemptionAmountUStx (default-to u0 redemptionAmount))
+      (user-address tx-sender)
+      (redemption-info (try! (get-user-redemption-info user-address (some amount-umia))))
+      (burn-amount-umia (get burn-amount-umia redemption-info))
+      (burn-amount-v1-in-mia (get burn-amount-v1-mia redemption-info))
+      (burn-amount-v2-in-umia (get burn-amount-v2-umia redemption-info))
+      (redemption-amount-ustx (get redemption-amount-ustx redemption-info))
+      (redemption-claimed (get redemption-claims redemption-info))
     )
     ;; check if redemptions are enabled
-    (asserts! (var-get redemptionsEnabled) ERR_NOT_ENABLED)
+    (asserts! (var-get redemptions-enabled) ERR_NOT_ENABLED)
     ;; check that user has at least one positive balance
-    (asserts! (> (+ balanceV1 balanceV2) u0) ERR_BALANCE_NOT_FOUND)
-    ;; check that contract has a positive balance
-    (asserts! (> (get-redemption-current-balance) u0) ERR_NOTHING_TO_REDEEM)
+    (asserts! (or (> burn-amount-v1-in-mia u0) (> burn-amount-v2-in-umia u0)) ERR_ZERO_BALANCE)    
     ;; check that redemption amount is > 0
-    (asserts! (and (is-some redemptionAmount) (> redemptionAmountUStx u0)) ERR_NOTHING_TO_REDEEM)
+    (asserts! (> redemption-amount-ustx u0) ERR_NOTHING_TO_REDEEM)
     ;; burn MIA tokens v1
     (and
-      (> redemptionV1InMia u0)
+      (> burn-amount-v1-in-mia u0)
       (try! (contract-call?
         'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v1-patch
-        burn-mia-v1 redemptionV1InMia userAddress
+        burn-mia-v1 burn-amount-v1-in-mia user-address
       ))
     )
-    ;; burn MIA tokens v2   
+    ;; burn MIA tokens v2
     (and
-      (> redemptionAmountUMiaV2 u0)
+      (> burn-amount-v2-in-umia u0)
       (try! (contract-call?
         'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 burn
-        redemptionAmountUMiaV2 userAddress
+        burn-amount-v2-in-umia user-address
       ))
     )
     ;; transfer STX
     (try! (contract-call?
       'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3
-      withdraw-stx redemptionAmountUStx userAddress
+      withdraw-stx redemption-amount-ustx user-address
     ))
     ;; update redemption claims
-    (var-set totalRedeemed (+ (var-get totalRedeemed) redemptionTotalUMia))
-    (var-set totalTransferred (+ (var-get totalTransferred) redemptionAmountUStx))
-    (map-set RedemptionClaims userAddress {
-      uMia: (+ (get uMia redemptionClaimed) redemptionTotalUMia),
-      uStx: (+ (get uStx redemptionClaimed) redemptionAmountUStx),
+    (var-set total-redeemed (+ (var-get total-redeemed) burn-amount-umia))
+    (var-set total-transferred (+ (var-get total-transferred) redemption-amount-ustx))
+    (map-set redemption-claims user-address {
+      umia: (+ (get umia redemption-claimed) burn-amount-umia),
+      ustx: (+ (get ustx redemption-claimed) redemption-amount-ustx),
     })
     ;; print redemption info
     (print {
@@ -230,14 +193,14 @@
     ;; print user redemption info
     (print {
       notification: "user-redemption",
-      payload: (get-user-redemption-info userAddress),
+      payload: redemption-info,
     })
     ;; return redemption amount
     (ok {
-      uStx: redemptionAmountUStx,
-      uMia: redemptionTotalUMia,
-      uMiaV2: redemptionAmountUMiaV2,
-      miaV1: redemptionV1InMia,
+      ustx: redemption-amount-ustx,
+      umia: burn-amount-umia,
+      umia-v2: burn-amount-v2-in-umia,
+      mia-v1: burn-amount-v1-in-mia,
     })
   )
 )
@@ -246,55 +209,61 @@
 
 ;; Returns true if initialize-redemption has been called successfully.
 (define-read-only (is-redemption-enabled)
-  (var-get redemptionsEnabled)
+  (var-get redemptions-enabled)
 )
 
 ;; Stacks block height when redemptions were initialized.
 (define-read-only (get-redemption-block-height)
-  (var-get blockHeight)
+  (var-get redemption-block-height)
 )
 
 ;; Total MIA supply snapshot (v1*10^6 + v2) at initialization.
 (define-read-only (get-redemption-total-supply)
-  (var-get totalSupply)
+  (var-get total-supply)
 )
 
-;; Treasury STX balance snapshot at initialization.
-(define-read-only (get-redemption-contract-balance)
-  (var-get contractBalance)
+;; Mining treasury STX balance snapshot at initialization.
+(define-read-only (get-mining-treasury-balance)
+  (var-get mining-treasury-ustx)
 )
 
-;; Live STX balance of the rewards treasury (decreases as users redeem).
+;; Live unlocked STX balance of the rewards treasury (decreases as users redeem).
 (define-read-only (get-redemption-current-balance)
   (stx-get-balance 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3)
 )
 
-;; The fixed-point redemption ratio: (treasuryBalance * 10^6) / totalSupply.
+(define-read-only (get-mining-treasury-total-balance)
+  (let ((acc (stx-account 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3)))
+    (+ (get locked acc) (get unlocked acc))
+  )
+)
+
+;; The fixed-point redemption ratio: (treasuryBalance * 10^6) / total-supply.
 (define-read-only (get-redemption-ratio)
-  (var-get redemptionRatio)
+  (var-get redemption-ratio)
 )
 
 ;; Running total of micro-MIA burned across all redemptions.
 (define-read-only (get-total-redeemed)
-  (var-get totalRedeemed)
+  (var-get total-redeemed)
 )
 
 ;; Running total of micro-STX transferred to redeemers.
 (define-read-only (get-total-transferred)
-  (var-get totalTransferred)
+  (var-get total-transferred)
 )
 
 ;; Aggregates all redemption state into a single tuple for convenience.
 (define-read-only (get-redemption-info)
   {
-    redemptionsEnabled: (is-redemption-enabled),
-    blockHeight: (get-redemption-block-height),
-    totalSupply: (get-redemption-total-supply),
-    contractBalance: (get-redemption-contract-balance),
-    currentContractBalance: (get-redemption-current-balance),
-    redemptionRatio: (get-redemption-ratio),
-    totalRedeemed: (get-total-redeemed),
-    totalTransferred: (get-total-transferred),
+    redemption-enabled: (is-redemption-enabled),
+    block-height: (get-redemption-block-height),
+    total-supply: (get-redemption-total-supply),
+    mining-treasury-ustx: (get-mining-treasury-balance),
+    current-contract-balance: (get-redemption-current-balance),
+    redemption-ratio: (get-redemption-ratio),
+    total-redeemed: (get-total-redeemed),
+    total-transferred: (get-total-transferred),
   }
 )
 
@@ -302,53 +271,75 @@
 (define-read-only (get-mia-balances (address principal))
   (let
     (
-      (balanceV1 (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-balance address) ERR_BALANCE_NOT_FOUND))
-      (balanceV2 (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-balance address) ERR_BALANCE_NOT_FOUND))
-      (totalBalance (+ (* balanceV1 MICRO_CITYCOINS) balanceV2))
+      (balance-v1-mia (unwrap! (contract-call? 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-token get-balance address) ERR_BALANCE_NOT_FOUND))
+      (balance-v2-umia (unwrap! (contract-call? 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2 get-balance address) ERR_BALANCE_NOT_FOUND))
+      (total-balance-umia (+ (* balance-v1-mia MICRO_CITYCOINS) balance-v2-umia))
     )
     (ok {
       address: address,
-      balanceV1: balanceV1,
-      balanceV2: balanceV2,
-      totalBalance: totalBalance
+      balance-v1-mia: balance-v1-mia,
+      balance-v2-umia: balance-v2-umia,
+      total-balance-umia: total-balance-umia
     })
   )
 )
 
 ;; Returns a user's MIA balances, potential redemption amount, and past claims.
-(define-read-only (get-user-redemption-info (user principal))
+(define-read-only (get-user-redemption-info (user principal) (amount-umia (optional uint)))
   (let
     (
-      (miaBalances (try! (get-mia-balances user)))
-      (redemptionAmount (default-to u0 (get-redemption-for-balance (get totalBalance miaBalances))))
-      (redemptionClaims (default-to { uMia: u0, uStx: u0 } (map-get? RedemptionClaims user)))
+      (mia-balances (try! (get-mia-balances user)))
+      (total-balance-umia (get total-balance-umia mia-balances))
+      (redemption-amount-umia (default-to total-balance-umia amount-umia))
+      (max-redemption-amount-umia (if (> redemption-amount-umia total-balance-umia) total-balance-umia redemption-amount-umia))
+      (capped-umia (if (> max-redemption-amount-umia MAX_PER_TRANSACTION) MAX_PER_TRANSACTION max-redemption-amount-umia))
+      (redemption (get-redemption-for-balance capped-umia))
+      (claims (default-to { umia: u0, ustx: u0 } (map-get? redemption-claims user)))
+      (balance-v1-mia (get balance-v1-mia mia-balances))
+      (balance-v2-umia (get balance-v2-umia mia-balances))
+      (burn-amount-umia (default-to u0 (get umia redemption)))
+      (burn-amount-mia (/ burn-amount-umia MICRO_CITYCOINS))
+      (burn-amount-v1-mia (if (> burn-amount-mia balance-v1-mia)
+        balance-v1-mia
+        burn-amount-mia
+      ))
+      (burn-amount-v1-umia (* burn-amount-v1-mia MICRO_CITYCOINS))
+      (remaining-amount-umia (- burn-amount-umia burn-amount-v1-umia))
+      (burn-amount-v2-umia (if (> remaining-amount-umia balance-v2-umia)
+        balance-v2-umia
+        remaining-amount-umia
+      ))    
     )
+    (asserts! (is-eq burn-amount-umia (+ burn-amount-v1-umia burn-amount-v2-umia)) ERR_INVALID_REDEMPTION_AMOUNT)
     (ok {
       address: user,
-      miaBalances: miaBalances,
-      redemptionAmount: redemptionAmount,
-      redemptionClaims: redemptionClaims
+      mia-balances: mia-balances,
+      redemption-amount-ustx: (default-to u0 (get ustx redemption)),
+      burn-amount-umia: burn-amount-umia,
+      burn-amount-v1-mia: burn-amount-v1-mia,      
+      burn-amount-v2-umia: burn-amount-v2-umia,
+      redemption-claims: claims
     })
   )
 )
 
 ;; Calculates the STX amount for a given micro-MIA balance:
-;;   redemptionAmount = (redemptionRatio * balance) / REDEMPTION_SCALE_FACTOR
+;;   redemption-amount = (redemption-ratio * balance) / REDEMPTION_SCALE_FACTOR
 ;; If the result exceeds the current treasury balance, returns the treasury
 ;; balance instead (safety cap). Returns none if the computed amount is zero.
 (define-read-only (get-redemption-for-balance (balance uint))
   (let
     (
-      (redemptionAmountScaled (* (var-get redemptionRatio) balance))
-      (redemptionAmount (/ redemptionAmountScaled REDEMPTION_SCALE_FACTOR))
-      (contractCurrentBalance (get-redemption-current-balance))
+      (redemption-amount-scaled (* (var-get redemption-ratio) balance))
+      (redemption-amount (scale-down redemption-amount-scaled))
+      (contract-current-balance (get-redemption-current-balance))
     )
-    (if (> redemptionAmount u0)
-      (if (< redemptionAmount contractCurrentBalance)
+    (if (> redemption-amount u0)
+      (if (< redemption-amount contract-current-balance)
         ;; if redemption amount is less than contract balance, return redemption amount
-        (some redemptionAmount)
+        (some {ustx: redemption-amount, umia: balance})
         ;; if redemption amount is greater than contract balance, return contract balance
-        (some contractCurrentBalance)
+        (some {ustx: contract-current-balance, umia: (scale-down (/ (scale-up contract-current-balance) (var-get redemption-ratio)))})
       )
       ;; if redemption amount is 0, return none
       none
@@ -376,6 +367,6 @@
 (define-private (calculate-redemption-ratio (balance uint) (supply uint))
   (if (or (is-eq supply u0) (is-eq balance u0))
     none
-    (some (/ (* balance REDEMPTION_SCALE_FACTOR) supply))
+    (some (/ (scale-up balance) supply))
   )
 )

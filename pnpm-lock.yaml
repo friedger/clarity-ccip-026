@@ -12,8 +12,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       '@stacks/clarinet-sdk':
-        specifier: 3.15.1
-        version: 3.15.1
+        specifier: 3.16.0
+        version: 3.16.0
       '@stacks/clarunit':
         specifier: git+ssh://git@github.com/friedger/stacks-test-tools.git#18fda2be121b4884968c34b4fd56c1ffe2555281
         version: https://codeload.github.com/friedger/stacks-test-tools/tar.gz/18fda2be121b4884968c34b4fd56c1ffe2555281(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3)
@@ -30,8 +30,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       clarity-abitype:
-        specifier: ^0.5.0
-        version: 0.5.0(@stacks/clarinet-sdk@3.15.1)(@stacks/network@7.3.1)(@stacks/transactions@7.4.0)(typescript@6.0.2)
+        specifier: ^0.6.0
+        version: 0.6.0(@stacks/clarinet-sdk@3.16.0)(@stacks/network@7.3.1)(@stacks/transactions@7.4.0)(typescript@6.0.2)
       stxer:
         specifier: 0.6.1
         version: 0.6.1(typescript@6.0.2)
@@ -43,7 +43,7 @@ importers:
         version: 4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3))
       vitest-environment-clarinet:
         specifier: 3.0.2
-        version: 3.0.2(@stacks/clarinet-sdk@3.15.1)(vitest@4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3)))
+        version: 3.0.2(@stacks/clarinet-sdk@3.16.0)(vitest@4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3)))
 
 packages:
 
@@ -183,11 +183,18 @@ packages:
   '@rolldown/pluginutils@1.0.0-rc.12':
     resolution: {integrity: sha512-HHMwmarRKvoFsJorqYlFeFRzXZqCt2ETQlEDOb9aqssrnVBB1/+xgTGtuTrIk5vzLNX1MjMtTf7W9z3tsSbrxw==}
 
+  '@stacks/clarinet-sdk-wasm@15.16.0':
+    resolution: {integrity: sha512-OBffQar1BSw0EZ9vnXeSLuVw4O0qfiFgcsSWcDvjybWOew41lUmSLa0QDwbfnKW0tmw2WAC6fDzzHZGQnhHWgg==}
+
   '@stacks/clarinet-sdk-wasm@3.15.1':
     resolution: {integrity: sha512-VnmhHG8cvB6ku/OGw1LCWwHElrGCL6stq6CVQxbTdb595ZAKIvBhJY7iKW5bvqWmHHMS7jxCNXM2fO/8M997Jg==}
 
   '@stacks/clarinet-sdk@3.15.1':
     resolution: {integrity: sha512-tFDzkqIIWyIl3WG21GJq1PtiIhQDyOXeOTK8089AXQYlO6jqwIvYlHuKn5qjokFBUaYcPOjGUhcCoJtkUCs6rA==}
+    engines: {node: '>=18.0.0'}
+
+  '@stacks/clarinet-sdk@3.16.0':
+    resolution: {integrity: sha512-IhKXuEQnq8vfh97f3R05IHJlUqzT6kOcyWAihOgpb+Ap7t/OA2aCQQfsz4qXonnFXxA1uzojihFAMigMZ/VfNA==}
     engines: {node: '>=18.0.0'}
 
   '@stacks/clarunit@https://codeload.github.com/friedger/stacks-test-tools/tar.gz/18fda2be121b4884968c34b4fd56c1ffe2555281':
@@ -318,15 +325,18 @@ packages:
       typescript:
         optional: true
 
-  clarity-abitype@0.5.0:
-    resolution: {integrity: sha512-nZccSh+uWTuodhNoBHQyy7ggP7EHSZYQLSOWrIre0M2dVEawGgyZTLiEkikc/qnjd77v4ybcT+iO+/XOWgttzA==}
+  clarity-abitype@0.6.0:
+    resolution: {integrity: sha512-4NhSWB/yuKQtl9u+7hk1xljYNfja2myu/I2VyQM+PexhCfCJ6lm7rGtfdbCGPR1HyEDEmdHwvHd66gAgAvxtpQ==}
     peerDependencies:
       '@stacks/clarinet-sdk': '>= 3.0.0'
+      '@stacks/connect': '>= 8.0.0'
       '@stacks/network': '>= 7.3.0'
       '@stacks/transactions': '>= 7.3.0'
-      typescript: '>=5.1.0'
+      typescript: '>=5.4.0 || >=6.0.0'
     peerDependenciesMeta:
       '@stacks/clarinet-sdk':
+        optional: true
+      '@stacks/connect':
         optional: true
       '@stacks/network':
         optional: true
@@ -917,11 +927,23 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.12': {}
 
+  '@stacks/clarinet-sdk-wasm@15.16.0': {}
+
   '@stacks/clarinet-sdk-wasm@3.15.1': {}
 
   '@stacks/clarinet-sdk@3.15.1':
     dependencies:
       '@stacks/clarinet-sdk-wasm': 3.15.1
+      '@stacks/transactions': 7.4.0
+      kolorist: 1.8.0
+      prompts: 2.4.2
+      yargs: 18.0.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@stacks/clarinet-sdk@3.16.0':
+    dependencies:
+      '@stacks/clarinet-sdk-wasm': 15.16.0
       '@stacks/transactions': 7.4.0
       kolorist: 1.8.0
       prompts: 2.4.2
@@ -977,7 +999,7 @@ snapshots:
   '@stacks/rendezvous@0.14.0':
     dependencies:
       '@iarna/toml': 2.2.5
-      '@stacks/clarinet-sdk': 3.15.1
+      '@stacks/clarinet-sdk': 3.16.0
       '@stacks/transactions': 7.4.0
       ansicolor: 2.0.3
       fast-check: 4.6.0
@@ -1111,9 +1133,9 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.2
 
-  clarity-abitype@0.5.0(@stacks/clarinet-sdk@3.15.1)(@stacks/network@7.3.1)(@stacks/transactions@7.4.0)(typescript@6.0.2):
+  clarity-abitype@0.6.0(@stacks/clarinet-sdk@3.16.0)(@stacks/network@7.3.1)(@stacks/transactions@7.4.0)(typescript@6.0.2):
     optionalDependencies:
-      '@stacks/clarinet-sdk': 3.15.1
+      '@stacks/clarinet-sdk': 3.16.0
       '@stacks/network': 7.3.1
       '@stacks/transactions': 7.4.0
       typescript: 6.0.2
@@ -1447,6 +1469,11 @@ snapshots:
   vitest-environment-clarinet@3.0.2(@stacks/clarinet-sdk@3.15.1)(vitest@4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3))):
     dependencies:
       '@stacks/clarinet-sdk': 3.15.1
+      vitest: 4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3))
+
+  vitest-environment-clarinet@3.0.2(@stacks/clarinet-sdk@3.16.0)(vitest@4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3))):
+    dependencies:
+      '@stacks/clarinet-sdk': 3.16.0
       vitest: 4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3))
 
   vitest@4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(yaml@2.8.3)):

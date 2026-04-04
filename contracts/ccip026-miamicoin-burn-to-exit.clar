@@ -13,16 +13,16 @@
 
 ;; ERRORS
 
-(define-constant ERR_PANIC (err u26000))                       ;; get-vote-totals returned none (should never happen)
-(define-constant ERR_SAVING_VOTE (err u26001))                 ;; map-insert for user-votes failed unexpectedly
-(define-constant ERR_VOTED_ALREADY (err u26002))               ;; user already voted with the same boolean choice
-(define-constant ERR_NOTHING_STACKED (err u26003))             ;; Merkle-verified vote amount is zero after scale-down
-(define-constant ERR_USER_NOT_FOUND (err u26004))              ;; contract-caller not registered in ccd003-user-registry
-(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u26005))         ;; vote is inactive or current block is outside vote period
-(define-constant ERR_VOTE_FAILED (err u26007))                 ;; yes votes do not exceed no votes (execution rejected)
-(define-constant ERR_PROOF_INVALID (err u26008))               ;; Merkle proof does not verify against snapshot root
-(define-constant ERR_FOLD_FAILED (err u26009))                 ;; internal Merkle proof fold step encountered unexpected none
-(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26010))   ;; to-consensus-buff? returned none during leaf hashing
+(define-constant ERR_PANIC (err u26000)) ;; get-vote-totals returned none (should never happen)
+(define-constant ERR_SAVING_VOTE (err u26001)) ;; map-insert for user-votes failed unexpectedly
+(define-constant ERR_VOTED_ALREADY (err u26002)) ;; user already voted with the same boolean choice
+(define-constant ERR_NOTHING_STACKED (err u26003)) ;; Merkle-verified vote amount is zero after scale-down
+(define-constant ERR_USER_NOT_FOUND (err u26004)) ;; contract-caller not registered in ccd003-user-registry
+(define-constant ERR_PROPOSAL_NOT_ACTIVE (err u26005)) ;; vote is inactive or current block is outside vote period
+(define-constant ERR_VOTE_FAILED (err u26007)) ;; yes votes do not exceed no votes (execution rejected)
+(define-constant ERR_PROOF_INVALID (err u26008)) ;; Merkle proof does not verify against snapshot root
+(define-constant ERR_FOLD_FAILED (err u26009)) ;; internal Merkle proof fold step encountered unexpected none
+(define-constant ERR_CONSENSUS_ENCODING_FAILED (err u26010)) ;; to-consensus-buff? returned none during leaf hashing
 
 ;; CONSTANTS
 
@@ -46,8 +46,8 @@
 (define-constant MERKLE_LEAF_TAG 0x6d65726b6c652d6c656166) ;; "merkle-leaf"
 (define-constant MERKLE_PARENT_TAG 0x6d65726b6c652d706172656e74) ;; "merkle-parent"
 ;; Fixed index list driving the fold-based proof verification. Clarity lacks
-;; dynamic iteration, so we pre-allocate the maximum proof depth of 32.
-(define-constant PROOF_INDICES (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31))
+;; dynamic iteration, so we pre-allocate the maximum proof depth of 9.
+(define-constant PROOF_INDICES (list u0 u1 u2 u3 u4 u5 u6 u7 u8))
 
 ;; City ID for Miami, looked up from the on-chain registry (defaults to u1).
 (define-constant MIA_ID (default-to u1
@@ -76,10 +76,10 @@
 (define-map city-votes
   uint ;; city ID
   {
-    total-amount-yes: uint,   ;; cumulative MIA amount for yes votes
-    total-amount-no: uint,    ;; cumulative MIA amount for no votes
-    total-votes-yes: uint,    ;; number of yes voters
-    total-votes-no: uint,     ;; number of no voters
+    total-amount-yes: uint, ;; cumulative MIA amount for yes votes
+    total-amount-no: uint, ;; cumulative MIA amount for no votes
+    total-votes-yes: uint, ;; number of yes voters
+    total-votes-no: uint, ;; number of no voters
   }
 )
 
@@ -88,8 +88,8 @@
 (define-map user-votes
   uint ;; user ID (from ccd003-user-registry)
   {
-    vote: bool,  ;; true = yes, false = no
-    mia: uint,   ;; unscaled MIA vote amount (scaledVote / VOTE_SCALE_FACTOR)
+    vote: bool, ;; true = yes, false = no
+    mia: uint, ;; unscaled MIA vote amount (scaledVote / VOTE_SCALE_FACTOR)
   }
 )
 
@@ -109,12 +109,11 @@
     ;; enable new treasuries in the DAO
     (try! (contract-call? 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.base-dao
       set-extensions
-      (list
-        {
-          extension: .ccd013-burn-to-exit-mia,
-          enabled: true,
-        }
-      )))
+      (list {
+        extension: .ccd013-burn-to-exit-mia,
+        enabled: true,
+      })
+    ))
     (try! (contract-call? .ccd013-burn-to-exit-mia initialize-redemption))
     (ok true)
   )
@@ -153,7 +152,10 @@
     ;; check if vote is active (use var directly like ccip022)
     (asserts! (var-get vote-active) ERR_PROPOSAL_NOT_ACTIVE)
     ;; check if within voting period
-    (asserts! (and (>= burn-block-height (var-get vote-start)) (<= burn-block-height (var-get vote-end))) ERR_PROPOSAL_NOT_ACTIVE)
+    (asserts!
+      (and (>= burn-block-height (var-get vote-start)) (<= burn-block-height (var-get vote-end)))
+      ERR_PROPOSAL_NOT_ACTIVE
+    )
     ;; check if vote record exists for user
     (match voter-record
       record
@@ -209,7 +211,8 @@
       (vote-totals (get totals voting-record))
     )
     ;; check that the yes total is more than no total, implies that there is at least one vote
-    (asserts! (> (get total-votes-yes vote-totals) (get total-votes-no vote-totals))
+    (asserts!
+      (> (get total-votes-yes vote-totals) (get total-votes-no vote-totals))
       ERR_VOTE_FAILED
     )
     ;; allow execution
@@ -336,24 +339,39 @@
   )
 )
 
-
 ;; MERKLE VERIFICATION
 
 ;; Computes the leaf hash for Merkle proof verification:
 ;; SHA256("merkle-leaf" || consensus(principal) || consensus(field-id) || consensus(amount))
 ;; Uses SIP-005 consensus serialization (to-consensus-buff?) for each value.
-(define-private (hash-leaf (account principal) (field-id uint) (amount uint))
+(define-private (hash-leaf
+    (account principal)
+    (field-id uint)
+    (amount uint)
+  )
   (let (
-      (principal-buf (try! (match (to-consensus-buff? account) p (ok p) ERR_CONSENSUS_ENCODING_FAILED)))
-      (field-buf (try! (match (to-consensus-buff? field-id) p (ok p) ERR_CONSENSUS_ENCODING_FAILED)))
-      (amount-buf (try! (match (to-consensus-buff? amount) p (ok p) ERR_CONSENSUS_ENCODING_FAILED)))
+      (principal-buf (try! (match (to-consensus-buff? account)
+        p (ok p)
+        ERR_CONSENSUS_ENCODING_FAILED
+      )))
+      (field-buf (try! (match (to-consensus-buff? field-id)
+        p (ok p)
+        ERR_CONSENSUS_ENCODING_FAILED
+      )))
+      (amount-buf (try! (match (to-consensus-buff? amount)
+        p (ok p)
+        ERR_CONSENSUS_ENCODING_FAILED
+      )))
     )
     (ok (sha256 (concat MERKLE_LEAF_TAG (concat principal-buf (concat field-buf amount-buf)))))
   )
 )
 
 ;; Computes a parent node: SHA256("merkle-parent" || left || right)
-(define-private (hash-parent (left (buff 32)) (right (buff 32)))
+(define-private (hash-parent
+    (left (buff 32))
+    (right (buff 32))
+  )
   (sha256 (concat MERKLE_PARENT_TAG (concat left right)))
 )
 
@@ -363,7 +381,13 @@
 ;; (true = sibling is on the left).
 (define-private (fold-proof-step-inner
     (idx uint)
-    (acc (response { current: (optional (buff 32)), proof: (list 9 (buff 32)), positions: (list 9 bool) } uint))
+    (acc (response {
+      current: (optional (buff 32)),
+      proof: (list 9 (buff 32)),
+      positions: (list 9 bool),
+    }
+      uint
+    ))
   )
   (let (
       (data (unwrap! acc ERR_FOLD_FAILED))
@@ -387,7 +411,7 @@
           (ok {
             current: (some parent),
             proof: proof,
-            positions: positions
+            positions: positions,
           })
         )
       )
@@ -397,12 +421,27 @@
 
 ;; Verifies a Merkle proof by folding over PROOF_INDICES, then comparing
 ;; the computed root to expected-root. Returns (ok true) if they match.
-(define-private (verify-proof (leaf (buff 32)) (proof (list 9 (buff 32))) (positions (list 9 bool)) (expected-root (buff 32)))
+(define-private (verify-proof
+    (leaf (buff 32))
+    (proof (list 9 (buff 32)))
+    (positions (list 9 bool))
+    (expected-root (buff 32))
+  )
   (let (
-      (initial { current: (some leaf), proof: proof, positions: positions })
+      (initial {
+        current: (some leaf),
+        proof: proof,
+        positions: positions,
+      })
       (folded (try! (fold fold-proof-step-inner PROOF_INDICES (ok initial))))
       (computed-root (get current folded))
-      (final-root (if (is-some computed-root) (try! (match computed-root r (ok r) ERR_FOLD_FAILED)) leaf))
+      (final-root (if (is-some computed-root)
+        (try! (match computed-root
+          r (ok r)
+          ERR_FOLD_FAILED
+        ))
+        leaf
+      ))
     )
     (ok (is-eq final-root expected-root))
   )

@@ -42,11 +42,10 @@
         (ok true)
       )
       ;; initialized - verify the calculation
-      (let (
-          (expected-stx (/ (* ratio amount-umia) scale-factor))
-        )
+      (let ((expected-stx (/ (* ratio amount-umia) scale-factor)))
         (match result
-          redemption (begin
+          redemption
+          (begin
             (asserts! (is-eq (get ustx redemption) expected-stx) (err u9999))
             (ok true)
           )
@@ -71,11 +70,10 @@
         (asserts! (is-eq result none) (err u9997))
         (ok true)
       )
-      (let (
-          (expected-stx (/ (* ratio amount-umia) scale-factor))
-        )
+      (let ((expected-stx (/ (* ratio amount-umia) scale-factor)))
         (match result
-          redemption (begin
+          redemption
+          (begin
             (asserts! (is-eq (get ustx redemption) expected-stx) (err u9999))
             (ok true)
           )
@@ -104,7 +102,8 @@
       )
       ;; initialized - should return (some contractBalance) since amount exceeds available
       (match result
-        redemption (begin
+        redemption
+        (begin
           (asserts! (is-eq (get ustx redemption) contract-balance) (err u9999))
           (ok true)
         )

@@ -383,7 +383,7 @@
         ;; if redemption amount is greater than contract balance, return contract balance
         (some {
           ustx: contract-current-balance,
-          umia: (scale-down (/ (scale-up contract-current-balance) (var-get redemption-ratio))),
+          umia: (/ (scale-up contract-current-balance) (var-get redemption-ratio)),
         })
       )
       ;; if redemption amount is 0, return none

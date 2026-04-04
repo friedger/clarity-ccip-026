@@ -696,7 +696,7 @@ export const abiCcip026MiamicoinBurnToExit = {
       "type": {
         "list": {
           "type": "uint128",
-          "length": 32
+          "length": 9
         }
       },
       "access": "constant"

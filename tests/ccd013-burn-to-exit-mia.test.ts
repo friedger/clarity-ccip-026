@@ -2,6 +2,8 @@ import { tx } from "@stacks/clarinet-sdk";
 import { Cl, uintCV } from "@stacks/transactions";
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
+import { stackingData } from "../data/stacking-data";
+import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
 import { abiCcd013BurnToExitMia } from "./abis/abi-ccd013-burn-to-exit-mia";
 import {
   convertToV2,
@@ -14,8 +16,6 @@ import {
   vote,
 } from "./clients/ccd013-burn-to-exit-mia-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
-import { stackingData } from "../data/stacking-data";
-import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
 
 const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
@@ -244,12 +244,8 @@ describe("CCD013 Burn to Exit MIA", () => {
     });
   });
 
-  it("should return correct user redemption info after redeem", () => {
-    const ratio = 5n;
-    const scaleFactor = 1_000000n;
+  it("should return correct user redemption info before initialization", () => {
     const miaAmount1 = 321_825_000000n;
-    const expectedStx1 = (miaAmount1 * ratio) / scaleFactor;
-
     const result = getUserRedemptionInfo(
       "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
       "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
@@ -275,7 +271,7 @@ describe("CCD013 Burn to Exit MIA", () => {
     });
   });
 
-  it("should track treasury balance decrease after redemptions", () => {
+  it("should track contract balance decrease after redemptions", () => {
     setupVoteAndExecute();
     const infoBefore = getRedemptionInfo().result;
     redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 321_825_000000n);
@@ -287,11 +283,12 @@ describe("CCD013 Burn to Exit MIA", () => {
     expect(info["total-transferred"]).toBe(
       (321_825_000000n * 1710n) / 1_000_000n,
     ); // amount redeemed * ratio
-    expect(info["mining-treasury-ustx"]).toBe(10241497066794n);
     // The difference should equal totalTransferred
     expect(info["current-contract-balance"]).toBe(
       infoBefore["current-contract-balance"] - info["total-transferred"],
     );
+    expect(info["mining-treasury-ustx"]).toBe(10241497066794n);
+    expect(infoBefore["current-contract-balance"]).toBe(44049273345n);
   });
 
   it("should return complete redemption info", () => {
@@ -302,9 +299,39 @@ describe("CCD013 Burn to Exit MIA", () => {
     expect(result["redemption-enabled"]).toBe(true);
     expect(result["redemption-ratio"]).toBe(1710n);
     expect(result["total-supply"]).toBeGreaterThan(0n);
-    expect(result["mining-treasury-ustx"]).toBeGreaterThan(0n);
+    expect(result["mining-treasury-ustx"]).toBe(10241497066794n);
     expect(result["block-height"]).toBeGreaterThan(0n);
-    expect(result["total-redeemed"]).toBeGreaterThan(0n);
-    expect(result["total-transferred"]).toBeGreaterThan(0n);
+    expect(result["total-redeemed"]).toBe(321825000000n);
+    expect(result["total-transferred"]).toBe(550320750n);
+  });
+
+  it("should return complete redemption info if redeemed more than max per tx", () => {
+    setupVoteAndExecute();
+    redeem("SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ", 1_646_111_611_749416n);
+    const info = getRedemptionInfo();
+    const result = info.result;
+    expect(result["redemption-enabled"]).toBe(true);
+    expect(result["redemption-ratio"]).toBe(1710n);
+    expect(result["total-supply"]).toBeGreaterThan(0n);
+    expect(result["mining-treasury-ustx"]).toBe(10241497066794n);
+    expect(result["block-height"]).toBeGreaterThan(0n);
+    expect(result["total-redeemed"]).toBe(10000000000000n); // capped at 10m MIA
+    expect(result["total-transferred"]).toBe(17100000000n);
+  });
+
+  it("should return complete redemption info if redeemed more than in contract", () => {
+    setupVoteAndExecute();
+    redeem("SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ", 1_646_111_611_749416n); // 10m MIA
+    redeem("SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ", 1_646_111_611_749416n); // 10m MIA
+    redeem("SP3HXJJMJQ06GNAZ8XWDN1QM48JEDC6PP6W3YZPZJ", 1_646_111_611_749416n); // 5.7m MIA
+    const info = getRedemptionInfo();
+    const result = info.result;
+    expect(result["redemption-enabled"]).toBe(true);
+    expect(result["redemption-ratio"]).toBe(1710n);
+    expect(result["total-supply"]).toBeGreaterThan(0n);
+    expect(result["mining-treasury-ustx"]).toBe(10241497066794n);
+    expect(result["block-height"]).toBeGreaterThan(0n);
+    expect(result["total-redeemed"]).toBe(25759808973684n); // capped at 10m MIA
+    expect(result["total-transferred"]).toBe(44049273345n); // total balance
   });
 });

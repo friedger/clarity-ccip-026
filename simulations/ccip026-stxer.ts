@@ -5,6 +5,7 @@ import {
   bufferCV,
   listCV,
   principalCV,
+  tupleCV,
   uintCV,
 } from "@stacks/transactions";
 import { SimulationBuilder } from "stxer";
@@ -28,7 +29,10 @@ const common_params = {
 const voters: VoterEntry[] = stackingData
   .map((entry) => ({
     address: entry.address,
-    scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+    scaledVote: calculateScaledMiaVote(
+      entry.cycle82Stacked,
+      entry.cycle83Stacked,
+    ),
   }))
   .filter(({ scaledVote }) => scaledVote > 0n);
 const { proofs } = buildMerkleTree(voters);
@@ -119,7 +123,7 @@ function main(block_height: number) {
         contract_name: contract_name_redeem,
         source_code: fs.readFileSync(
           `./contracts/${contract_name_redeem}.clar`,
-          "utf8"
+          "utf8",
         ),
         deployer,
       })
@@ -127,7 +131,7 @@ function main(block_height: number) {
         contract_name,
         source_code: fs.readFileSync(
           `./contracts/${contract_name}.clar`,
-          "utf8"
+          "utf8",
         ),
         deployer,
       })
@@ -138,7 +142,7 @@ function main(block_height: number) {
           voterA.scaledVote,
           voterA.proof,
           voterA.positions,
-        )
+        ),
       )
       .addContractCall(
         vote(
@@ -147,42 +151,56 @@ function main(block_height: number) {
           voterB.scaledVote,
           voterB.proof,
           voterB.positions,
-        )
+        ),
       )
       .addContractCall(
         // not in Merkle tree — expected to fail with ERR_PROOF_INVALID
-        vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529, 0n, [], [])
+        vote("SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD", 529, 0n, [], []),
       )
       // execute
       .addContractCall(
-        directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE", 124)
+        directExecute("SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE", 124),
       )
       .addContractCall(
-        directExecute("SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ", 19)
+        directExecute("SP3YYGCGX1B62CYAH4QX7PQE63YXG7RDTXD8BQHJQ", 19),
       )
       .addContractCall(
-        directExecute("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X", 851)
+        directExecute("SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X", 851),
       )
-
+      .addContractCall({
+        contract_id: "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many",
+        function_name: "send-many",
+        function_args: [
+          listCV([
+            tupleCV({
+              to: principalCV(
+                "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3",
+              ),
+              ustx: uintCV(2000_000000),
+            }),
+          ]),
+        ],
+        sender: "SM1Z6BP8PDKYKXTZXXSKXFEY6NQ7RAM7DAEAYR045",
+      })
       // redeem
       .addContractCall(
-        redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 75, 321_825_000000)
+        redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 75, 321_825_000000),
       )
       .addContractCall(
         // redeem more than user owns (0 MIA)
-        redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 76, 321_825_000000)
+        redeem("SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA", 76, 321_825_000000),
+      )
+      // redeem v1
+      .addContractCall(
+        redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 10, 800_000_000000),
       )
       .addContractCall(
         // redeeem more than owned (10.08m MIA), redeem more than max per tx (10m MIA)
         redeem(
           "SP3BSWJTYBDJGDGZ54T4T0NMBGQ6BBFZCWD44VMH9",
           453,
-          11_000_000_000000
-        )
-      )
-      // redeem v1
-      .addContractCall(
-        redeem("SP22HP2QFA16AAP62HJWD85AKMYJ5AYRTH7TBT9MX", 10, 800_000_000000)
+          11_000_000_000000,
+        ),
       )
 
       .run()
@@ -190,8 +208,5 @@ function main(block_height: number) {
   );
 }
 
-const block_height_empty = 3425439;
-const block_height_31k_stx = 3491155;
-
-//main(block_height_empty).catch(console.error);
+// epoch 3.4 start: 7444340
 main(7444340).catch(console.error);

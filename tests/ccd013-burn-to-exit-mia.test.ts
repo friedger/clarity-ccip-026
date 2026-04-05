@@ -334,4 +334,30 @@ describe("CCD013 Burn to Exit MIA", () => {
     expect(result["total-redeemed"]).toBe(25759808973684n); // capped at 10m MIA
     expect(result["total-transferred"]).toBe(44049273345n); // total balance
   });
+
+  it("should return error when redeeming before initialization", () => {
+    const txReceiptRedeem = redeem(
+      "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",
+      321_825_000000n,
+    );
+    expect(txReceiptRedeem.result).toEqual({ error: 13005n }); // ERR_NOT_ENABLED
+  })
+
+  it("should return error when executing twice", () => {
+    setupVoteAndExecute();
+    const txReceiptDirectExecute = directExecute(
+      "SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE",
+    );
+    expect(txReceiptDirectExecute.result).toEqual({ error: 901 }); // ERR_ALREADY_EXECUTED
+  });
+
+  it("should return error when voting with invalid proof", () => {
+    const txReceipt = vote(
+      "SP18Z92ZT0GAB2JHD21CZ3KS1WPGNDJCYZS7CV3MD",
+      0n,
+      [],
+      [],
+    );
+    expect(txReceipt.result).toEqual({ error: 26008n }); // ERR_BALANCE_NOT_FOUND
+  });
 });

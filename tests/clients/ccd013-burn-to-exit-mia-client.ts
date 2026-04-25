@@ -54,14 +54,14 @@ export const convertToV2 = (sender: string) => {
   );
 };
 
-export const getRedemptionInfo = (sender: string) => {
+export const getRedemptionInfo = () => {
   return typedCallReadOnlyFn({
     simnet,
     abi: abiCcd013BurnToExitMia,
     contract: "ccd013-burn-to-exit-mia",
     functionName: "get-redemption-info",
     functionArgs: [],
-    sender,
+    sender: "SP1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRCBGD7R",
   });
 };
 
@@ -82,7 +82,7 @@ export const getUserRedemptionInfo = (sender: string, user: string) => {
     abi: abiCcd013BurnToExitMia,
     contract: "ccd013-burn-to-exit-mia",
     functionName: "get-user-redemption-info",
-    functionArgs: [user],
+    functionArgs: [user, null],
     sender,
   });
 };

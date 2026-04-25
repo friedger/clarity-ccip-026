@@ -1,12 +1,12 @@
 
-(define-public (test-get-redemption-for-balance (amountUMia uint))
+(define-public (test-get-redemption-for-balance (amount-umia uint))
   (let (
       (ratio (get-redemption-ratio))
-      (scaleFactor u1000000)
+      (scale-factor u1000000)
     )
-    (match (get-redemption-for-balance (* amountUMia u1000000000))
-      uStx (begin
-        (asserts! (is-eq uStx (/ (* ratio amountUMia u1000000000) scaleFactor)) (err u9999))
+    (match (get-redemption-for-balance (* amount-umia u1000000000))
+      ustx (begin
+        (asserts! (is-eq ustx (/ (* ratio amount-umia u1000000000) scale-factor)) (err u9999))
         (ok true))
       (ok false) ;; none case - ratio not initialized yet
     )
@@ -14,17 +14,17 @@
 )
 
 ;; Property test: redeem-mia should never return more STX than the redemption formula allows
-(define-public (test-redeem-mia-stx-amount-bounded (amountUMia uint))
+(define-public (test-redeem-mia-stx-amount-bounded (amount-umia uint))
   (let (
-      (result (redeem-mia amountUMia))
-      (maxExpectedStx (match (get-redemption-for-balance amountUMia)
-        expectedStx expectedStx
+      (result (redeem-mia amount-umia))
+      (max-expected-stx (match (get-redemption-for-balance amount-umia)
+        expected-stx expected-stx
         u0)) ;; none case
     )
     (match result
       success (begin
         ;; Property: returned STX should never exceed the calculated maximum
-        (asserts! (<= (get uStx success) maxExpectedStx) (err u9999))
+        (asserts! (<= (get ustx success) max-expected-stx) (err u9999))
         (ok true)
       )
       error (ok true) ;; Errors are acceptable for this property
@@ -33,18 +33,18 @@
 )
 
 ;; Property test: redeem-mia should never redeem more MIA than requested (capped by MAX_PER_TRANSACTION)
-(define-public (test-redeem-mia-amount-capped (amountUMia uint))
+(define-public (test-redeem-mia-amount-capped (amount-umia uint))
   (let (
-      (result (redeem-mia amountUMia))
-      (maxPerTransaction u10000000000000) ;; 10m MIA in uMIA
-      (cappedAmount (if (> amountUMia maxPerTransaction) maxPerTransaction amountUMia))
+      (result (redeem-mia amount-umia))
+      (max-per-transaction u10000000000000) ;; 10m MIA in uMIA
+      (capped-amount (if (> amount-umia max-per-transaction) max-per-transaction amount-umia))
     )
     (match result
       redeemed (begin
         ;; Property: redeemed amount should never exceed the capped input amount
-        (asserts! (<= (get uMia redeemed) cappedAmount) (err u9998))
+        (asserts! (<= (get umia redeemed) capped-amount) (err u9998))
         ;; Property: if any MIA was redeemed, some STX should be returned
-        (asserts! (implies (> (get uMia redeemed) u0) (> (get uStx redeemed) u0)) (err u9997))
+        (asserts! (implies (> (get umia redeemed) u0) (> (get ustx redeemed) u0)) (err u9997))
         (ok true)
       )
       error (ok true) ;; Errors are acceptable for this property
@@ -53,23 +53,23 @@
 )
 
 ;; Property test: redeem-mia should maintain the correct ratio between MIA and STX
-(define-public (test-redeem-mia-ratio-consistency (amountUMia uint))
+(define-public (test-redeem-mia-ratio-consistency (amount-umia uint))
   (let (
-      (result (redeem-mia amountUMia))
+      (result (redeem-mia amount-umia))
       (ratio (get-redemption-ratio))
-      (scaleFactor u1000000)
+      (scale-factor u1000000)
     )
     (match result
       redeemed (begin
         (let (
-            (redeemedMia (get uMia redeemed))
-            (redeemedStx (get uStx redeemed))
-            (expectedStx (/ (* redeemedMia ratio) scaleFactor))
+            (redeemed-mia (get umia redeemed))
+            (redeemed-stx (get ustx redeemed))
+            (expected-stx (/ (* redeemed-mia ratio) scale-factor))
           )
           ;; Property: STX received should match the redemption ratio for the actual MIA redeemed
           ;; Allow for some tolerance due to rounding
-          (asserts! (<= redeemedStx (+ expectedStx u1)) (err u9996))
-          (asserts! (>= redeemedStx (- expectedStx u1)) (err u9995))
+          (asserts! (<= redeemed-stx (+ expected-stx u1)) (err u9996))
+          (asserts! (>= redeemed-stx (- expected-stx u1)) (err u9995))
           (ok true)
         )
       )
@@ -79,10 +79,10 @@
 )
 
 ;; Property test: redeem-mia should never succeed if redemptions are disabled
-(define-public (test-redeem-mia-disabled-invariant (amountUMia uint))
+(define-public (test-redeem-mia-disabled-invariant (amount-umia uint))
   (let (
       (enabled (is-redemption-enabled))
-      (result (redeem-mia amountUMia))
+      (result (redeem-mia amount-umia))
     )
     (if (not enabled)
       ;; Property: if redemptions are disabled, redeem-mia should always fail with ERR_NOT_ENABLED
@@ -116,28 +116,28 @@
 )
 
 ;; Property test: successful redemption should update total redeemed and transferred amounts
-(define-public (test-redeem-mia-state-consistency (amountUMia uint))
+(define-public (test-redeem-mia-state-consistency (amount-umia uint))
   (let (
-      (totalRedeemedBefore (get-total-redeemed))
-      (totalTransferredBefore (get-total-transferred))
-      (result (redeem-mia amountUMia))
-      (totalRedeemedAfter (get-total-redeemed))
-      (totalTransferredAfter (get-total-transferred))
+      (total-redeemed-before (get-total-redeemed))
+      (total-transferred-before (get-total-transferred))
+      (result (redeem-mia amount-umia))
+      (total-redeemed-after (get-total-redeemed))
+      (total-transferred-after (get-total-transferred))
     )
     (match result
       redeemed (begin
         ;; Property: total redeemed should increase by the amount redeemed
-        (asserts! (is-eq totalRedeemedAfter
-                        (+ totalRedeemedBefore (get uMia redeemed))) (err u9990))
+        (asserts! (is-eq total-redeemed-after
+                        (+ total-redeemed-before (get umia redeemed))) (err u9990))
         ;; Property: total transferred should increase by the STX amount transferred
-        (asserts! (is-eq totalTransferredAfter
-                        (+ totalTransferredBefore (get uStx redeemed))) (err u9989))
+        (asserts! (is-eq total-transferred-after
+                        (+ total-transferred-before (get ustx redeemed))) (err u9989))
         (ok true)
       )
       error (begin
         ;; Property: on failure, totals should remain unchanged
-        (asserts! (is-eq totalRedeemedAfter totalRedeemedBefore) (err u9988))
-        (asserts! (is-eq totalTransferredAfter totalTransferredBefore) (err u9987))
+        (asserts! (is-eq total-redeemed-after total-redeemed-before) (err u9988))
+        (asserts! (is-eq total-transferred-after total-transferred-before) (err u9987))
         (ok true)
       )
     )
@@ -187,29 +187,29 @@
 ;; Total MIA redeemed should never exceed the total supply snapshot.
 (define-read-only (invariant-total-redeemed-leq-supply)
   (or
-    (not (var-get redemptionsEnabled))
-    (<= (get-total-redeemed) (var-get totalSupply))
+    (not (var-get redemptions-enabled))
+    (<= (get-total-redeemed) (var-get total-supply))
   )
 )
 
 ;; Total STX transferred should never exceed the initial treasury balance snapshot.
 (define-read-only (invariant-total-transferred-leq-balance)
   (or
-    (not (var-get redemptionsEnabled))
-    (<= (get-total-transferred) (var-get contractBalance))
+    (not (var-get redemptions-enabled))
+    (<= (get-total-transferred) (var-get contract-balance))
   )
 )
 
 ;; Once redemptions are enabled, the ratio, total supply, and contract balance
 ;; snapshots should never change (they are set once in initialize-redemption).
-;; This invariant checks that redemptionRatio is non-zero when enabled.
+;; This invariant checks that redemption-ratio is non-zero when enabled.
 (define-read-only (invariant-ratio-nonzero-when-enabled)
   (or
-    (not (var-get redemptionsEnabled))
+    (not (var-get redemptions-enabled))
     (and
-      (> (var-get redemptionRatio) u0)
-      (> (var-get totalSupply) u0)
-      (> (var-get contractBalance) u0)
+      (> (var-get redemption-ratio) u0)
+      (> (var-get total-supply) u0)
+      (> (var-get contract-balance) u0)
     )
   )
 )

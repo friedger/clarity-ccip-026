@@ -11,11 +11,11 @@
 ;; Test that get-redemption-for-balance returns none when ratio is 0 (not initialized)
 (define-public (test-get-redemption-for-balance)
   (let (
-      (amountUMia u0)
+      (amount-umia u0)
       ;; before init, ratio is 0 so result is none
       (expectedResult none)
       (result (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
-        amountUMia
+        amount-umia
       ))
     )
     (asserts! (is-eq result expectedResult) (err u9999))
@@ -27,11 +27,11 @@
 ;; When ratio is 0 (not initialized), returns none - which is correct
 (define-public (test-get-redemption-for-balance-1m)
   (let (
-      (amountUMia u1000000000000) ;; 1,000,000 Mia
+      (amount-umia u1000000000000) ;; 1,000,000 Mia
       (ratio (contract-call? .ccd013-burn-to-exit-mia get-redemption-ratio))
-      (scaleFactor u1000000)
+      (scale-factor u1000000)
       (result (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
-        amountUMia
+        amount-umia
       ))
     )
     ;; when ratio is 0, expect none; when > 0, verify the formula
@@ -42,12 +42,11 @@
         (ok true)
       )
       ;; initialized - verify the calculation
-      (let (
-          (expectedStx (/ (* ratio amountUMia) scaleFactor))
-        )
+      (let ((expected-stx (/ (* ratio amount-umia) scale-factor)))
         (match result
-          stx (begin
-            (asserts! (is-eq stx expectedStx) (err u9999))
+          redemption
+          (begin
+            (asserts! (is-eq (get ustx redemption) expected-stx) (err u9999))
             (ok true)
           )
           (err u9998) ;; should not be none after init
@@ -59,11 +58,11 @@
 
 (define-public (test-get-redemption-for-balance-10m)
   (let (
-      (amountUMia u10000000000000) ;; 10,000,000 Mia
+      (amount-umia u10000000000000) ;; 10,000,000 Mia
       (ratio (contract-call? .ccd013-burn-to-exit-mia get-redemption-ratio))
-      (scaleFactor u1000000)
+      (scale-factor u1000000)
       (result (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
-        amountUMia
+        amount-umia
       ))
     )
     (if (is-eq ratio u0)
@@ -71,15 +70,14 @@
         (asserts! (is-eq result none) (err u9997))
         (ok true)
       )
-      (let (
-          (expectedStx (/ (* ratio amountUMia) scaleFactor))
-        )
+      (let ((expected-stx (/ (* ratio amount-umia) scale-factor)))
         (match result
-          stx (begin
-            (asserts! (is-eq stx expectedStx) (err stx))
+          redemption
+          (begin
+            (asserts! (is-eq (get ustx redemption) expected-stx) (err u9999))
             (ok true)
           )
-          (err u9998)
+          (err u9998) ;; should not be none after init
         )
       )
     )
@@ -90,11 +88,11 @@
 ;; when not initialized (ratio = 0), returns none
 (define-public (test-get-redemption-for-balance-100m)
   (let (
-      (amountUMia u100000000000000) ;; 100,000,000 Mia
+      (amount-umia u100000000000000) ;; 100,000,000 Mia
       (ratio (contract-call? .ccd013-burn-to-exit-mia get-redemption-ratio))
-      (contractBalance (contract-call? .ccd013-burn-to-exit-mia get-redemption-current-balance))
+      (contract-balance (contract-call? .ccd013-burn-to-exit-mia get-redemption-current-balance))
       (result (contract-call? .ccd013-burn-to-exit-mia get-redemption-for-balance
-        amountUMia
+        amount-umia
       ))
     )
     (if (is-eq ratio u0)
@@ -104,8 +102,9 @@
       )
       ;; initialized - should return (some contractBalance) since amount exceeds available
       (match result
-        stx (begin
-          (asserts! (is-eq stx contractBalance) (err u9999))
+        redemption
+        (begin
+          (asserts! (is-eq (get ustx redemption) contract-balance) (err u9999))
           (ok true)
         )
         (err u9998) ;; should not be none after init

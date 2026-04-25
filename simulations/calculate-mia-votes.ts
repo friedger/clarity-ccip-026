@@ -2,9 +2,8 @@
  * Off-chain calculation of scaled MIA votes and Merkle tree construction.
  *
  * Replicates the get-mia-vote logic from ccip026-miamicoin-burn-to-exit.clar
- * and builds a Merkle tree whose root can be committed on-chain via
- * set-snapshot-root. Voters then submit their proof when calling
- * vote-on-proposal.
+ * and builds a Merkle tree whose root is used in the contract.
+ * Voters then submit their proof when calling vote-on-proposal.
  *
  * Usage:
  *   npx tsx simulations/calculate-mia-votes.ts
@@ -12,7 +11,7 @@
 
 import { Cl, serializeCV, type ClarityValue } from "@stacks/transactions";
 import { stackingData } from "../data/stacking-data";
-import { sha256 as noble_sha256 } from '@noble/hashes/sha2.js';
+import { sha256 as noble_sha256 } from "@noble/hashes/sha2.js";
 // ---------------------------------------------------------------------------
 // Constants (must match the Clarity contract)
 // ---------------------------------------------------------------------------
@@ -170,7 +169,6 @@ export function calculateScaledMiaVote(
   );
 }
 
-
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -185,7 +183,9 @@ async function main() {
     .filter(({ scaledVote }) => scaledVote > 0n);
 
   if (entries.length === 0) {
-    console.log("No eligible voters found. Add stacking data to stackingData array.");
+    console.log(
+      "No eligible voters found. Add stacking data to stackingData array.",
+    );
     return;
   }
 
@@ -207,25 +207,20 @@ async function main() {
     const entry = entries[i];
     const { proof, positions } = proofs[i];
     const voteAfterScaleDown = entry.scaledVote / VOTE_SCALE_FACTOR;
-    if (entry.address === "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A" ||
-        entry.address === "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA") {
-    
-    console.log(`--- ${entry.address} ---`);
-    console.log(`  scaledMiaVoteAmount: u${entry.scaledVote}`);
-    console.log(`  vote (after scale-down): ${voteAfterScaleDown}`);
-    console.log(
-      `  proof: (list ${proof.map((b) => `0x${toHex(b)}`).join(" ")})`,
-    );
-    console.log(`  positions: (list ${positions.join(" ")})`);
-    console.log("");
+    if (
+      entry.address === "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A" ||
+      entry.address === "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA"
+    ) {
+      console.log(`--- ${entry.address} ---`);
+      console.log(`  scaledMiaVoteAmount: u${entry.scaledVote}`);
+      console.log(`  vote (after scale-down): ${voteAfterScaleDown}`);
+      console.log(
+        `  proof: (list ${proof.map((b) => `0x${toHex(b)}`).join(" ")})`,
+      );
+      console.log(`  positions: (list ${positions.join(" ")})`);
+      console.log("");
+    }
   }
-  }
-
-  // Output Clarity-ready set-snapshot-root call
-  console.log("=== Clarity call ===");
-  console.log(
-    `(contract-call? .ccip026-miamicoin-burn-to-exit set-snapshot-root 0x${toHex(root)})`,
-  );
 }
 
 main().catch(console.error);

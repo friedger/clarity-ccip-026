@@ -10,36 +10,36 @@
 )
 
 ;; Property test: vote totals should be consistent after update-city-votes
-(define-public (test-vote-totals-consistency (voteAmount uint) (voteChoice bool))
+(define-public (test-vote-totals-consistency (vote-amount uint) (vote-choice bool))
   (let (
-      (totalsBefore (get-vote-total-mia-or-default))
-      (updated (update-city-votes MIA_ID voteAmount voteChoice false))
-      (totalsAfter (get-vote-total-mia-or-default))
+      (totals-before (get-vote-total-mia-or-default))
+      (updated (update-city-votes MIA_ID vote-amount vote-choice false))
+      (totals-after (get-vote-total-mia-or-default))
     )
-    (if (is-eq voteAmount u0)
+    (if (is-eq vote-amount u0)
       ;; zero amount is ignored by update-city-votes
       (begin
-        (asserts! (is-eq totalsBefore totalsAfter) (err u9999))
+        (asserts! (is-eq totals-before totals-after) (err u9999))
         (ok true)
       )
       (begin
         ;; total vote count should increase by 1
         (let (
-            (expectedTotalVotes (+ (+ (get totalVotesYes totalsBefore) (get totalVotesNo totalsBefore)) u1))
-            (actualTotalVotes (+ (get totalVotesYes totalsAfter) (get totalVotesNo totalsAfter)))
+            (expected-total-votes (+ (+ (get total-votes-yes totals-before) (get total-votes-no totals-before)) u1))
+            (actual-total-votes (+ (get total-votes-yes totals-after) (get total-votes-no totals-after)))
           )
-          (asserts! (is-eq expectedTotalVotes actualTotalVotes) (err u9998))
+          (asserts! (is-eq expected-total-votes actual-total-votes) (err u9998))
         )
         ;; if yes, yes amount should increase
-        (if voteChoice
+        (if vote-choice
           (begin
-            (asserts! (is-eq (get totalAmountYes totalsAfter) (+ (get totalAmountYes totalsBefore) voteAmount)) (err u9997))
-            (asserts! (is-eq (get totalAmountNo totalsAfter) (get totalAmountNo totalsBefore)) (err u9996))
+            (asserts! (is-eq (get total-amount-yes totals-after) (+ (get total-amount-yes totals-before) vote-amount)) (err u9997))
+            (asserts! (is-eq (get total-amount-no totals-after) (get total-amount-no totals-before)) (err u9996))
           )
           ;; if no, no amount should increase
           (begin
-            (asserts! (is-eq (get totalAmountNo totalsAfter) (+ (get totalAmountNo totalsBefore) voteAmount)) (err u9995))
-            (asserts! (is-eq (get totalAmountYes totalsAfter) (get totalAmountYes totalsBefore)) (err u9994))
+            (asserts! (is-eq (get total-amount-no totals-after) (+ (get total-amount-no totals-before) vote-amount)) (err u9995))
+            (asserts! (is-eq (get total-amount-yes totals-after) (get total-amount-yes totals-before)) (err u9994))
           )
         )
         (ok true)
@@ -49,31 +49,31 @@
 )
 
 ;; Property test: changed vote should move amounts between yes and no
-(define-public (test-changed-vote-consistency (voteAmount uint) (voteChoice bool))
+(define-public (test-changed-vote-consistency (vote-amount uint) (vote-choice bool))
   (let (
       ;; first cast a vote in one direction
-      (updated1 (update-city-votes MIA_ID voteAmount (not voteChoice) false))
-      (totalsBefore (get-vote-total-mia-or-default))
+      (updated1 (update-city-votes MIA_ID vote-amount (not vote-choice) false))
+      (totals-before (get-vote-total-mia-or-default))
       ;; then change the vote
-      (updated2 (update-city-votes MIA_ID voteAmount voteChoice true))
-      (totalsAfter (get-vote-total-mia-or-default))
+      (updated2 (update-city-votes MIA_ID vote-amount vote-choice true))
+      (totals-after (get-vote-total-mia-or-default))
     )
-    (if (is-eq voteAmount u0)
+    (if (is-eq vote-amount u0)
       (ok true) ;; zero amount is no-op
       (begin
         ;; total vote count should stay the same (one added, one removed)
         (let (
-            (totalVotesBefore (+ (get totalVotesYes totalsBefore) (get totalVotesNo totalsBefore)))
-            (totalVotesAfter (+ (get totalVotesYes totalsAfter) (get totalVotesNo totalsAfter)))
+            (total-votes-before (+ (get total-votes-yes totals-before) (get total-votes-no totals-before)))
+            (total-votes-after (+ (get total-votes-yes totals-after) (get total-votes-no totals-after)))
           )
-          (asserts! (is-eq totalVotesBefore totalVotesAfter) (err u9993))
+          (asserts! (is-eq total-votes-before total-votes-after) (err u9993))
         )
         ;; total amount should stay the same
         (let (
-            (totalAmountBefore (+ (get totalAmountYes totalsBefore) (get totalAmountNo totalsBefore)))
-            (totalAmountAfter (+ (get totalAmountYes totalsAfter) (get totalAmountNo totalsAfter)))
+            (total-amount-before (+ (get total-amount-yes totals-before) (get total-amount-no totals-before)))
+            (total-amount-after (+ (get total-amount-yes totals-after) (get total-amount-no totals-after)))
           )
-          (asserts! (is-eq totalAmountBefore totalAmountAfter) (err u9992))
+          (asserts! (is-eq total-amount-before total-amount-after) (err u9992))
         )
         (ok true)
       )
@@ -84,12 +84,12 @@
 ;; Property test: is-executable should only return true when yes votes exceed no votes
 (define-public (test-executable-condition)
   (let (
-      (voteTotals (get-vote-total-mia-or-default))
+      (vote-totals (get-vote-total-mia-or-default))
       (executable (is-executable))
-      (yesVotes (get totalVotesYes voteTotals))
-      (noVotes (get totalVotesNo voteTotals))
+      (yes-votes (get total-votes-yes vote-totals))
+      (no-votes (get total-votes-no vote-totals))
     )
-    (if (> yesVotes noVotes)
+    (if (> yes-votes no-votes)
       ;; yes > no: should be executable
       (asserts! (is-ok executable) (err u9989))
       ;; yes <= no: should not be executable
@@ -106,14 +106,14 @@
       (period2 (get-vote-period))
     )
     (match period1
-      periodData1 (begin
+      period-data-1 (begin
         (match period2
-          periodData2 (begin
-            (asserts! (is-eq (get startBlock periodData1) (get startBlock periodData2)) (err u9984))
-            (asserts! (is-eq (get endBlock periodData1) (get endBlock periodData2)) (err u9983))
-            (asserts! (is-eq (get length periodData1) (get length periodData2)) (err u9982))
+          period-data-2 (begin
+            (asserts! (is-eq (get start-block period-data-1) (get start-block period-data-2)) (err u9984))
+            (asserts! (is-eq (get end-block period-data-1) (get end-block period-data-2)) (err u9983))
+            (asserts! (is-eq (get length period-data-1) (get length period-data-2)) (err u9982))
             ;; vote length should be VOTE_LENGTH (2016 blocks)
-            (asserts! (is-eq (get length periodData1) u2016) (err u9981))
+            (asserts! (is-eq (get length period-data-1) u2016) (err u9981))
             (ok true)
           )
           (err u9980)
@@ -125,15 +125,15 @@
 )
 
 ;; Property test: total amounts should never decrease on new votes (non-changed)
-(define-public (test-vote-totals-monotonicity (voteAmount uint) (voteChoice bool))
+(define-public (test-vote-totals-monotonicity (vote-amount uint) (vote-choice bool))
   (let (
-      (totalsBefore (get-vote-total-mia-or-default))
-      (updated (update-city-votes MIA_ID voteAmount voteChoice false))
-      (totalsAfter (get-vote-total-mia-or-default))
-      (totalAmountBefore (+ (get totalAmountYes totalsBefore) (get totalAmountNo totalsBefore)))
-      (totalAmountAfter (+ (get totalAmountYes totalsAfter) (get totalAmountNo totalsAfter)))
+      (totals-before (get-vote-total-mia-or-default))
+      (updated (update-city-votes MIA_ID vote-amount vote-choice false))
+      (totals-after (get-vote-total-mia-or-default))
+      (total-amount-before (+ (get total-amount-yes totals-before) (get total-amount-no totals-before)))
+      (total-amount-after (+ (get total-amount-yes totals-after) (get total-amount-no totals-after)))
     )
-    (asserts! (>= totalAmountAfter totalAmountBefore) (err u9972))
+    (asserts! (>= total-amount-after total-amount-before) (err u9972))
     (ok true)
   )
 )
@@ -144,8 +144,8 @@
 (define-read-only (invariant-vote-amounts-consistent)
   (let ((totals (get-vote-total-mia-or-default)))
     (and
-      (implies (> (get totalAmountYes totals) u0) (> (get totalVotesYes totals) u0))
-      (implies (> (get totalAmountNo totals) u0) (> (get totalVotesNo totals) u0))
+      (implies (> (get total-amount-yes totals) u0) (> (get total-votes-yes totals) u0))
+      (implies (> (get total-amount-no totals) u0) (> (get total-votes-no totals) u0))
     )
   )
 )

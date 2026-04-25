@@ -39,20 +39,20 @@ const checkVotes = async (
 ) => {
   const result = simnet.getMapEntry(
     "ccip026-miamicoin-burn-to-exit",
-    "CityVotes",
+    "city-votes",
     uintCV(1)
   ) as SomeCV<
     TupleCV<{
-      totalAmountYes: UIntCV;
-      totalAmountNo: UIntCV;
-      totalVotesYes: UIntCV;
-      totalVotesNo: UIntCV;
+      'total-amount-yes': UIntCV;
+      'total-amount-no': UIntCV;
+      'total-votes-yes': UIntCV;
+      'total-votes-no': UIntCV;
     }>
   >;
-  expect(result.value.value.totalAmountYes.value).toBe(totalAmountYes);
-  expect(result.value.value.totalVotesYes.value).toBe(totalVotesYes);
-  expect(result.value.value.totalAmountNo.value).toBe(totalAmountNo);
-  expect(result.value.value.totalVotesNo.value).toBe(totalVotesNo);
+  expect(result.value.value['total-amount-yes'].value).toBe(totalAmountYes);
+  expect(result.value.value['total-votes-yes'].value).toBe(totalVotesYes);
+  expect(result.value.value['total-amount-no'].value).toBe(totalAmountNo);
+  expect(result.value.value['total-votes-no'].value).toBe(totalVotesNo);
 };
 
 const checkIsExecutable = (response: {ok: boolean} | {error: bigint}) => {

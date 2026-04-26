@@ -226,8 +226,8 @@ export function BurnExitPage() {
           hint={info ? `raw: ${info.ratio.toString()}` : undefined}
         />
         <Stat
-          label="Treasury STX (live)"
-          value={treasuryStx == null ? "..." : formatUStx(treasuryStx)}
+          label="Treasury unlocked STX"
+          value={treasuryStx == null ? "..." : `${formatUStx(treasuryStx)}`}
           hint={`${MIA_REWARDS_TREASURY.address}.${MIA_REWARDS_TREASURY.name}`}
         />
         <Stat

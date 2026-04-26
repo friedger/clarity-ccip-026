@@ -1,9 +1,50 @@
 import {
-  cvToValue,
+  ClarityType,
   fetchCallReadOnlyFunction,
   type ClarityValue,
 } from "@stacks/transactions";
 import { HIRO_API, STACKS_NETWORK } from "./config";
+
+// Recursively unwraps a ClarityValue into plain JS. Replaces
+// `cvToValue(cv, true)` from @stacks/transactions, which (since v7) wraps
+// every nested value in `{type, value}` envelopes — producing shapes the
+// rest of the UI cannot read. Mirrors the v6 "strict JSON" output:
+// optionals collapse to inner-value-or-null, tuples to flat objects,
+// uints to decimal strings, buffers to 0x-prefixed hex.
+export function unwrapCv(cv: ClarityValue): unknown {
+  switch (cv.type) {
+    case ClarityType.BoolTrue:
+      return true;
+    case ClarityType.BoolFalse:
+      return false;
+    case ClarityType.Int:
+    case ClarityType.UInt:
+      return cv.value.toString();
+    case ClarityType.Buffer:
+      return `0x${cv.value}`;
+    case ClarityType.OptionalNone:
+      return null;
+    case ClarityType.OptionalSome:
+    case ClarityType.ResponseOk:
+    case ClarityType.ResponseErr:
+      return unwrapCv(cv.value);
+    case ClarityType.PrincipalStandard:
+    case ClarityType.PrincipalContract:
+      return cv.value;
+    case ClarityType.List:
+      return cv.value.map(unwrapCv);
+    case ClarityType.Tuple: {
+      const out: Record<string, unknown> = {};
+      for (const k of Object.keys(cv.value)) {
+        out[k] = unwrapCv(cv.value[k]);
+      }
+      return out;
+    }
+    case ClarityType.StringASCII:
+    case ClarityType.StringUTF8:
+      return cv.value;
+  }
+}
 
 export interface ContractRef {
   address: string;
@@ -85,7 +126,7 @@ export class HiroClient implements ReadOnlyClient {
       senderAddress: NULL_SENDER,
       client: { baseUrl: this.baseUrl },
     });
-    return cvToValue(cv, true) as T;
+    return unwrapCv(cv) as T;
   }
 
   async fetchAccount(target: string): Promise<AccountState> {

@@ -85,7 +85,7 @@ match    ${rootMatches ? "✓" : "✗"}`,
         {
           label: "Verify the treasury balance",
           detail:
-            "The 'Treasury STX (live)' stat is fetched from /v2/accounts on the rewards treasury contract; it decreases as redemptions land. Cross-check on the explorer.",
+            "The 'Treasury unlocked STX' stat is fetched from /v2/accounts on the rewards treasury contract; it decreases as redemptions land. Cross-check on the explorer.",
           code: `https://explorer.hiro.so/address/${MIA_REWARDS_TREASURY.address}.${MIA_REWARDS_TREASURY.name}?chain=mainnet`,
         },
         {

@@ -263,12 +263,8 @@ code {
 /* Grids ------------------------------------------------------------- */
 
 .grid { display: grid; gap: 0; }
-.stats-grid { grid-template-columns: repeat(4, 1fr); gap: 0; }
-.stats-grid .stat {
-  padding: 0 20px 0 0;
-  border-right: 1px solid var(--rule);
-}
-.stats-grid .stat:last-child { border-right: none; padding-right: 0; }
+.stats-grid { grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.stats-grid .stat { padding: 0; }
 
 .two-col {
   grid-template-columns: 1fr 1fr;
@@ -277,8 +273,7 @@ code {
 .two-col > * { min-width: 0; }
 
 @media (max-width: 800px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
-  .stats-grid .stat:nth-child(2n) { border-right: none; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 24px; }
   .two-col { grid-template-columns: 1fr; gap: 32px; }
 }
 

@@ -306,17 +306,21 @@ export function VotePage() {
               <div className="vote-buttons">
                 <button
                   className="btn btn-yes"
-                  disabled={busy || active === false}
+                  disabled={
+                    busy || active === false || voterRecord?.vote === true
+                  }
                   onClick={() => vote(true)}
                 >
-                  Vote YES
+                  {voterRecord?.vote === false ? "Change to YES" : "Vote YES"}
                 </button>
                 <button
                   className="btn btn-no"
-                  disabled={busy || active === false}
+                  disabled={
+                    busy || active === false || voterRecord?.vote === false
+                  }
                   onClick={() => vote(false)}
                 >
-                  Vote NO
+                  {voterRecord?.vote === true ? "Change to NO" : "Vote NO"}
                 </button>
               </div>
               <TermsNotice />

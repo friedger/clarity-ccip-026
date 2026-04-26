@@ -42,7 +42,25 @@ export default function App() {
       {page === "verify" && <VerifyPage />}
       <footer className="footer">
         <span>CCIP-026 · MiamiCoin Burn to Exit</span>
-        <span>Independent UI · Verify on-chain</span>
+        <span>
+          <a
+            className="link"
+            href="https://github.com/friedger/clarity-ccip-026"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Source on GitHub
+          </a>
+          {" · "}
+          <a
+            className="link"
+            href="https://github.com/friedger/clarity-ccip-026/issues/new"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Report an issue
+          </a>
+        </span>
         <span>{new Date().getFullYear()} · Stacks Mainnet</span>
       </footer>
       <TermsGate />

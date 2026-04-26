@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F0D10"/>
+      <stop offset="1" stop-color="#15131A"/>
+    </linearGradient>
+    <linearGradient id="mintGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7CFFB2" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#7CFFB2" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="pinkGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF2E63" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FF2E63" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="430" width="600" height="200" fill="url(#mintGlow)"/>
+  <rect x="600" y="430" width="600" height="200" fill="url(#pinkGlow)"/>
+
+  <!-- hairline rules -->
+  <line x1="80" y1="120" x2="1120" y2="120" stroke="#2A2630" stroke-width="1"/>
+  <line x1="80" y1="510" x2="1120" y2="510" stroke="#2A2630" stroke-width="1"/>
+
+  <!-- top tag -->
+  <text x="80" y="100" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="18" font-weight="500" fill="#9A9085" letter-spacing="3">CCIP-026 · STACKS · MIAMI</text>
+
+  <!-- title -->
+  <text x="80" y="240" font-family="Fraunces, Georgia, serif" font-size="92" font-weight="400" fill="#F2EBDE" letter-spacing="-2">MiamiCoin</text>
+  <text x="80" y="340" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="92" font-weight="400" fill="#7CFFB2" letter-spacing="-2">Burn to Exit</text>
+
+  <!-- subtitle -->
+  <text x="80" y="410" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="26" fill="#9A9085">Redeem MIA for a proportional share of the rewards treasury.</text>
+  <text x="80" y="448" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="26" fill="#9A9085">Snapshot-verified voting · open to MIA stackers cycles 82–83.</text>
+
+  <!-- footer row -->
+  <text x="80" y="570" font-family="JetBrains Mono, monospace" font-size="20" fill="#5A5350">vote · burn · verify</text>
+  <text x="1120" y="570" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="20" fill="#5A5350">stacks mainnet</text>
+</svg>

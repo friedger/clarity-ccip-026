@@ -11,6 +11,11 @@
 
 import { Cl, serializeCV, type ClarityValue } from "@stacks/transactions";
 import { stackingData } from "../data/stacking-data";
+import {
+  MIA_ID,
+  VOTE_SCALE_FACTOR,
+  scaledVoteFromCycles,
+} from "../data/scaled-vote";
 import { sha256 as noble_sha256 } from "@noble/hashes/sha2.js";
 // ---------------------------------------------------------------------------
 // Constants (must match the Clarity contract)
@@ -18,8 +23,6 @@ import { sha256 as noble_sha256 } from "@noble/hashes/sha2.js";
 
 const MERKLE_LEAF_TAG = new TextEncoder().encode("merkle-leaf");
 const MERKLE_PARENT_TAG = new TextEncoder().encode("merkle-parent");
-const VOTE_SCALE_FACTOR = 10n ** 16n;
-const MIA_ID = 1n;
 
 // ---------------------------------------------------------------------------
 // Hex helpers
@@ -146,30 +149,6 @@ function buildMerkleTree(leaves: Uint8Array[]): {
 }
 
 // ---------------------------------------------------------------------------
-// Scaled MIA vote calculation (replicates get-mia-vote with scaled=true)
-// ---------------------------------------------------------------------------
-
-/**
- * Calculates the scaled MIA vote amount for a user.
- *
- * Formula (from the Clarity contract):
- *   scaledVote = (scale-up(cycle82Amount) + scale-up(cycle83Amount)) / 2
- * where scale-up(x) = x * VOTE_SCALE_FACTOR
- *
- * @param cycle82Amount - MIA stacked in cycle 82 (micro units)
- * @param cycle83Amount - MIA stacked in cycle 83 (micro units)
- * @returns The scaled vote amount (before scale-down)
- */
-export function calculateScaledMiaVote(
-  cycle82Amount: bigint,
-  cycle83Amount: bigint,
-): bigint {
-  return (
-    (cycle82Amount * VOTE_SCALE_FACTOR + cycle83Amount * VOTE_SCALE_FACTOR) / 2n
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -178,7 +157,7 @@ async function main() {
   const entries = stackingData
     .map(({ address, cycle82Stacked, cycle83Stacked }) => ({
       address,
-      scaledVote: calculateScaledMiaVote(cycle82Stacked, cycle83Stacked),
+      scaledVote: scaledVoteFromCycles(cycle82Stacked, cycle83Stacked),
     }))
     .filter(({ scaledVote }) => scaledVote > 0n);
 

@@ -11,7 +11,7 @@ import {
 import { SimulationBuilder } from "stxer";
 import fs from "fs";
 import { stackingData } from "../data/stacking-data";
-import { calculateScaledMiaVote } from "./calculate-mia-votes";
+import { scaledVoteFromCycles } from "../data/scaled-vote";
 import { buildMerkleTree, type VoterEntry } from "../tests/merkle-helpers";
 
 const contract_name = "ccip026-miamicoin-burn-to-exit";
@@ -29,7 +29,7 @@ const common_params = {
 const voters: VoterEntry[] = stackingData
   .map((entry) => ({
     address: entry.address,
-    scaledVote: calculateScaledMiaVote(
+    scaledVote: scaledVoteFromCycles(
       entry.cycle82Stacked,
       entry.cycle83Stacked,
     ),

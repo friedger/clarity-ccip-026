@@ -9,6 +9,7 @@
     "test:report": "vitest run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
     "test:stxer": "npx tsx simulations/ccip026-stxer.ts",
+    "verify:root": "npx tsx simulations/verify-snapshot-root.ts",
     "test:rv": "rv . ccd013-burn-to-exit-mia test",
     "test:rv2": "rv . ccd013-burn-to-exit-mia invariant",
     "test:rv3": "rv . ccip026-miamicoin-burn-to-exit test",

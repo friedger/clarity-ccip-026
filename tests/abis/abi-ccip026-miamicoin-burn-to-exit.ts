@@ -320,7 +320,7 @@ export const abiCcip026MiamicoinBurnToExit = {
                 "name": "hash",
                 "type": {
                   "string-ascii": {
-                    "length": 0
+                    "length": 40
                   }
                 }
               },
@@ -544,7 +544,7 @@ export const abiCcip026MiamicoinBurnToExit = {
             "name": "hash",
             "type": {
               "string-ascii": {
-                "length": 0
+                "length": 40
               }
             }
           },

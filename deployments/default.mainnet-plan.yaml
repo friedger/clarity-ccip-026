@@ -1,0 +1,38 @@
+id: 0
+name: Mainnet deployment
+network: mainnet
+stacks-node: https://api.hiro.so
+bitcoin-node: http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332
+plan:
+  batches:
+  - id: 0
+    transactions:
+    - transaction-type: contract-publish
+      contract-name: ccd013-burn-to-exit-mia
+      expected-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
+      cost: 908753
+      path: contracts/ccd013-burn-to-exit-mia.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccd013-burn-to-exit-mia_test
+      expected-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
+      cost: 906603
+      path: tests/ccd013-burn-to-exit-mia_test.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccip026-miamicoin-burn-to-exit
+      expected-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
+      cost: 908716
+      path: contracts/ccip026-miamicoin-burn-to-exit.clar
+      anchor-block-only: true
+      clarity-version: 5
+    - transaction-type: contract-publish
+      contract-name: ccip026-miamicoin-burn-to-exit_flow_test
+      expected-sender: SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9
+      cost: 906418
+      path: tests/ccip026-miamicoin-burn-to-exit_flow_test.clar
+      anchor-block-only: true
+      clarity-version: 5
+    epoch: '3.4'

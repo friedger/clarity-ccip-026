@@ -21,6 +21,10 @@ import {
 
 export default defineConfig({
   test: {
+    // The UI app under ui/ has its own vitest config and doesn't need the
+    // clarinet env. Keep the root suite scoped to contract tests.
+    include: ["tests/**/*.test.ts"],
+    exclude: ["ui/**", "node_modules/**"],
     // use vitest-environment-clarinet
     environment: "clarinet",
     pool: "forks",

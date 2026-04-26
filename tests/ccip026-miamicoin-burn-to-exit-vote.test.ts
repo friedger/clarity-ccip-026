@@ -9,7 +9,7 @@ import {
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { stackingData } from "../data/stacking-data";
-import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
+import { scaledVoteFromCycles } from "../data/scaled-vote";
 import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn-to-exit";
 import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
@@ -23,7 +23,7 @@ const VOTER_B_SCALED = 2086372000000n * VOTE_SCALE_FACTOR;
 
 const voters: VoterEntry[] = stackingData.map((entry) => ({
   address: entry.address,
-  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+  scaledVote: scaledVoteFromCycles(entry.cycle82Stacked, entry.cycle83Stacked),
 })).filter(({ scaledVote }) => scaledVote > 0n);
 
 const { proofs } = buildMerkleTree(voters);

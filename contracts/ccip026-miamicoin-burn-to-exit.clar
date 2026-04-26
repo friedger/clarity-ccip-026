@@ -29,7 +29,7 @@
 ;; Proposal metadata
 (define-constant CCIP_026 {
   name: "MiamiCoin Burn to Exit",
-  link: "https://github.com/citycoins/governance/blob/feat/add-ccip-026/ccips/ccip-026/ccip-026-miamicoin-burn-to-exit.md",
+  link: "https://github.com/citycoins/governance/blob/d73c5d9bbd51f785454e60790b4b6be74d42d63d/ccips/ccip-026/ccip-026-miamicoin-burn-to-exit.md",
   hash: "d73c5d9bbd51f785454e60790b4b6be74d42d63d",
 })
 

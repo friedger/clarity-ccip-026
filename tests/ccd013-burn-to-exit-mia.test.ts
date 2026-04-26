@@ -3,7 +3,7 @@ import { Cl, uintCV } from "@stacks/transactions";
 import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 import { describe, expect, it } from "vitest";
 import { stackingData } from "../data/stacking-data";
-import { calculateScaledMiaVote } from "../simulations/calculate-mia-votes";
+import { scaledVoteFromCycles } from "../data/scaled-vote";
 import { abiCcd013BurnToExitMia } from "./abis/abi-ccd013-burn-to-exit-mia";
 import {
   convertToV2,
@@ -23,7 +23,7 @@ const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
 const voters: VoterEntry[] = stackingData
   .map((entry) => ({
     address: entry.address,
-    scaledVote: calculateScaledMiaVote(
+    scaledVote: scaledVoteFromCycles(
       entry.cycle82Stacked,
       entry.cycle83Stacked,
     ),
@@ -348,7 +348,7 @@ describe("CCD013 Burn to Exit MIA", () => {
     const txReceiptDirectExecute = directExecute(
       "SP7DGES13508FHRWS1FB0J3SZA326FP6QRMB6JDE",
     );
-    expect(txReceiptDirectExecute.result).toEqual({ error: 901 }); // ERR_ALREADY_EXECUTED
+    expect(txReceiptDirectExecute.result).toEqual({ error: 901n }); // ERR_ALREADY_EXECUTED
   });
 
   it("should return error when voting with invalid proof", () => {

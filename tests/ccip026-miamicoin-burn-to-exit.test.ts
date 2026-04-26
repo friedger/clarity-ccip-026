@@ -15,14 +15,14 @@ import { abiCcip026MiamicoinBurnToExit } from "./abis/abi-ccip026-miamicoin-burn
 import { vote } from "./clients/ccip026-miamicoin-burn-to-exit-client";
 import { buildMerkleTree, type VoterEntry } from "./merkle-helpers";
 import { stackingData } from '../data/stacking-data';
-import { calculateScaledMiaVote } from '../simulations/calculate-mia-votes';
+import { scaledVoteFromCycles } from '../data/scaled-vote';
 
 const VOTER_A = "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA";
 const VOTER_B = "SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A";
 
 const voters: VoterEntry[] = stackingData.map((entry) => ({
   address: entry.address,
-  scaledVote: calculateScaledMiaVote(entry.cycle82Stacked, entry.cycle83Stacked),
+  scaledVote: scaledVoteFromCycles(entry.cycle82Stacked, entry.cycle83Stacked),
 })).filter(({ scaledVote }) => scaledVote > 0n);
 
 const { proofs } = buildMerkleTree(voters);
@@ -58,8 +58,8 @@ describe("CCIP026 Core", () => {
     });
 
     expect(proposalInfo.result).toEqual({
-      hash: "",
-      link: "https://github.com/citycoins/governance/blob/eea941ea40c16428b4806d1808e7dab9fc095e0a/ccips/ccip-026/ccip-026-miamicoin-burn-to-exit.md",
+      hash: "d73c5d9bbd51f785454e60790b4b6be74d42d63d",
+      link: "https://github.com/citycoins/governance/blob/d73c5d9bbd51f785454e60790b4b6be74d42d63d/ccips/ccip-026/ccip-026-miamicoin-burn-to-exit.md",
       name: "MiamiCoin Burn to Exit",
     });
   });

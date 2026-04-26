@@ -20,19 +20,23 @@ requirements = [
 
 [contracts.ccd013-burn-to-exit-mia]
 path = "contracts/ccd013-burn-to-exit-mia.clar"
+clarity_version = 5
 epoch = "3.4"
 
 [contracts.ccip026-miamicoin-burn-to-exit]
 path = "contracts/ccip026-miamicoin-burn-to-exit.clar"
+clarity_version = 5
 epoch = "3.4"
 
 ### tests
 [contracts.ccd013-burn-to-exit-mia_test]
 path = "tests/ccd013-burn-to-exit-mia_test.clar"
+clarity_version = 5
 epoch = "3.4"
 
 [contracts.ccip026-miamicoin-burn-to-exit_flow_test]
 path = "tests/ccip026-miamicoin-burn-to-exit_flow_test.clar"
+clarity_version = 5
 epoch = "3.4"
 
 [repl.remote_data]

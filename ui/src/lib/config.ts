@@ -1,12 +1,15 @@
 // Network + contract addresses. Override the deployer at deploy time.
 
-export const HIRO_API = "https://api.hiro.so";
+// In production we proxy Hiro through a same-origin path so the API key stays
+// server-side (see ui/netlify.toml + ui/netlify/edge-functions/hiro-proxy.ts).
+// In dev the Vite proxy in vite.config.ts forwards /hiro/* to api.hiro.so.
+export const HIRO_API =
+  (import.meta.env.VITE_HIRO_API as string | undefined) ?? "/hiro";
 export const STACKS_NETWORK = "mainnet" as const;
 
-// CCIP-026 + ccd013 are deployed by the proposer wallet. Set this to the
-// actual deployer once known. Leave empty to surface a clear UI error.
 export const CCIP_DEPLOYER =
-  (import.meta.env.VITE_CCIP_DEPLOYER as string | undefined) ?? "";
+  (import.meta.env.VITE_CCIP_DEPLOYER as string | undefined) ??
+  "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9";
 
 export const CCIP_026 = {
   address: CCIP_DEPLOYER,

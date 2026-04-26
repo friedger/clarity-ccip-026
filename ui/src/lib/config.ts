@@ -43,6 +43,14 @@ export const USER_REGISTRY = {
   name: "ccd003-user-registry",
 };
 
+// PoX-4: Stacks consensus stacking contract. Used to check / grant the
+// "contract caller allowance" that wrappers (e.g. Fast Pool) need before
+// they can delegate-stx on the user's behalf.
+export const POX_4 = {
+  address: "SP000000000000000000002Q6VF78",
+  name: "pox-4",
+};
+
 // Fast Pool: STX delegated stacking via PoX-4. Override via env if needed.
 export const FAST_POOL = {
   address:

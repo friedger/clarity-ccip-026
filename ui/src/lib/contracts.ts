@@ -5,9 +5,10 @@ import {
   MIA_REWARDS_TREASURY,
   MIA_V1,
   MIA_V2,
+  POX_4,
   USER_REGISTRY,
 } from "./config";
-import type { ReadOnlyClient } from "./api";
+import type { ContractRef, ReadOnlyClient } from "./api";
 
 // --- domain types ---
 
@@ -187,6 +188,35 @@ export class Ccip026Service {
       mia: string;
     } | null>(CCIP_026, "get-voter-info", [Cl.uint(userId)]);
     return v ? { vote: v.vote, mia: BigInt(v.mia) } : null;
+  }
+}
+
+/**
+ * Thin read-only access to the `SP000…002Q6VF78.pox-4` consensus contract.
+ * Today only used to inspect whether the user has already granted a wrapper
+ * (Fast Pool) permission to call delegate-stx on their behalf.
+ */
+export class Pox4Service {
+  constructor(private readonly client: ReadOnlyClient) {}
+
+  /**
+   * Returns the allowance entry for `sender → callingContract`, or null when
+   * the sender has not granted the caller. `untilBurnHt` is `null` when the
+   * grant is open-ended.
+   */
+  async getAllowanceContractCallers(
+    sender: string,
+    callingContract: ContractRef,
+  ): Promise<{ untilBurnHt: bigint | null } | null> {
+    const raw = await this.client.callReadOnly<{
+      "until-burn-ht": string | null;
+    } | null>(POX_4, "get-allowance-contract-callers", [
+      Cl.principal(sender),
+      Cl.principal(`${callingContract.address}.${callingContract.name}`),
+    ]);
+    if (!raw) return null;
+    const u = raw["until-burn-ht"];
+    return { untilBurnHt: u == null ? null : BigInt(u) };
   }
 }
 

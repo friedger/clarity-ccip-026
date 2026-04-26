@@ -13,14 +13,11 @@ describe("AUTO_COMPOUND_USTX", () => {
 });
 
 describe("recommendedUstx", () => {
-  it("subtracts the 1 STX fee reserve", () => {
-    expect(recommendedUstx(10_000_000n)).toBe(10_000_000n - RESERVE_USTX);
-  });
-
-  it("returns 0 when balance is below the reserve", () => {
+  it("returns the full liquid balance — Fast Pool keeps the 1 STX reserve on-chain", () => {
+    expect(recommendedUstx(10_000_000n)).toBe(10_000_000n);
     expect(recommendedUstx(0n)).toBe(0n);
-    expect(recommendedUstx(500_000n)).toBe(0n);
-    expect(recommendedUstx(RESERVE_USTX)).toBe(0n);
+    // RESERVE_USTX is exposed for hint copy only; it no longer gates input.
+    expect(recommendedUstx(RESERVE_USTX)).toBe(RESERVE_USTX);
   });
 });
 
@@ -64,23 +61,23 @@ describe("deriveFastPoolAmount", () => {
     expect(out.error).toMatch(/greater than 0/i);
   });
 
-  it("flags amounts above (balance - 1 STX)", () => {
+  it("flags amounts above the full liquid balance", () => {
     const out = deriveFastPoolAmount({
       autoCompound: false,
       inputStx: "100",
-      availableUstx: 50_000_000n, // 50 STX, recommended max = 49 STX
+      availableUstx: 50_000_000n, // 50 STX
     });
     expect(out.error).toMatch(/exceeds/i);
     expect(out.ustx).toBe(100_000_000n); // value still echoed for transparency
   });
 
-  it("accepts the exact recommended max", () => {
+  it("accepts the exact full balance — Fast Pool subtracts the 1 STX reserve on-chain", () => {
     const out = deriveFastPoolAmount({
       autoCompound: false,
-      inputStx: "49",
+      inputStx: "50",
       availableUstx: 50_000_000n,
     });
-    expect(out.ustx).toBe(49_000_000n);
+    expect(out.ustx).toBe(50_000_000n);
     expect(out.error).toBeUndefined();
   });
 });

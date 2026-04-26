@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Cl, serializeCV } from "@stacks/transactions";
+import { hexToBytes} from "@stacks/common";
+import { Cl, cvToHex, serializeCV } from "@stacks/transactions";
 import { Stat } from "../components/Stat";
 import { TermsNotice } from "../components/TermsGate";
 import { Toggle } from "../components/Toggle";
@@ -11,6 +12,7 @@ import {
 } from "../lib/config";
 import type { RedemptionInfo, UserRedemption } from "../lib/contracts";
 import {
+  allowContractCaller,
   deriveFastPoolAmount,
   recommendedUstx,
   RESERVE_USTX,
@@ -22,7 +24,7 @@ import {
   shortAddress,
 } from "../lib/format";
 import { buildRedeemPostConditions } from "../lib/postConditions";
-import { getCcd013, getReadOnlyClient } from "../lib/services";
+import { getCcd013, getPox4, getReadOnlyClient } from "../lib/services";
 import { callContract, useWallet } from "../lib/wallet";
 
 export function BurnExitPage() {
@@ -48,6 +50,11 @@ export function BurnExitPage() {
   const [autoCompound, setAutoCompound] = useState(true);
   const [delegateInput, setDelegateInput] = useState("");
   const [delegateInputDirty, setDelegateInputDirty] = useState(false);
+  // null   → not yet fetched
+  // false  → fetched, user has NOT allowed Fast Pool on pox-4
+  // true   → fetched, user HAS allowed Fast Pool on pox-4
+  const [callerAllowed, setCallerAllowed] = useState<boolean | null>(null);
+  const [allowTxid, setAllowTxid] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,26 +88,32 @@ export function BurnExitPage() {
     if (!wallet.address) {
       setUser(null);
       setStacking(null);
+      setCallerAllowed(null);
       return;
     }
     const svc = getCcd013();
+    const pox4 = getPox4();
     const client = getReadOnlyClient();
     (async () => {
       try {
-        const [u, s] = await Promise.all([
+        const [u, s, allowance] = await Promise.all([
           svc.getUserRedemptionInfo(
             wallet.address!,
             amountInput ? parseUmia(amountInput) : undefined,
           ),
           client.fetchAccount(wallet.address!),
+          pox4
+            .getAllowanceContractCallers(wallet.address!, FAST_POOL)
+            .catch(() => null),
         ]);
         setUser(u);
         setStacking(s);
+        setCallerAllowed(allowance != null);
       } catch (e) {
         console.error(e);
       }
     })();
-  }, [wallet.address, amountInput]);
+  }, [wallet.address, amountInput, allowTxid]);
 
   async function redeem() {
     if (!wallet.address || !user) return;
@@ -165,6 +178,7 @@ export function BurnExitPage() {
     if (!wallet.address) return;
     setErr(null);
     setStackTxid(null);
+    setAllowTxid(null);
     if (delegateAmount.error) {
       setErr(delegateAmount.error);
       return;
@@ -175,14 +189,42 @@ export function BurnExitPage() {
     }
     setBusy(true);
     try {
-      // delegate-stx(amount, delegate-to, until-burn-ht, pox-addr)
-      // No PC list needed: delegate-stx writes a delegation row, no asset
-      // transfer happens. Deny mode is still correct because nothing moves.
+      // If the user hasn't yet granted Fast Pool permission to call
+      // delegate-stx on their behalf, surface a wallet popup for the
+      // allowance first. We don't wait for confirmation — Stacks mempool
+      // ordering means the delegate-stx tx (submitted right after) lands in
+      // the same block as long as it's broadcast from the same nonce
+      // sequence, so a single user flow yields two popups in a row.
+      if (callerAllowed === false) {
+        try {
+          const allow = await allowContractCaller(FAST_POOL);
+          if (allow.txid) setAllowTxid(allow.txid);
+          // Optimistically flip local state so the gate doesn't re-trigger
+          // if the user clicks again before the read-only refetch completes.
+          setCallerAllowed(true);
+        } catch (e) {
+          setErr(e instanceof Error ? e.message : String(e));
+          return;
+        }
+      }
+      // Fast Pool's pox4-multi-pool-v1.delegate-stx wraps PoX-4 and takes
+      //   (amount-ustx uint) (user-data (buff 2048))
+      // — not the raw PoX-4 4-tuple. user-data is an indicative payload for
+      // the pool operator; we tag it with the proposal name so operators can
+      // trace which UI delegated.
       const args = [
         Cl.uint(delegateAmount.ustx),
-        Cl.principal(`${FAST_POOL.address}.${FAST_POOL.name}`),
-        Cl.none(),
-        Cl.none(),
+        Cl.buffer(
+          hexToBytes(
+            cvToHex(
+              Cl.tuple({
+                c: Cl.stringAscii("sbtc"),
+                v: Cl.uint(1),
+                s: Cl.stringAscii("ccip-026"),
+              }),
+            ),
+          ),
+        ),
       ];
       const result = await callContract({
         contract: `${FAST_POOL.address}.${FAST_POOL.name}`,
@@ -190,17 +232,18 @@ export function BurnExitPage() {
         functionArgs: args.map((a) => `0x${serializeCV(a)}`),
         postConditionMode: "deny",
       });
+      console.log(result);
       if (result.txid) setStackTxid(result.txid);
     } catch (e) {
+      console.log(e);
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }
   }
 
-  const ratioStxPerMia = info && info.ratio > 0n
-    ? Number(info.ratio) / 1_000_000
-    : 0;
+  const ratioStxPerMia =
+    info && info.ratio > 0n ? Number(info.ratio) / 1_000_000 : 0;
 
   return (
     <main className="page">
@@ -209,8 +252,8 @@ export function BurnExitPage() {
         <h1>Burn MIA · Receive STX</h1>
         <p className="hero-lede">
           The fixed redemption ratio was sealed at initialization. Burns v1
-          first, then v2, and receive STX from the rewards treasury in one atomic
-          transaction.
+          first, then v2, and receive STX from the rewards treasury in one
+          atomic transaction.
         </p>
       </section>
 
@@ -265,10 +308,7 @@ export function BurnExitPage() {
                     : "..."}
                 </strong>
               </div>
-              <button
-                className="btn btn-primary full"
-                onClick={wallet.connect}
-              >
+              <button className="btn btn-primary full" onClick={wallet.connect}>
                 Connect wallet
               </button>
             </>
@@ -372,9 +412,8 @@ export function BurnExitPage() {
         <div className="card">
           <h2>Stacking state</h2>
           <p className="muted small">
-            After execute, ccd013 calls{" "}
-            <code>revoke-delegate-stx</code> on the rewards treasury so STX
-            unlocks for redemption.
+            After execute, ccd013 calls <code>revoke-delegate-stx</code> on the
+            rewards treasury so STX unlocks for redemption.
           </p>
           <div className="kv">
             <div>Treasury locked</div>
@@ -428,16 +467,16 @@ export function BurnExitPage() {
           <h2>Keep stacking with Fast Pool</h2>
           <p>
             Once you've redeemed, your STX can keep working. Fast Pool is the
-            longest running, most transparent,
-            non-custodial PoX-4 stacking pool: you delegate, they aggregate stacking
-            slots, your tokens never leave your wallet.
+            longest running, most transparent, non-custodial PoX-4 stacking
+            pool: you delegate, they aggregate stacking slots, your tokens never
+            leave your wallet, sBTC rewards will arrive in your wallet.
           </p>
 
           <Toggle
             checked={autoCompound}
             onChange={setAutoCompound}
             label="Auto-compound rewards"
-            hint={`Delegate 1,000m STX so Fast Pool can re-stack future rewards. Only your liquid balance minus ${formatUStx(RESERVE_USTX, 0)} STX (fee reserve) gets locked.`}
+            hint={`Delegate 1,000m STX so Fast Pool can re-stack future rewards. The contract keeps ${formatUStx(RESERVE_USTX, 0)} STX liquid as a fee reserve before locking the rest.`}
           />
 
           <label className="field">
@@ -448,7 +487,9 @@ export function BurnExitPage() {
                   type="button"
                   className="field-action"
                   onClick={() => {
-                    setDelegateInput(formatUstxAsStxInput(recommendedDelegateUstx));
+                    setDelegateInput(
+                      formatUstxAsStxInput(recommendedDelegateUstx),
+                    );
                     setDelegateInputDirty(true);
                   }}
                 >
@@ -466,11 +507,7 @@ export function BurnExitPage() {
                     ? formatUstxAsStxInput(recommendedDelegateUstx)
                     : "0"
               }
-              value={
-                autoCompound
-                  ? "1,000,000,000"
-                  : delegateInput
-              }
+              value={autoCompound ? "1,000,000,000" : delegateInput}
               onChange={(e) => {
                 if (autoCompound) return;
                 setDelegateInput(e.target.value.replace(/[^0-9.]/g, ""));
@@ -500,16 +537,39 @@ export function BurnExitPage() {
             disabled={
               busy ||
               !wallet.address ||
+              callerAllowed === null ||
               delegateAmount.ustx === 0n ||
               !!delegateAmount.error
             }
             onClick={stackWithFastPool}
           >
-            Delegate to Fast Pool
+            {callerAllowed === false
+              ? "Allow + Delegate to Fast Pool"
+              : "Delegate to Fast Pool"}
           </button>
+          {wallet.address && callerAllowed === false && (
+            <p className="warn small">
+              First time: your wallet will pop up twice — once to allow Fast
+              Pool to handle your Stacking, then to <code>delegate-stx</code>.
+            </p>
+          )}
 
           {delegateAmount.error && wallet.address && (
             <p className="warn small">{delegateAmount.error}</p>
+          )}
+          {allowTxid && (
+            <p className="success">
+              Allowance submitted ·{" "}
+              <a
+                className="link"
+                href={`https://explorer.hiro.so/txid/${allowTxid}?chain=mainnet`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {shortAddress(allowTxid, 10, 6)}
+              </a>
+              . Once it confirms, the delegate button unlocks.
+            </p>
           )}
           {stackTxid && (
             <p className="success">
@@ -529,7 +589,11 @@ export function BurnExitPage() {
 
       <p className="page-foot">
         Independently verify the ratio, the burn split, and the post-conditions
-        on the <a href="#/verify" className="link">Verify page</a>.
+        on the{" "}
+        <a href="#/verify" className="link">
+          Verify page
+        </a>
+        .
       </p>
     </main>
   );

@@ -759,20 +759,33 @@ code {
   background: rgba(8, 6, 10, 0.85);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  display: grid;
-  place-items: center;
+  /* Flex (not grid) + overflow-y so the modal scrolls vertically on short
+     mobile viewports — the prior `display: grid; place-items: center` clipped
+     the bottom of the modal and blocked access to the Accept button. */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   padding: 24px;
   z-index: 100;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .modal {
   width: 100%;
   max-width: 520px;
+  /* dvh tracks the dynamic viewport on mobile (toolbars hiding/showing).
+     svh is a safer fallback for browsers without dvh. */
+  max-height: calc(100svh - 48px);
+  max-height: calc(100dvh - 48px);
   background: var(--bg);
   border: 1px solid var(--rule);
   padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: auto;
   animation: modal-in 0.25s ease-out;
 }
 @keyframes modal-in {
@@ -821,7 +834,30 @@ code {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  flex-wrap: wrap;
   margin-top: 8px;
+  /* Pin the Accept row to the bottom of the modal so internal scroll
+     doesn't push it under the viewport edge on small screens. */
+  position: sticky;
+  bottom: -32px;
+  padding: 12px 0;
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  padding-right: 32px;
+  background: var(--bg);
+  border-top: 1px solid var(--rule);
+}
+@media (max-width: 480px) {
+  .modal { padding: 20px; }
+  .modal-actions {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    bottom: -20px;
+  }
+  .modal-actions .btn { flex: 1 1 100%; text-align: center; }
 }
 
 /* Footer ------------------------------------------------------------ */

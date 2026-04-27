@@ -100,6 +100,22 @@ export function VotePage() {
   const totalAmount = totals ? totals.yesAmount + totals.noAmount : 0n;
   const periodView = deriveVotePeriod(period, active, burnHeight);
 
+  const totalVotingPowerUmia = useMemo(
+    () =>
+      snapshot
+        ? snapshot.voters.reduce((s, v) => s + v.averageStacked, 0n)
+        : 0n,
+    [snapshot],
+  );
+  const yesOfTotalPct =
+    totals && totalVotingPowerUmia > 0n
+      ? Number((totals.yesAmount * 10000n) / totalVotingPowerUmia) / 100
+      : 0;
+  const noOfTotalPct =
+    totals && totalVotingPowerUmia > 0n
+      ? Number((totals.noAmount * 10000n) / totalVotingPowerUmia) / 100
+      : 0;
+
   async function vote(choice: boolean) {
     if (!wallet.address) {
       await wallet.connect();
@@ -186,6 +202,33 @@ export function VotePage() {
           <div className="bar-yes" style={{ width: `${yesPct}%` }} />
           <div className="bar-no" style={{ width: `${100 - yesPct}%` }} />
         </div>
+      )}
+
+      {snapshot && (
+        <section className="threshold">
+          <div className="threshold-head">
+            <span className="threshold-label">Share of total voting power</span>
+            <span className="threshold-meta">
+              50% locks the outcome for either side
+            </span>
+          </div>
+          <div className="threshold-bar" aria-hidden="true">
+            <div
+              className="bar-yes"
+              style={{ width: `${Math.min(yesOfTotalPct, 100)}%` }}
+            />
+            <div
+              className="bar-no"
+              style={{ width: `${Math.min(noOfTotalPct, 100 - yesOfTotalPct)}%` }}
+            />
+            <div className="threshold-mark" />
+          </div>
+          <div className="threshold-foot">
+            <span>Yes {yesOfTotalPct.toFixed(2)}%</span>
+            <span className="dim">50% threshold</span>
+            <span>No {noOfTotalPct.toFixed(2)}%</span>
+          </div>
+        </section>
       )}
 
       {period && (

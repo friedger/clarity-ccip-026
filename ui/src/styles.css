@@ -321,6 +321,60 @@ code {
 .bar-yes { background: var(--mint); transition: width 0.5s ease; }
 .bar-no  { background: var(--accent); transition: width 0.5s ease; }
 
+/* Threshold (share of total voting power) -------------------------- */
+
+.threshold {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.threshold-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.threshold-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  font-weight: 500;
+}
+.threshold-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+.threshold-bar {
+  position: relative;
+  display: flex;
+  height: 4px;
+  background: var(--rule);
+}
+.threshold-bar .bar-yes,
+.threshold-bar .bar-no { height: 100%; }
+.threshold-mark {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--ink-dim);
+  transform: translateX(-0.5px);
+  pointer-events: none;
+}
+.threshold-foot {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.threshold-foot .dim { color: var(--ink-faint); }
+
 /* Voting-period progress ------------------------------------------- */
 
 .period {

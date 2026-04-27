@@ -118,23 +118,7 @@ const voterB = getVoterProof("SP1T91N2Y2TE5M937FE3R6DE0HGWD85SGCV50T95A")!;
 function main(block_height: number) {
   return (
     SimulationBuilder.new()
-      .useBlockHeight(block_height)
-      .addContractDeploy({
-        contract_name: contract_name_redeem,
-        source_code: fs.readFileSync(
-          `./contracts/${contract_name_redeem}.clar`,
-          "utf8",
-        ),
-        deployer,
-      })
-      .addContractDeploy({
-        contract_name,
-        source_code: fs.readFileSync(
-          `./contracts/${contract_name}.clar`,
-          "utf8",
-        ),
-        deployer,
-      })
+      //.useBlockHeight(block_height)
       .addContractCall(
         vote(
           "SP39EH784WK8VYG0SXEVA0M81DGECRE25JYSZ5XSA",

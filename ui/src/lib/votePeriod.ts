@@ -45,15 +45,6 @@ export function deriveVotePeriod(
   const remaining = Math.max(0, end - burnHeight);
   const progressPct = Math.max(0, Math.min(100, (elapsed / length) * 100));
 
-  if (voteActive === false) {
-    return {
-      status: "executed",
-      label: "Executed",
-      progressPct: 100,
-      blocksElapsed: length,
-      blocksRemaining: 0,
-    };
-  }
 
   if (burnHeight < start) {
     return {
@@ -69,6 +60,16 @@ export function deriveVotePeriod(
     return {
       status: "ended_pending_execution",
       label: "Awaiting execution",
+      progressPct: 100,
+      blocksElapsed: length,
+      blocksRemaining: 0,
+    };
+  }
+
+  if (voteActive === false) {
+    return {
+      status: "executed",
+      label: "Executed",
       progressPct: 100,
       blocksElapsed: length,
       blocksRemaining: 0,
